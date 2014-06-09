@@ -19,7 +19,7 @@ Posts are Markdown files, stored in a folder of the website (`data/posts`). To a
 
 **What to do next ?**
 
-1. Edit the file `app/parameters.yml`, and configure your blog (you name, twitter account, etc.)
+1. Edit the file `app/parameters.yml`, and configure your blog (your name, twitter account, etc.)
 
 2. Create your first post by adding a file in `data/posts/`
     
