@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "77a26d7dbbced83acc7659b81a5e4b38",
+    "hash": "eebdad0999b8fc5c720d307cc079c1fd",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -134,11 +134,11 @@
         },
         {
             "name": "netgusto/mozza-theme-default",
-            "version": "1.0.0",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Default.git",
-                "reference": "9fc113738f4797cd71d401262d6996851d8c7367"
+                "reference": "038b78faeab5854b939abfa7f83a4b4e630ff274"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -160,7 +160,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-09 12:56:44"
+            "time": "2014-06-09 19:55:57"
         },
         {
             "name": "pimple/pimple",
