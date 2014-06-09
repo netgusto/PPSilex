@@ -1,0 +1,27 @@
+site:
+    title: My Mozza blog
+    description: "Stuff about life, universe and everything"
+    theme: netgusto/mozza-theme-default         # the package name of the theme
+    locale: fr_FR.UTF-8                         # The server locale
+    owner:
+        name: Me                                # Your full name, or your company name
+        twitter: GetMozza                       # Your twitter username
+        mail: mozza@netgusto.com                # Your email
+        website: http://netgusto.com            # Your website URL
+
+date:
+    timezone: Europe/Paris                      # Timezone, as per http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    format: "F jS, Y"                           # http://fr2.php.net/manual/en/function.date.php
+
+components:
+    disqus:
+        shortname: mozzablog                    # the Disqus ID for your blog
+
+#
+# System parameters; do not touch unless YNWYD
+#
+debug: false
+posts:
+    extension: md
+    dir: data/posts
+    webresdir: res      # Relative to web/

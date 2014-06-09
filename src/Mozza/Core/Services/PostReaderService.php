@@ -10,14 +10,24 @@ use Mozza\Core\Entity\Post,
 class PostReaderService {
 
     protected $postresolver;
+    protected $postresourceresolver;
     protected $timezone;
+    protected $appconfig;
 
-    public function __construct(PostResolverService $postresolver, \DateTimeZone $timezone) {
+    protected $runtimecache = array();
+
+    public function __construct(PostResolverService $postresolver, PostResourceResolverService $postresourceresolver, \DateTimeZone $timezone, array $appconfig) {
         $this->postresolver = $postresolver;
+        $this->postresourceresolver = $postresourceresolver;
         $this->timezone = $timezone;
+        $this->appconfig = $appconfig;
     }
 
     public function getPost($filepath) {
+
+        if(array_key_exists($filepath, $this->runtimecache)) {
+            return $this->runtimecache[$filepath];
+        }
 
         if(!$this->postresolver->isFilepathLegit($filepath)) {
             return null;
@@ -61,14 +71,16 @@ class PostReaderService {
         if(array_key_exists('author', $postData['ymf'])) {
             $post->setAuthor($postData['ymf']['author']);
         } else {
-            $post->setAuthor('Anonymous');
+            # Use the site author
+            $post->setAuthor($this->appconfig['site']['owner']['name']);
         }
 
         # Extract twitter
         if(array_key_exists('twitter', $postData['ymf'])) {
             $post->setTwitter($postData['ymf']['twitter']);
         } else {
-            $post->setTwitter(null);
+            # Use the site twitter
+            $post->setTwitter($this->appconfig['site']['owner']['twitter']);
         }
 
         # Extract date
@@ -77,7 +89,10 @@ class PostReaderService {
             $date = new \DateTime($dateString, $this->timezone);
             $post->setDate($date);
         } else {
-            $post->setDate(null);
+            # the file creation date
+            $datetime = \DateTime::createFromFormat('U', filectime($filepath));
+            $datetime->setTimezone($this->timezone);
+            $post->setDate($datetime);
         }
 
         # Extract Status
@@ -102,6 +117,23 @@ class PostReaderService {
             $post->setAbout(array());
         }
 
+        # Extract Comments (enabled or not)
+        if(array_key_exists('comments', $postData['ymf'])) {
+            $comments = mb_strtolower(trim($postData['ymf']['comments']), 'UTF-8');
+
+            if(
+                $comments === 'no' ||
+                $comments === 'false' ||
+                $comments === 'off'
+            ) {
+                $post->setComments(FALSE);
+            } else {
+                $post->setComments(TRUE);
+            }
+        } else {
+            $post->setComments(TRUE);
+        }
+
         # Extract Metadata
         if(array_key_exists('meta', $postData['ymf'])) {
             $meta = $postData['ymf']['meta'];
@@ -113,14 +145,27 @@ class PostReaderService {
         } else {
             $post->setMeta(array());
         }
+
+        # Extract Image
+        if(array_key_exists('image', $postData['ymf'])) {
+            $imagerelpath = $postData['ymf']['image'];
+            $imagepath = $this->postresourceresolver->filepathForPostAndResourceName($post, $imagerelpath);
+            if($imagepath) {
+                $post->setImage($imagerelpath); # As set in the post source, to be future-proof
+            }
+        } else {
+            $post->setImage(null);
+        }
+
+        $this->runtimecache[$filepath] = $post;
         
-        return $post;
+        return $this->runtimecache[$filepath];
     }
 
     protected function splitFrontMatterFromSource($markdown) {
         $res = array(
-            'ymf' => null,
-            'markdown' => null,
+            'ymf' => array(),
+            'markdown' => array(),
         );
 
         if(trim($markdown) === '') {
@@ -134,7 +179,7 @@ class PostReaderService {
         if(empty($matches)) {
             # No YMF in the file
             return array(
-                'ymf' => null,
+                'ymf' => array(),
                 'markdown' => $markdown,
             );
         }

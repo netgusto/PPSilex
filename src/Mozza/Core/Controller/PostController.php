@@ -23,7 +23,7 @@ class PostController {
     }
 
     public function indexAction(Request $request, Application $app, $slug) {
-        
+
         $post = $this->postRepo->findBySlug($slug);
         if(!$post) {
             throw new Exception\PostNotFoundException('Post with slug ' . $slug . ' does not exist.');

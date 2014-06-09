@@ -6,11 +6,15 @@ use Silex\Application,
     Silex\Provider\UrlGeneratorServiceProvider,
     Silex\Provider\WebProfilerServiceProvider;
 
+use Symfony\Component\HttpFoundation\Request;
+
 use Mozza\Core\Repository\PostRepository,
     Mozza\Core\Controller\HomeController,
     Mozza\Core\Controller\PostController,
     Mozza\Core\Controller\FeedController,
+    Mozza\Core\Services\URLAbsolutizerService,
     Mozza\Core\Services\PostResolverService,
+    Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\PostReaderService,
     Mozza\Core\Services\CebeMarkdownProcessorService,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
@@ -27,7 +31,10 @@ require_once ROOT_DIR . '/vendor/autoload.php';
 ###############################################################################
 
 $app = new Application();
-$app['debug'] = true;
+
+# Building a temporary root request to determine host url, as we cannot access the request service out of the scope of a controller
+$rootrequest = Request::createFromGlobals();
+$app['siteurl'] = $rootrequest->getScheme() . '://' . $rootrequest->getHttpHost() . $rootrequest->getBaseUrl();
 
 
 ###############################################################################
@@ -42,12 +49,22 @@ if(!file_exists($configfile)) {
     $app->register(new DerAlex\Silex\YamlConfigServiceProvider($configfile));
 }
 
+if(isset($app['config']['debug']) && is_bool($app['config']['debug'])) {
+    $app['debug'] = $app['config']['debug'];
+} else {
+    $app['debug'] = FALSE;  # debug is disabled by default
+}
+
 # Building the realpathes for configures pathes
+
+$webdir = ROOT_DIR . '/web';
 $app['abspath'] = array(
     'root' => ROOT_DIR,
-    'theme' => ROOT_DIR . '/web/vendor/' . $app['config']['site']['theme'],
     'posts' => ROOT_DIR . '/' . trim($app['config']['posts']['dir'], '/'),
     'customhtml' => ROOT_DIR . '/app/customhtml/',
+    'web' => $webdir,
+    'theme' => $webdir . '/vendor/' . $app['config']['site']['theme'],
+    'postsresources' => $webdir . '/' . trim($app['config']['posts']['webresdir'], '/'),
 );
 
 # Setting server timezone and locale
@@ -64,6 +81,27 @@ $app['timezone'] = new \DateTimeZone($app['config']['date']['timezone']);
 #
 
 $app->register(new UrlGeneratorServiceProvider());
+
+#
+# URL absolutizer service
+#
+$app['url.absolutizer'] = $app->share(function() use ($app) {
+    return new URLAbsolutizerService(
+        $app['siteurl'],
+        $app['abspath']['web']
+    );
+});
+
+#
+# Post resource filepath resolver
+#
+
+$app['post.resource.resolver'] = $app->share(function() use ($app) {
+    return new PostResourceResolverService(
+        $app['abspath']['web'],
+        $app['abspath']['postsresources']
+    );
+});
 
 #
 # Templating Service
@@ -92,6 +130,8 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
         new TwigMozzaExtension(
             $app['url_generator'],
             $app['markdown.processor'],
+            $app['post.resource.resolver'],
+            $app['url.absolutizer'],
             $app['config']
         )
     );
@@ -130,7 +170,9 @@ $app['post.resolver'] = $app->share(function() use ($app) {
 $app['post.reader'] = $app->share(function() use ($app) {
     return new PostReaderService(
         $app['post.resolver'],
-        $app['timezone']
+        $app['post.resource.resolver'],
+        $app['timezone'],
+        $app['config']
     );
 });
 
@@ -176,7 +218,8 @@ $app['feed.controller'] = $app->share(function() use ($app) {
         $app['twig'],
         $app['post.repository'],
         $app['markdown.processor'],
-        $app['url_generator']
+        $app['url_generator'],
+        $app['url.absolutizer']
     );
 });
 
@@ -191,7 +234,7 @@ $app->get('/', 'home.controller:indexAction')
     ->bind('home');
 
 # Filename /rss or /atom: RSS Feed
-$app->get('{feedtype}', 'feed.controller:indexAction')->assert('feedtype', 'rss|atom')
+$app->get('rss', 'feed.controller:indexAction')
     ->bind('feed');
 
 # Filename path/to/post.md: Single Post Pages

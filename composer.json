@@ -46,6 +46,7 @@
     ],
     "scripts": {
         "post-install-cmd": [
+            "Mozza\\Core\\Composer\\ScriptHandler::createParametersYml",
             "Mozza\\Core\\Composer\\ScriptHandler::forwardAssetsToWebDir"
         ],
         "post-update-cmd": [

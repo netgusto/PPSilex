@@ -26,17 +26,19 @@ class PostRepository {
 
         $postpath = $this->postresolver->filepathFromSlug($slug);
         $post = $this->postreader->getPost($postpath);
-        if(!$post) {
-            # post is not found based on slug
-            # We list all posts, and try to find the one with the correct slug (could be defined in it's Yaml Front matter)
+        if($post) {
+            return $post;
+        }
 
-            $posts = $this->findAll();
-            foreach($posts as $post) {
-                if($post->getSlug() === $slug) {
+        # post is not found based on slug
+        # We list all posts, and try to find the one with the correct slug (could be defined in it's Yaml Front matter)
 
-                    # It's a match
-                    return $post;
-                }
+        $posts = $this->findAll();
+        foreach($posts as $post) {
+            if($post->getSlug() === $slug) {
+
+                # It's a match
+                return $post;
             }
         }
 

@@ -5,17 +5,23 @@ namespace Mozza\Core\Twig;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 use Mozza\Core\Services\MarkdownProcessorInterface,
+    Mozza\Core\Services\PostResourceResolverService,
+    Mozza\Core\Services\URLAbsolutizerService,
     Mozza\Core\Entity\Post;
 
 class MozzaExtension extends \Twig_Extension {
 
     protected $urlgenerator;
     protected $markdownProcessor;
+    protected $postresourceresolver;
+    protected $urlabsolutizer;
     protected $appconfig;
 
-    public function __construct(UrlGenerator $urlgenerator, MarkdownProcessorInterface $markdownProcessor, array $appconfig) {
+    public function __construct(UrlGenerator $urlgenerator, MarkdownProcessorInterface $markdownProcessor, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, array $appconfig) {
         $this->urlgenerator = $urlgenerator;
         $this->markdownProcessor = $markdownProcessor;
+        $this->postresourceresolver = $postresourceresolver;
+        $this->urlabsolutizer = $urlabsolutizer;
         $this->appconfig = $appconfig;
     }
     
@@ -27,6 +33,7 @@ class MozzaExtension extends \Twig_Extension {
         return array(
             'markdown' => new \Twig_Filter_Method($this, 'markdown', array('is_safe' => array('html'))),
             'inlinemarkdown' => new \Twig_Filter_Method($this, 'inlinemarkdown', array('is_safe' => array('html'))),
+            'toresourceurl' => new \Twig_Filter_Method($this, 'toresourceurl', array('is_safe' => array('html'))),
         );
     }
 
@@ -45,7 +52,20 @@ class MozzaExtension extends \Twig_Extension {
         return $this->markdownProcessor->toInlineHtml($markdownsource);
     }
 
-    public function component_disqus($options=array()) {
+    public function toresourceurl($relfilepath, Post $post) {
+        return $this->urlabsolutizer->absoluteURLFromRelativePath(
+            $this->postresourceresolver->relativeFilepathForPostAndResourceName(
+                $post,
+                $relfilepath
+            )
+        );
+    }
+
+    public function component_disqus(Post $post) {
+
+        if(!$post->getComments()) {
+            return '';
+        }
 
         if(
             !array_key_exists('components', $this->appconfig) ||
@@ -89,26 +109,7 @@ HTML;
         return implode("\n", $metas);
     }
 
-    protected function metatagsWithoutPost(Post $post) {
-        $metas = array();
-
-        $cleanup = function($string) {
-            return trim(strip_tags($string));
-        };
-
-        $sitetitle = $cleanup($this->appconfig['site']['title']);
-        $sitedescription = $cleanup($this->appconfig['site']['sitedescription']);
-        $author = $cleanup($this->appconfig['site']['owner']['name']);
-        $ownertwitter = $cleanup($this->appconfig['site']['owner']['twitter']);
-
-        $metas[] = '<title>' . htmlspecialchars($sitetitle) . '</title>';
-        $metas[] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
-        $metas[] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
-
-        return $metas;
-    }
-
-    protected function metatagsWithPost(Post $post) {
+    protected function metatagsWithoutPost() {
         $metas = array();
 
         $cleanup = function($string) {
@@ -117,30 +118,66 @@ HTML;
 
         $sitetitle = $cleanup($this->appconfig['site']['title']);
         $sitedescription = $cleanup($this->appconfig['site']['description']);
+        $author = $cleanup($this->appconfig['site']['owner']['name']);
+        $ownertwitter = $cleanup($this->appconfig['site']['owner']['twitter']);
+
+        $metas['title'] = '<title>' . htmlspecialchars($sitetitle) . '</title>';
+        $metas['author'] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
+        $metas['description'] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
+
+        # RSS feed
+        $rssRoutePath = $this->urlgenerator->generate('feed');
+        $metas['rss'] = '<link rel="alternate" type="application/rss+xml" title="Subscribe using RSS" href="' . $this->urlabsolutizer->absoluteURLFromRoutePath($rssRoutePath) . '" />';
+
+        return $metas;
+    }
+
+    protected function metatagsWithPost(Post $post) {
+
+        $cleanup = function($string) {
+            return trim(strip_tags($string));
+        };
+
+        $metas = $this->metatagsWithoutPost();
+
+        $sitetitle = $cleanup($this->appconfig['site']['title']);
+        $sitedescription = $cleanup($this->appconfig['site']['description']);
         $posttitle = $cleanup($post->getTitle());
         $intro = $cleanup($this->markdown($post->getIntro()));
         $author = $cleanup($this->appconfig['site']['owner']['name']);
         $ownertwitter = $cleanup($this->appconfig['site']['owner']['twitter']);
+        
+        $imagerelpath = $post->getImage();
+        if($imagerelpath) {
+            $imageurl = $this->toresourceurl($imagerelpath, $post);
+        } else {
+            $imageurl = null;
+        }
 
-        $metas[] = '<title>' . htmlspecialchars($posttitle . ' - ' . $sitetitle) . '</title>';
-        $metas[] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
-        $metas[] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
-        $metas[] = '<link rel="canonical" href="' . $this->urlgenerator->generate('post', array('slug' => $post->getSlug())) . '" />';
+        $metas['title'] = '<title>' . htmlspecialchars($posttitle . ' - ' . $sitetitle) . '</title>';
+        $metas['author'] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
+        $metas['description'] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
+        $metas['canonical'] = '<link rel="canonical" href="' . $this->urlgenerator->generate('post', array('slug' => $post->getSlug())) . '" />';
         
         # Twitter card
-        $metas[] = '<meta name="twitter:card" content="summary">';
-        $metas[] = '<meta name="twitter:site" content="' . htmlspecialchars($sitetitle) . '">';
-        $metas[] = '<meta name="twitter:title" content="' . htmlspecialchars($posttitle) . '">';
-        $metas[] = '<meta name="twitter:description" content="' . htmlspecialchars($intro) . '">';
-        $metas[] = '<meta name="twitter:creator" content="' . htmlspecialchars($ownertwitter) . '">';
-        $metas[] = '<meta name="twitter:image:src" content="">';
+        $metas['twitter:card'] = '<meta name="twitter:card" content="summary">';
+        $metas['twitter:site'] = '<meta name="twitter:site" content="' . htmlspecialchars($sitetitle) . '">';
+        $metas['twitter:title'] = '<meta name="twitter:title" content="' . htmlspecialchars($posttitle) . '">';
+        $metas['twitter:description'] = '<meta name="twitter:description" content="' . htmlspecialchars($intro) . '">';
+        $metas['twitter:creator'] = '<meta name="twitter:creator" content="' . htmlspecialchars($ownertwitter) . '">';
+
+        if($imageurl) {
+            $metas['twitter:image:src'] = '<meta name="twitter:image:src" content="' . htmlspecialchars($imageurl) . '">';
+        }
 
         # OpenGraph
-        $metas[] = '<meta property="og:type" content="article">';
-        $metas[] = '<meta property="og:title" content="' . htmlspecialchars($posttitle) . '">';
-        $metas[] = '<meta property="og:site_name" content="' . htmlspecialchars($sitetitle) . '">';
-        $metas[] = '<meta property="og:description" content="' . htmlspecialchars($intro) . '">';
-        $metas[] = '<meta property="og:image" content="">';
+        $metas['og:type'] = '<meta property="og:type" content="article">';
+        $metas['og:title'] = '<meta property="og:title" content="' . htmlspecialchars($posttitle) . '">';
+        $metas['og:site_name'] = '<meta property="og:site_name" content="' . htmlspecialchars($sitetitle) . '">';
+        $metas['og:description'] = '<meta property="og:description" content="' . htmlspecialchars($intro) . '">';
+        if($imageurl) {
+            $metas['og:image'] = '<meta property="og:image" content="' . htmlspecialchars($imageurl) . '">';
+        }
 
         return $metas;
     }

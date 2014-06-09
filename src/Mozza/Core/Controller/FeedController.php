@@ -13,7 +13,8 @@ use \Suin\RSSWriter\Feed,
     \Suin\RSSWriter\Item;
 
 use Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\MarkdownProcessorInterface;
+    Mozza\Core\Services\MarkdownProcessorInterface,
+    Mozza\Core\Services\URLAbsolutizerService;
 
 class FeedController {
 
@@ -22,23 +23,22 @@ class FeedController {
     protected $markdownprocessor;
     protected $urlgenerator;
 
-    public function __construct(Twig_Environment $twig, PostRepository $postRepo, MarkdownProcessorInterface $markdownprocessor, UrlGenerator $urlgenerator) {
+    public function __construct(Twig_Environment $twig, PostRepository $postRepo, MarkdownProcessorInterface $markdownprocessor, UrlGenerator $urlgenerator, URLAbsolutizerService $urlabsolutizer) {
         $this->twig = $twig;
         $this->postRepo = $postRepo;
         $this->markdownprocessor = $markdownprocessor;
         $this->urlgenerator = $urlgenerator;
+        $this->urlabsolutizer = $urlabsolutizer;
     }
 
     public function indexAction(Request $request, Application $app, $feedtype) {
-
-        $siteurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBaseUrl();
 
         $feed = new Feed();
         $channel = new Channel();
         $channel
             ->title($app['config']['site']['title'])
             ->description($app['config']['site']['description'])
-            ->url($siteurl)
+            ->url($this->urlabsolutizer->absoluteSiteURL())
             ->appendTo($feed);
 
         $posts = $this->postRepo->findAll();
@@ -51,7 +51,7 @@ class FeedController {
                 ->title($post->getTitle())
                 ->description($postcontent)
                 ->pubdate($post->getDate()->getTimestamp())
-                ->url($siteurl . $this->urlgenerator->generate('post', array('slug' => $post->getSlug())))
+                ->url($this->urlabsolutizer->absoluteURLFromRoutePath($this->urlgenerator->generate('post', array('slug' => $post->getSlug()))))
                 ->appendTo($channel);
         }
 

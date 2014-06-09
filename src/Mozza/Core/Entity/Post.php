@@ -13,6 +13,8 @@ class Post {
     protected $status;
     protected $intro;
     protected $content;
+    protected $image;
+    protected $comments = TRUE;
     protected $about = array();
     protected $meta = array();
 
@@ -94,6 +96,24 @@ class Post {
 
     public function setAbout(array $about) {
         $this->about = $about;
+        return $this;
+    }
+
+    public function getImage() {
+        return $this->image;
+    }
+
+    public function setImage($imagepath) {
+        $this->image = $imagepath;
+        return $this;
+    }
+
+    public function getComments() {
+        return $this->comments;
+    }
+
+    public function setComments($comments) {
+        $this->comments = $comments;
         return $this;
     }
 
