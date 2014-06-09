@@ -1,0 +1,6 @@
+app/cache/*
+app/parameters.yml
+web/css/*
+web/js/*
+web/img/*
+vendor/

@@ -1,0 +1,65 @@
+{
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "require": {
+        "silex/silex": "~1.2",
+        "silex/web-profiler": "~1.0",
+        "deralex/yaml-config-service-provider": "1.0.x-dev",
+        "twig/twig": ">=1.8,<2.0-dev",
+        "symfony/twig-bridge": "~2.5",
+        "symfony/finder": "~2.5",
+        "symfony/filesystem": "~2.5",
+        "cebe/markdown": "0.9.2",
+        "isagalaev/highlightjs": "~8.0",
+        "font-awesome/font-awesome": "~4.1",
+        "suin/php-rss-writer": ">=1.0",
+        "netgusto/mozza-theme-default": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "file:///Users/jerome/Desktop/droplets/mozza-theme-default"
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "isagalaev/highlightjs",
+                "version": "8.0",
+                "dist": {
+                    "url": "https://github.com/isagalaev/highlight.js/archive/8.0.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "font-awesome/font-awesome",
+                "version": "4.1.0",
+                "dist": {
+                    "url": "http://fortawesome.github.io/Font-Awesome/assets/font-awesome-4.1.0.zip",
+                    "type": "zip"
+                }
+            }
+        }
+    ],
+    "scripts": {
+        "post-install-cmd": [
+            "Mozza\\Core\\Composer\\ScriptHandler::forwardAssetsToWebDir"
+        ],
+        "post-update-cmd": [
+            "Mozza\\Core\\Composer\\ScriptHandler::forwardAssetsToWebDir"
+        ]
+    },
+    "extra": {
+        "assetsforwarding": {
+            "destdir": "web/vendor",
+            "packages": [
+                "isagalaev/highlightjs",
+                "netgusto/mozza-theme-default",
+                "font-awesome/font-awesome"
+            ]
+        }
+    }
+}
