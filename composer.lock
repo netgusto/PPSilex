@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "1b70684e16b32762b87096655b2a61fd",
+    "hash": "77a26d7dbbced83acc7659b81a5e4b38",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -134,11 +134,11 @@
         },
         {
             "name": "netgusto/mozza-theme-default",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "/Users/jerome/Desktop/droplets/mozza-theme-default",
-                "reference": "dc4ae89fb304d75e2f4b67fb5a82b5097e0f1a43"
+                "url": "https://github.com/netgusto/Mozza-Theme-Default.git",
+                "reference": "9fc113738f4797cd71d401262d6996851d8c7367"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -160,7 +160,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-09 12:43:13"
+            "time": "2014-06-09 12:56:44"
         },
         {
             "name": "pimple/pimple",
@@ -1251,8 +1251,7 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "deralex/yaml-config-service-provider": 20,
-        "netgusto/mozza-theme-default": 20
+        "deralex/yaml-config-service-provider": 20
     },
     "platform": [
 
