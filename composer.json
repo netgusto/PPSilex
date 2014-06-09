@@ -14,12 +14,12 @@
         "isagalaev/highlightjs": "~8.0",
         "font-awesome/font-awesome": "~4.1",
         "suin/php-rss-writer": ">=1.0",
-        "netgusto/mozza-theme-default": "dev-master"
+        "netgusto/mozza-theme-default": "~1.0"
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "file:///Users/jerome/Desktop/droplets/mozza-theme-default"
+            "url": "https://github.com/netgusto/Mozza-Theme-Default.git",
+            "type": "git"
         },
         {
             "type": "package",
