@@ -154,10 +154,14 @@ HTML;
             $imageurl = null;
         }
 
+        $canonicalurl =  $this->urlabsolutizer->absoluteURLFromRoutePath(
+            $this->urlgenerator->generate('post', array('slug' => $post->getSlug()))
+        );
+
         $metas['title'] = '<title>' . htmlspecialchars($posttitle . ' - ' . $sitetitle) . '</title>';
         $metas['author'] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
         $metas['description'] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
-        $metas['canonical'] = '<link rel="canonical" href="' . $this->urlgenerator->generate('post', array('slug' => $post->getSlug())) . '" />';
+        $metas['canonical'] = '<link rel="canonical" href="' . $canonicalurl . '" />';
         
         # Twitter card
         $metas['twitter:card'] = '<meta name="twitter:card" content="summary">';

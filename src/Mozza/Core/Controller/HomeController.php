@@ -33,7 +33,7 @@ class HomeController {
             $post = new Post();
             $post->setTitle('Oh no ! not a single post to display !');
             $post->setSlug('no-post');
-            $post->setIntro("It looks like you don't have any post in your blog yet. To add a post, create a file in `app/posts`.");
+            $post->setIntro("It looks like you don't have any post in your blog yet. To add a post, create a file in `data/posts`.");
             $post->setAuthor($app['config']['site']['owner']['name']);
             $post->setMeta(array(
                 'comments' => 'off'

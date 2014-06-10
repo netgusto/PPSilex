@@ -6,12 +6,15 @@ use Silex\Application,
     Silex\Provider\UrlGeneratorServiceProvider,
     Silex\Provider\WebProfilerServiceProvider;
 
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request,
+    Symfony\Component\HttpFoundation\Response,
+    Symfony\Component\HttpFoundation\RedirectResponse;
 
 use Mozza\Core\Repository\PostRepository,
     Mozza\Core\Controller\HomeController,
     Mozza\Core\Controller\PostController,
     Mozza\Core\Controller\FeedController,
+    Mozza\Core\Controller\ErrorController,
     Mozza\Core\Services\URLAbsolutizerService,
     Mozza\Core\Services\PostResolverService,
     Mozza\Core\Services\PostResourceResolverService,
@@ -147,9 +150,11 @@ $app['twig.loader.filesystem']->addPath($app['abspath']['customhtml'], 'Custom')
 # Web profiler service
 #
 
-$app->register(new WebProfilerServiceProvider(), array(
-    'profiler.cache_dir' => ROOT_DIR . '/app/cache/profiler',
-));
+if($app['debug']) {
+    $app->register(new WebProfilerServiceProvider(), array(
+        'profiler.cache_dir' => ROOT_DIR . '/app/cache/profiler',
+    ));
+}
 
 #
 # Business logic related services
@@ -223,6 +228,13 @@ $app['feed.controller'] = $app->share(function() use ($app) {
     );
 });
 
+# The controller responsible for error handling
+$app['error.controller'] = $app->share(function() use ($app) {
+    return new ErrorController(
+        $app['twig']
+    );
+});
+
 
 
 ###############################################################################
@@ -238,8 +250,37 @@ $app->get('rss', 'feed.controller:indexAction')
     ->bind('feed');
 
 # Filename path/to/post.md: Single Post Pages
-$app->match('blog/{slug}', 'post.controller:indexAction')->assert('slug', '.+')
+$app->match('blog/{slug}', 'post.controller:indexAction')
+    ->assert('slug', '.+')
     ->bind('post');
+
+# Filename path/to/post.md: Single Post Pages
+$app->match('blog{trailingslash}', function(Request $request) use ($app) {
+    return new RedirectResponse($app['url_generator']->generate('home'));
+})->assert('trailingslash', '/?');
+
+
+if(!$app['debug']) {
+    # If debug mode is disabled, we handle the error messages nicely
+    $app->error(function (\Exception $e, $code) use ($app) {
+
+        if($code === 404) {
+            return $app['error.controller']->notFoundAction(
+                $app['request'],
+                $app,
+                $e,
+                $code
+            );
+        }
+
+        return $app['error.controller']->errorAction(
+            $app['request'],
+            $app,
+            $e,
+            $code
+        );
+    });
+}
 
 # Serving the app
 return $app;

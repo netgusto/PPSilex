@@ -31,7 +31,7 @@ class FeedController {
         $this->urlabsolutizer = $urlabsolutizer;
     }
 
-    public function indexAction(Request $request, Application $app, $feedtype) {
+    public function indexAction(Request $request, Application $app) {
 
         $feed = new Feed();
         $channel = new Channel();

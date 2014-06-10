@@ -17,7 +17,7 @@ Mozza is designed to be an ascetic solution to online post publication, rather t
 
 Posts are Markdown files, stored in a folder of the website (`data/posts`). To add a post, simply create a file in this folder.
 
-**What to do next ?**
+## What to do next ?
 
 1. Edit the file `app/parameters.yml`, and configure your blog (your name, twitter account, etc.)
 
