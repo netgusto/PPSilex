@@ -1,7 +1,8 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
     "hash": "eebdad0999b8fc5c720d307cc079c1fd",
     "packages": [
@@ -134,11 +135,11 @@
         },
         {
             "name": "netgusto/mozza-theme-default",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Default.git",
-                "reference": "038b78faeab5854b939abfa7f83a4b4e630ff274"
+                "reference": "6409a5a579403e2e8db03c7034851fd2fa0ed73e"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -160,7 +161,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-09 19:55:57"
+            "time": "2014-06-10 09:35:23"
         },
         {
             "name": "pimple/pimple",
