@@ -2,10 +2,10 @@
 title: Hello, World !
 slug: hello-world
 author: Jérôme Schneider
-date: 2014-06-08 14:00
+date: 2014-06-10 21:00
 status: publish
 
-image: netgusto.png
+image: onion.jpg
 about: [life, universe, everything]
 comments: off
 ---
@@ -27,4 +27,4 @@ Posts are Markdown files, stored in a folder of the website (`data/posts`). To a
 
     2. To define your post metadata, like it's date, or title, you'll have to use the yaml front matter notation; have a look at `hello-world.md` to see how it's done
 
-3. Once you created your first post, remove this default post by deleting the file `data/posts/hello-world.md`
+3. Once you created your first post, remove the default posts by deleting the files `data/posts/hello-world.md` and `data/posts/setting-up-mozza.md`.
