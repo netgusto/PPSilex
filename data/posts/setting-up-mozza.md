@@ -1,15 +1,14 @@
 ---
-title: Hello, World !
-slug: hello-world
+title: Setting up Mozza
 author: Jérôme Schneider
-date: 2014-06-10 21:00
+date: 2014-06-10 14:00
 status: publish
 
-image: onion.jpg
+image: jet-sky.jpg
 about: [life, universe, everything]
 comments: off
 ---
-Welcome to **Mozza**.
+Let's start this thing.
 
 **Mozza** is a deliciously simple [Markdown](http://daringfireball.net/projects/markdown/) blog system, based on [Silex](http://silex.sensiolabs.org).
 
