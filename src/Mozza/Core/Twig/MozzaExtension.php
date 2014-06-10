@@ -7,17 +7,23 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 use Mozza\Core\Services\MarkdownProcessorInterface,
     Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\URLAbsolutizerService,
+    Mozza\Core\Services\PostSerializerService,
+    Mozza\Core\Repository\PostRepository,
     Mozza\Core\Entity\Post;
 
 class MozzaExtension extends \Twig_Extension {
 
+    protected $postRepo;
+    protected $postserializer;
     protected $urlgenerator;
     protected $markdownProcessor;
     protected $postresourceresolver;
     protected $urlabsolutizer;
     protected $appconfig;
 
-    public function __construct(UrlGenerator $urlgenerator, MarkdownProcessorInterface $markdownProcessor, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, array $appconfig) {
+    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, UrlGenerator $urlgenerator, MarkdownProcessorInterface $markdownProcessor, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, array $appconfig) {
+        $this->postRepo = $postRepo;
+        $this->postserializer = $postserializer;
         $this->urlgenerator = $urlgenerator;
         $this->markdownProcessor = $markdownProcessor;
         $this->postresourceresolver = $postresourceresolver;
@@ -34,6 +40,8 @@ class MozzaExtension extends \Twig_Extension {
             'markdown' => new \Twig_Filter_Method($this, 'markdown', array('is_safe' => array('html'))),
             'inlinemarkdown' => new \Twig_Filter_Method($this, 'inlinemarkdown', array('is_safe' => array('html'))),
             'toresourceurl' => new \Twig_Filter_Method($this, 'toresourceurl', array('is_safe' => array('html'))),
+            'toabsoluteurl' => new \Twig_Filter_Method($this, 'toabsoluteurl', array('is_safe' => array('html'))),
+            'serializepost' => new \Twig_Filter_Method($this, 'serializepost'),
         );
     }
 
@@ -41,7 +49,21 @@ class MozzaExtension extends \Twig_Extension {
         return array(
             'component_disqus' => new \Twig_SimpleFunction('component_disqus', array($this, 'component_disqus'), array('is_safe' => array('html'))),
             'component_metatags' => new \Twig_SimpleFunction('component_metatags', array($this, 'component_metatags'), array('is_safe' => array('html'))),
+            'nextpost' => new \Twig_SimpleFunction('nextpost', array($this, 'nextpost')),
+            'previouspost' => new \Twig_SimpleFunction('previouspost', array($this, 'previouspost')),
         );
+    }
+
+    public function serializepost(Post $post) {
+        return $this->postserializer->serialize($post);
+    }
+
+    public function previouspost(Post $post) {
+        return $this->postRepo->findPrevious($post);
+    }
+
+    public function nextpost(Post $post) {
+        return $this->postRepo->findNext($post);
     }
 
     public function markdown($markdownsource) {
@@ -59,6 +81,10 @@ class MozzaExtension extends \Twig_Extension {
                 $relfilepath
             )
         );
+    }
+
+    public function toabsoluteurl($relurl) {
+        return $this->urlabsolutizer->absoluteURLFromRoutePath($relurl);
     }
 
     public function component_disqus(Post $post) {

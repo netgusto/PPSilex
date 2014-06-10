@@ -11,15 +11,58 @@
         "symfony/finder": "~2.5",
         "symfony/filesystem": "~2.5",
         "cebe/markdown": "0.9.2",
+        
         "isagalaev/highlightjs": "~8.0",
+        "requirejs/requirejs": "2.1.11",
+        "modernizr/modernizr": "2.7.1",
+        "jquery/jquery": "2.1.0",
+
         "font-awesome/font-awesome": "~4.1",
         "suin/php-rss-writer": ">=1.0",
-        "netgusto/mozza-theme-default": "~1.0"
+        "netgusto/mozza-theme-default": "~1.0",
+        "netgusto/mozza-theme-medium": "~1.0"
     },
     "repositories": [
         {
             "url": "https://github.com/netgusto/Mozza-Theme-Default.git",
             "type": "git"
+        },
+        {
+            "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
+            "type": "git"
+        },
+        {
+            "type": "package",
+            "package": {
+              "name": "requirejs/requirejs",
+                "version": "2.1.11",
+                "dist": {
+                    "url": "http://requirejs.org/docs/release/2.1.11/minified/require.js",
+                    "type": "file"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "jquery/jquery",
+                "version": "2.1.0",
+                "dist": {
+                    "url": "http://code.jquery.com/jquery-2.1.0.min.js",
+                    "type": "file"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "modernizr/modernizr",
+                "version": "2.7.1",
+                "dist": {
+                    "url": "http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js",
+                    "type": "file"
+                }
+            }
         },
         {
             "type": "package",
@@ -57,9 +100,13 @@
         "assetsforwarding": {
             "destdir": "web/vendor",
             "packages": [
+                "requirejs/requirejs",
+                "jquery/jquery",
+                "modernizr/modernizr",
                 "isagalaev/highlightjs",
+                "font-awesome/font-awesome",
                 "netgusto/mozza-theme-default",
-                "font-awesome/font-awesome"
+                "netgusto/mozza-theme-medium"
             ]
         }
     }

@@ -14,11 +14,13 @@ use Mozza\Core\Repository\PostRepository,
     Mozza\Core\Controller\HomeController,
     Mozza\Core\Controller\PostController,
     Mozza\Core\Controller\FeedController,
+    Mozza\Core\Controller\JsonController,
     Mozza\Core\Controller\ErrorController,
     Mozza\Core\Services\URLAbsolutizerService,
     Mozza\Core\Services\PostResolverService,
     Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\PostReaderService,
+    Mozza\Core\Services\PostSerializerService,
     Mozza\Core\Services\CebeMarkdownProcessorService,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
 
@@ -131,6 +133,8 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 
     $twig->addExtension(
         new TwigMozzaExtension(
+            $app['post.repository'],
+            $app['post.serializer'],
             $app['url_generator'],
             $app['markdown.processor'],
             $app['post.resource.resolver'],
@@ -177,6 +181,17 @@ $app['post.reader'] = $app->share(function() use ($app) {
         $app['post.resolver'],
         $app['post.resource.resolver'],
         $app['timezone'],
+        $app['config']
+    );
+});
+
+$app['post.serializer'] = $app->share(function() use ($app) {
+    return new PostSerializerService(
+        $app['post.repository'],
+        $app['markdown.processor'],
+        $app['url_generator'],
+        $app['url.absolutizer'],
+        $app['post.resource.resolver'],
         $app['config']
     );
 });
@@ -228,6 +243,14 @@ $app['feed.controller'] = $app->share(function() use ($app) {
     );
 });
 
+# The controller responsible for the JSON feed
+$app['json.controller'] = $app->share(function() use ($app) {
+    return new JsonController(
+        $app['post.repository'],
+        $app['post.serializer']
+    );
+});
+
 # The controller responsible for error handling
 $app['error.controller'] = $app->share(function() use ($app) {
     return new ErrorController(
@@ -248,6 +271,15 @@ $app->get('/', 'home.controller:indexAction')
 # Filename /rss or /atom: RSS Feed
 $app->get('rss', 'feed.controller:indexAction')
     ->bind('feed');
+
+# Filename /rss or /atom: RSS Feed
+$app->get('json/posts', 'json.controller:indexAction')
+    ->bind('json.posts');
+
+# Filename /rss or /atom: RSS Feed
+$app->get('json/posts/{slug}', 'json.controller:postAction')
+    ->assert('slug', '.+')
+    ->bind('json.post');
 
 # Filename path/to/post.md: Single Post Pages
 $app->match('blog/{slug}', 'post.controller:indexAction')

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "eebdad0999b8fc5c720d307cc079c1fd",
+    "hash": "15f43e0352f1371867c0aeb8a6242ed7",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -134,6 +134,28 @@
             "type": "library"
         },
         {
+            "name": "jquery/jquery",
+            "version": "2.1.0",
+            "dist": {
+                "type": "file",
+                "url": "http://code.jquery.com/jquery-2.1.0.min.js",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "modernizr/modernizr",
+            "version": "2.7.1",
+            "dist": {
+                "type": "file",
+                "url": "http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
             "name": "netgusto/mozza-theme-default",
             "version": "1.0.3",
             "source": {
@@ -162,6 +184,37 @@
                 "theme"
             ],
             "time": "2014-06-10 09:35:23"
+        },
+        {
+            "name": "netgusto/mozza-theme-medium",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
+                "reference": "5942508bcd0fad7c3dfa65682c9a239c8cff05f2"
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "package",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Net Gusto",
+                    "email": "contact@netgusto.com"
+                }
+            ],
+            "description": "Medium theme for Mozza",
+            "homepage": "https://github.com/netgusto/mozza-theme-medium",
+            "keywords": [
+                "medium",
+                "mozza",
+                "silex",
+                "theme"
+            ],
+            "time": "2014-06-10 19:07:16"
         },
         {
             "name": "pimple/pimple",
@@ -248,6 +301,17 @@
                 "psr-3"
             ],
             "time": "2012-12-21 11:40:51"
+        },
+        {
+            "name": "requirejs/requirejs",
+            "version": "2.1.11",
+            "dist": {
+                "type": "file",
+                "url": "http://requirejs.org/docs/release/2.1.11/minified/require.js",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
         },
         {
             "name": "silex/silex",
