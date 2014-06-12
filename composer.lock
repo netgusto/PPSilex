@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "15f43e0352f1371867c0aeb8a6242ed7",
+    "hash": "497b1956a99dd066568a060d1afb34f0",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -156,12 +156,12 @@
             "type": "library"
         },
         {
-            "name": "netgusto/mozza-theme-default",
-            "version": "1.0.3",
+            "name": "netgusto/mozza-theme-dropplets",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/netgusto/Mozza-Theme-Default.git",
-                "reference": "6409a5a579403e2e8db03c7034851fd2fa0ed73e"
+                "url": "https://github.com/netgusto/Mozza-Theme-Dropplets.git",
+                "reference": "57f3b476943d749773a25cef2fccddd9123b9ae5"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -176,22 +176,22 @@
                     "email": "contact@netgusto.com"
                 }
             ],
-            "description": "Default theme for Mozza",
-            "homepage": "https://github.com/netgusto/mozza-theme-default",
+            "description": "Dropplets theme for Mozza",
+            "homepage": "https://github.com/netgusto/mozza-theme-dropplets",
             "keywords": [
                 "mozza",
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-10 09:35:23"
+            "time": "2014-06-12 20:52:24"
         },
         {
             "name": "netgusto/mozza-theme-medium",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
-                "reference": "42956a21b73f72f268d4689b672fb475812138c7"
+                "reference": "63eea8bcf137447ad02d6f93209380a5680245e9"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -214,7 +214,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-12 16:22:02"
+            "time": "2014-06-12 20:55:38"
         },
         {
             "name": "pimple/pimple",
