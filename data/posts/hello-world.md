@@ -5,11 +5,7 @@ author: Jérôme Schneider
 date: 2014-06-10 21:00
 status: publish
 
-<<<<<<< Updated upstream
-image: onion.jpg
-=======
-image: 1.jpg
->>>>>>> Stashed changes
+image: desk.jpg
 about: [life, universe, everything]
 comments: off
 ---

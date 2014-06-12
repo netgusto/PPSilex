@@ -29,11 +29,14 @@ class PostController {
             throw new Exception\PostNotFoundException('Post with slug ' . $slug . ' does not exist.');
         }
 
+        $posts = $this->postRepo->findAll();
+
         $nextpost = $this->postRepo->findNext($post);
         $previouspost = $this->postRepo->findPrevious($post);
 
         return $this->twig->render('@MozzaTheme/Post/index.html.twig', array(
             'post' => $post,
+            'posts' => $posts,
             'nextpost' => $nextpost,
             'previouspost' => $previouspost,
         ));
