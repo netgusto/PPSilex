@@ -24,7 +24,7 @@
     },
     "repositories": [
         {
-            "url": "https://github.com/netgusto/Mozza-Theme-Default.git",
+            "url": "https://github.com/netgusto/Mozza-Theme-Dropplets.git",
             "type": "git"
         },
         {
@@ -105,7 +105,7 @@
                 "modernizr/modernizr",
                 "isagalaev/highlightjs",
                 "font-awesome/font-awesome",
-                "netgusto/mozza-theme-default",
+                "netgusto/mozza-theme-dropplets",
                 "netgusto/mozza-theme-medium"
             ]
         }
