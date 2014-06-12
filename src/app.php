@@ -17,6 +17,7 @@ use Mozza\Core\Repository\PostRepository,
     Mozza\Core\Controller\JsonController,
     Mozza\Core\Controller\ErrorController,
     Mozza\Core\Services\URLAbsolutizerService,
+    Mozza\Core\Services\PostURLGeneratorService,
     Mozza\Core\Services\PostResolverService,
     Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\PostReaderService,
@@ -39,6 +40,7 @@ $app = new Application();
 
 # Building a temporary root request to determine host url, as we cannot access the request service out of the scope of a controller
 $rootrequest = Request::createFromGlobals();
+$app['sitedomain'] = $rootrequest->getHost();
 $app['siteurl'] = $rootrequest->getScheme() . '://' . $rootrequest->getHttpHost() . $rootrequest->getBaseUrl();
 
 
@@ -108,6 +110,14 @@ $app['post.resource.resolver'] = $app->share(function() use ($app) {
     );
 });
 
+$app['post.urlgenerator'] = $app->share(function() use ($app) {
+    return new PostURLGeneratorService(
+        $app['post.repository'],
+        $app['url_generator'],
+        $app['url.absolutizer']
+    );
+});
+
 #
 # Templating Service
 #
@@ -136,9 +146,11 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
             $app['post.repository'],
             $app['post.serializer'],
             $app['url_generator'],
+            $app['post.urlgenerator'],
             $app['markdown.processor'],
             $app['post.resource.resolver'],
             $app['url.absolutizer'],
+            $app['sitedomain'],
             $app['config']
         )
     );
@@ -189,7 +201,7 @@ $app['post.serializer'] = $app->share(function() use ($app) {
     return new PostSerializerService(
         $app['post.repository'],
         $app['markdown.processor'],
-        $app['url_generator'],
+        $app['post.urlgenerator'],
         $app['url.absolutizer'],
         $app['post.resource.resolver'],
         $app['config']

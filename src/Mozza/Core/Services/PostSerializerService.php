@@ -2,27 +2,26 @@
 
 namespace Mozza\Core\Services;
 
-use Symfony\Component\Routing\Generator\UrlGenerator;
-
 use Mozza\Core\Repository\PostRepository,
     Mozza\Core\Services\MarkdownProcessorInterface,
     Mozza\Core\Services\URLAbsolutizerService,
     Mozza\Core\Services\PostResourceResolverService,
+    Mozza\Core\Services\PostURLGeneratorService,
     Mozza\Core\Exception;
 
 class PostSerializerService {
 
     protected $postRepo;
     protected $markdownprocessor;
-    protected $urlgenerator;
+    protected $posturlgenerator;
     protected $urlabsolutizer;
     protected $postresourceresolver;
     protected $appconfig;
     
-    public function __construct(PostRepository $postRepo, MarkdownProcessorInterface $markdownprocessor, UrlGenerator $urlgenerator, URLAbsolutizerService $urlabsolutizer, PostResourceResolverService $postresourceresolver, array $appconfig) {
+    public function __construct(PostRepository $postRepo, MarkdownProcessorInterface $markdownprocessor, PostURLGeneratorService $posturlgenerator, URLAbsolutizerService $urlabsolutizer, PostResourceResolverService $postresourceresolver, array $appconfig) {
         $this->postRepo = $postRepo;
         $this->markdownprocessor = $markdownprocessor;
-        $this->urlgenerator = $urlgenerator;
+        $this->posturlgenerator = $posturlgenerator;
         $this->urlabsolutizer = $urlabsolutizer;
         $this->postresourceresolver = $postresourceresolver;
         $this->appconfig = $appconfig;
@@ -32,7 +31,7 @@ class PostSerializerService {
         $postintro = trim($this->markdownprocessor->toInlineHtml($post->getIntro()));
         $postcontent = trim($this->markdownprocessor->toHtml($post->getContent()));
 
-        $url = $this->urlabsolutizer->absoluteURLFromRoutePath($this->urlgenerator->generate('post', array('slug' => $post->getSlug())));
+        $url = $this->posturlgenerator->absoluteFromSlug($post->getSlug());
 
         $imagerelpath = $post->getImage();
         if($imagerelpath) {

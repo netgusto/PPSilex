@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 use Mozza\Core\Services\MarkdownProcessorInterface,
     Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\URLAbsolutizerService,
+    Mozza\Core\Services\PostURLGeneratorService,
     Mozza\Core\Services\PostSerializerService,
     Mozza\Core\Repository\PostRepository,
     Mozza\Core\Entity\Post;
@@ -16,18 +17,22 @@ class MozzaExtension extends \Twig_Extension {
     protected $postRepo;
     protected $postserializer;
     protected $urlgenerator;
+    protected $posturlgenerator;
     protected $markdownProcessor;
     protected $postresourceresolver;
     protected $urlabsolutizer;
+    protected $domainname;
     protected $appconfig;
 
-    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, UrlGenerator $urlgenerator, MarkdownProcessorInterface $markdownProcessor, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, array $appconfig) {
+    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, UrlGenerator $urlgenerator, PostURLGeneratorService $posturlgenerator, MarkdownProcessorInterface $markdownProcessor, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, $domainname, array $appconfig) {
         $this->postRepo = $postRepo;
         $this->postserializer = $postserializer;
         $this->urlgenerator = $urlgenerator;
+        $this->posturlgenerator = $posturlgenerator;
         $this->markdownProcessor = $markdownProcessor;
         $this->postresourceresolver = $postresourceresolver;
         $this->urlabsolutizer = $urlabsolutizer;
+        $this->domainname = $domainname;
         $this->appconfig = $appconfig;
     }
     
@@ -49,6 +54,8 @@ class MozzaExtension extends \Twig_Extension {
         return array(
             'component_disqus' => new \Twig_SimpleFunction('component_disqus', array($this, 'component_disqus'), array('is_safe' => array('html'))),
             'component_metatags' => new \Twig_SimpleFunction('component_metatags', array($this, 'component_metatags'), array('is_safe' => array('html'))),
+            'component_googleanalytics' => new \Twig_SimpleFunction('component_googleanalytics', array($this, 'component_googleanalytics'), array('is_safe' => array('html'))),
+            'posturl' => new \Twig_SimpleFunction('posturl', array($this, 'posturl'), array('is_safe' => array('html'))),
             'nextpost' => new \Twig_SimpleFunction('nextpost', array($this, 'nextpost')),
             'previouspost' => new \Twig_SimpleFunction('previouspost', array($this, 'previouspost')),
         );
@@ -87,6 +94,14 @@ class MozzaExtension extends \Twig_Extension {
         return $this->urlabsolutizer->absoluteURLFromRoutePath($relurl);
     }
 
+    public function posturl($slug) {
+        return $this->posturlgenerator->fromSlug($slug);
+    }
+
+    public function posturlabsolute($slug) {
+        return $this->posturlgenerator->absolutefromSlug($slug);
+    }
+
     public function component_disqus(Post $post) {
 
         if(!$post->getComments()) {
@@ -105,6 +120,7 @@ class MozzaExtension extends \Twig_Extension {
         $shortname = trim($this->appconfig['components']['disqus']['shortname']);
 
         $html =<<<HTML
+        <!-- The disqus component -->
         <div id="disqus_thread"></div>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
@@ -118,9 +134,42 @@ class MozzaExtension extends \Twig_Extension {
             })();
         </script>
         <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <!-- /The disqus component -->
 HTML;
         
         return $html;
+    }
+
+    public function component_googleanalytics() {
+
+        if(
+            !array_key_exists('components', $this->appconfig) ||
+            !array_key_exists('googleanalytics', $this->appconfig['components']) ||
+            !array_key_exists('uacode', $this->appconfig['components']['googleanalytics']) ||
+            trim($this->appconfig['components']['googleanalytics']['uacode']) === ''
+        ) {
+            return '';
+        }
+
+        $uacode = trim($this->appconfig['components']['googleanalytics']['uacode']);
+        $domainname = $this->domainname;
+
+        $script =<<<SCRIPT
+<!-- The google analytics component -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '{$uacode}', '{$domainname}');
+ga('send', 'pageview');
+
+</script>
+<!-- /The google analytics component -->
+SCRIPT;
+        
+        return $script;
     }
 
     public function component_metatags(Post $post = null) {
