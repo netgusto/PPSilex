@@ -6,5 +6,9 @@
         {% if site.owner.website is defined %}</a>{% endif %}
 
         {% if site.owner.twitter is defined %} | <a href="https://twitter.com/{{ site.owner.twitter }}">Follow us on twitter</a>{% endif %}
+
+        {% if site.about is defined and site.about.slug is defined and site.about.slug|length %}
+            | <a href="{{ posturl(site.about.slug) }}"> About this blog</a>
+        {% endif %}
     </p>
 </footer>
