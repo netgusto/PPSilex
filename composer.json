@@ -12,7 +12,7 @@
         "symfony/filesystem": "~2.5",
         "cebe/markdown": "0.9.2",
         
-        "isagalaev/highlightjs": "~8.0",
+        "zipball/highlightjs": "~8.0",
         "requirejs/requirejs": "2.1.11",
         "modernizr/modernizr": "2.7.1",
         "jquery/jquery": "2.1.0",
@@ -67,10 +67,10 @@
         {
             "type": "package",
             "package": {
-                "name": "isagalaev/highlightjs",
+                "name": "zipball/highlightjs",
                 "version": "8.0",
                 "dist": {
-                    "url": "https://github.com/isagalaev/highlight.js/archive/8.0.zip",
+                    "url": "https://github.com/components/highlightjs/archive/8.0.0.zip",
                     "type": "zip"
                 }
             }
@@ -103,7 +103,7 @@
                 "requirejs/requirejs",
                 "jquery/jquery",
                 "modernizr/modernizr",
-                "isagalaev/highlightjs",
+                "zipball/highlightjs",
                 "font-awesome/font-awesome",
                 "netgusto/mozza-theme-dropplets",
                 "netgusto/mozza-theme-medium"
