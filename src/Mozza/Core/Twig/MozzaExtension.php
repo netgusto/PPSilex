@@ -155,6 +155,26 @@ HTML;
         $uacode = trim($this->appconfig['components']['googleanalytics']['uacode']);
         $domainname = $this->domainname;
 
+        # A custom domain name is set (for instance, to aggregate a subdomain and the main domain in GA)
+        if(array_key_exists('domain', $this->appconfig['components']['googleanalytics'])) {
+
+            $customdomainname = trim($this->appconfig['components']['googleanalytics']['domain']);
+            $customdomainname = rtrim($customdomainname, '/');
+            $customdomainname = trim($customdomainname);
+
+            if(preg_match('%^https?://%i', $customdomainname)) {
+                $domainparts = parse_url($customdomainname);
+                $customdomainname = $domainparts['host'];
+            }
+
+            if(trim($customdomainname) !== '') {
+                $domainname = $customdomainname;
+            }
+        }
+
+        $jsuacode = json_encode($uacode);
+        $jsdomainname = json_encode($domainname);
+
         $script =<<<SCRIPT
 <!-- The google analytics component -->
 <script>
@@ -163,7 +183,7 @@ HTML;
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-ga('create', '{$uacode}', '{$domainname}');
+ga('create', {$jsuacode}, {$jsdomainname});
 ga('send', 'pageview');
 
 </script>
