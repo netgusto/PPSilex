@@ -236,14 +236,24 @@ SCRIPT;
             $imageurl = null;
         }
 
-        $canonicalurl =  $this->urlabsolutizer->absoluteURLFromRoutePath(
-            $this->urlgenerator->generate('post', array('slug' => $post->getSlug()))
-        );
+        $canonicalurl =  $this->posturlabsolute($post->getSlug());
+
+        $previouspost = $this->previouspost($post);
+        $nextpost = $this->nextpost($post);
 
         $metas['title'] = '<title>' . htmlspecialchars($this->documenttitleforposttitle($posttitle)) . '</title>';
         $metas['author'] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
         $metas['description'] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
-        $metas['canonical'] = '<link rel="canonical" href="' . $canonicalurl . '" />';
+        $metas['link:canonical'] = '<link rel="canonical" href="' . $canonicalurl . '" />';
+        
+        if($previouspost) {
+            $metas['link:prev'] = '<link rel="prev" href="' . $this->posturlabsolute($previouspost->getSlug()) . '" />';
+        }
+
+        if($nextpost) {
+            $metas['link:next'] = '<link rel="next" href="' . $this->posturlabsolute($nextpost->getSlug()) . '" />';
+        }
+
         
         # Twitter card
         $metas['twitter:card'] = '<meta name="twitter:card" content="summary">';
