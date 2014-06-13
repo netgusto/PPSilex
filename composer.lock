@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "497b1956a99dd066568a060d1afb34f0",
+    "hash": "20ade056eb2d1e3b7116dd208aa8903e",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -123,17 +123,6 @@
             "type": "library"
         },
         {
-            "name": "isagalaev/highlightjs",
-            "version": "8.0",
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/isagalaev/highlight.js/archive/8.0.zip",
-                "reference": null,
-                "shasum": null
-            },
-            "type": "library"
-        },
-        {
             "name": "jquery/jquery",
             "version": "2.1.0",
             "dist": {
@@ -157,11 +146,11 @@
         },
         {
             "name": "netgusto/mozza-theme-dropplets",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Dropplets.git",
-                "reference": "57f3b476943d749773a25cef2fccddd9123b9ae5"
+                "reference": "3801c136a6684ae0e06e365dd8ba2a0cedbf79dd"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -183,15 +172,15 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-12 20:52:24"
+            "time": "2014-06-13 10:26:57"
         },
         {
             "name": "netgusto/mozza-theme-medium",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
-                "reference": "db9f7300dd79e7f2476631b97486546eaff4673b"
+                "reference": "455b36d81d0e2068a958180482ade3608802b941"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -214,7 +203,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-13 07:35:33"
+            "time": "2014-06-13 10:29:02"
         },
         {
             "name": "pimple/pimple",
@@ -1306,6 +1295,17 @@
                 "templating"
             ],
             "time": "2014-02-13 10:19:29"
+        },
+        {
+            "name": "zipball/highlightjs",
+            "version": "8.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/components/highlightjs/archive/8.0.0.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
         }
     ],
     "packages-dev": [
