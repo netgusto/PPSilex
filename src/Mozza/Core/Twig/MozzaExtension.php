@@ -56,6 +56,7 @@ class MozzaExtension extends \Twig_Extension {
             'component_metatags' => new \Twig_SimpleFunction('component_metatags', array($this, 'component_metatags'), array('is_safe' => array('html'))),
             'component_googleanalytics' => new \Twig_SimpleFunction('component_googleanalytics', array($this, 'component_googleanalytics'), array('is_safe' => array('html'))),
             'posturl' => new \Twig_SimpleFunction('posturl', array($this, 'posturl'), array('is_safe' => array('html'))),
+            'documenttitleforposttitle' => new \Twig_SimpleFunction('documenttitleforposttitle', array($this, 'documenttitleforposttitle')),
             'nextpost' => new \Twig_SimpleFunction('nextpost', array($this, 'nextpost')),
             'previouspost' => new \Twig_SimpleFunction('previouspost', array($this, 'previouspost')),
         );
@@ -187,16 +188,11 @@ SCRIPT;
     protected function metatagsWithoutPost() {
         $metas = array();
 
-        $cleanup = function($string) {
-            return trim(strip_tags($string));
-        };
+        $sitedescription = $this->cleanupMetaString($this->appconfig['site']['description']);
+        $author = $this->cleanupMetaString($this->appconfig['site']['owner']['name']);
+        $ownertwitter = $this->cleanupMetaString($this->appconfig['site']['owner']['twitter']);
 
-        $sitetitle = $cleanup($this->appconfig['site']['title']);
-        $sitedescription = $cleanup($this->appconfig['site']['description']);
-        $author = $cleanup($this->appconfig['site']['owner']['name']);
-        $ownertwitter = $cleanup($this->appconfig['site']['owner']['twitter']);
-
-        $metas['title'] = '<title>' . htmlspecialchars($sitetitle) . '</title>';
+        $metas['title'] = '<title>' . htmlspecialchars($this->documenttitleforposttitle('')) . '</title>';
         $metas['author'] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
         $metas['description'] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
 
@@ -207,20 +203,31 @@ SCRIPT;
         return $metas;
     }
 
-    protected function metatagsWithPost(Post $post) {
+    public function documenttitleforposttitle(/*string*/ $posttitle = '') {
+        $sitetitle = $this->cleanupMetaString($this->appconfig['site']['title']);
+        $posttitle = $this->cleanupMetaString($posttitle);
 
-        $cleanup = function($string) {
-            return trim(strip_tags($string));
-        };
+        if(trim($posttitle) === '') {
+            return $sitetitle;
+        }
+
+        return $posttitle . ' - ' . $sitetitle;
+    }
+
+    protected function cleanupMetaString($string) {
+        return trim(strip_tags($string));
+    }
+
+    protected function metatagsWithPost(Post $post) {
 
         $metas = $this->metatagsWithoutPost();
 
-        $sitetitle = $cleanup($this->appconfig['site']['title']);
-        $sitedescription = $cleanup($this->appconfig['site']['description']);
-        $posttitle = $cleanup($post->getTitle());
-        $intro = $cleanup($this->markdown($post->getIntro()));
-        $author = $cleanup($this->appconfig['site']['owner']['name']);
-        $ownertwitter = $cleanup($this->appconfig['site']['owner']['twitter']);
+        $sitetitle = $this->cleanupMetaString($this->appconfig['site']['title']);
+        $sitedescription = $this->cleanupMetaString($this->appconfig['site']['description']);
+        $posttitle = $this->cleanupMetaString($post->getTitle());
+        $intro = $this->cleanupMetaString($this->markdown($post->getIntro()));
+        $author = $this->cleanupMetaString($this->appconfig['site']['owner']['name']);
+        $ownertwitter = $this->cleanupMetaString($this->appconfig['site']['owner']['twitter']);
         
         $imagerelpath = $post->getImage();
         if($imagerelpath) {
@@ -233,7 +240,7 @@ SCRIPT;
             $this->urlgenerator->generate('post', array('slug' => $post->getSlug()))
         );
 
-        $metas['title'] = '<title>' . htmlspecialchars($posttitle . ' - ' . $sitetitle) . '</title>';
+        $metas['title'] = '<title>' . htmlspecialchars($this->documenttitleforposttitle($posttitle)) . '</title>';
         $metas['author'] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
         $metas['description'] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
         $metas['canonical'] = '<link rel="canonical" href="' . $canonicalurl . '" />';
