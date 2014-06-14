@@ -46,6 +46,8 @@ php_flag short_open_tag Off
 SetOutputFilter DEFLATE
 ```
 
+Note for Apache: `Options +FollowSymLinks` has to be enabled in your virtualhost.
+
 ## Parameters
 
 Upon install a file named `parameters.yml` has been created for you in the `app/` folder. It contains default value for all the parameters you can adjust.
@@ -89,15 +91,15 @@ Example of such a post (`data/posts/about.md`):
 
 ```markdown
 ---
-title: About this blog
-slug: about
-author: Jérôme Schneider
-date: 2014-06-01 12:00
-status: publish
+title: About this blog          # The title of the post; required
+slug: about                     # The url of the post; optional, by default set to the file name
+author: Jérôme Schneider        # The name of the author; optional, by default, uses site.owner.name in the config
+date: 2014-06-01 12:00          # The date of the post; required
+status: publish                 # The status of the post (draft, publish); optional, publish by default
 
-image: desk.jpg
-about: [this blog, mozza]
-comments: off
+image: desk.jpg                 # The image associated with the post; required, path relative to data/res
+about: [this blog, mozza]       # An array of categories; optional; not all themes use this
+comments: off                   # Wether or not to display the comment form; optional; not all themes support comments
 ---
 Stuffed with Markdown flavoured **Mozza**.
 
