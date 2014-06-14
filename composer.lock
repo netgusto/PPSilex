@@ -176,11 +176,11 @@
         },
         {
             "name": "netgusto/mozza-theme-medium",
-            "version": "1.0.10",
+            "version": "1.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
-                "reference": "bdf904a3145989a2ccfda8336771afac6fef213e"
+                "reference": "b629658ab5cf96442e0f0de2507e4d802868c1d6"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -203,7 +203,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-13 21:34:27"
+            "time": "2014-06-14 05:47:39"
         },
         {
             "name": "pimple/pimple",
