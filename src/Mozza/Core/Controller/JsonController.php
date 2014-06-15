@@ -36,7 +36,7 @@ class JsonController {
     }
 
     public function postAction(Request $request, Application $app, $slug) {
-        $post = $this->postRepo->findBySlug($slug);
+        $post = $this->postRepo->findOneBySlug($slug);
         if(!$post) {
             throw new Exception\PostNotFoundException('Post with slug ' . $slug . ' does not exist.');
         }

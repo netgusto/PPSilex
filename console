@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+ini_set('display_errors', 1);
+require_once __DIR__.'/vendor/autoload.php';
+
+#\Symfony\Component\ClassLoader\DebugClassLoader::enable();
+\Symfony\Component\HttpKernel\Debug\ErrorHandler::register();
+
+$app = require(__DIR__.'/src/app.php');
+
+$app->register(new \Knp\Provider\ConsoleServiceProvider(), array(
+    'console.name'              => 'Mozza',
+    'console.version'           => $app['version'],
+    'console.project_directory' => __DIR__.'/app'
+));
+
+# création des helper pour le CLI de Doctrine
+$em = $app['orm.em'];
+$helperSet = $app['console']->getHelperSet();
+$helperSet->set(new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()), 'db');
+$helperSet->set(new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em), 'em');
+$helperSet->set(new \Symfony\Component\Console\Helper\DialogHelper(), 'dialog');
+
+# ajout des commandes de Doctrine
+$app['console']->addCommands(array(
+  // DBAL Commands
+  new \Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(),
+  new \Doctrine\DBAL\Tools\Console\Command\ImportCommand(),
+
+  // ORM Commands
+  new \Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\ClearCache\ResultCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\RunDqlCommand(),
+  new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
+));
+
+# ajout des commandes de l'application
+$app['console']->addCommands(array(
+    new \Mozza\Core\Command\PostRebuildCacheCommand(),
+    new \Mozza\Core\Command\PostUpdateCacheCommand()
+));
+
+$app['console']->run();

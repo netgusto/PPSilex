@@ -20,7 +20,9 @@
         "font-awesome/font-awesome": "~4.1",
         "suin/php-rss-writer": ">=1.0",
         "netgusto/mozza-theme-dropplets": "~1.0",
-        "netgusto/mozza-theme-medium": "~1.0"
+        "netgusto/mozza-theme-medium": "~1.0",
+        "dflydev/doctrine-orm-service-provider": "v1.0.4",
+        "knplabs/console-service-provider": "dev-master"
     },
     "repositories": [
         {

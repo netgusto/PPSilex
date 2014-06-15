@@ -4,30 +4,27 @@ namespace Mozza\Core\Services;
 
 use Symfony\Component\Yaml\Yaml;
 
-use Mozza\Core\Entity\Post,
-    Mozza\Core\Services\PostResolverService;
+use Mozza\Core\Entity\PostFile,
+    Mozza\Core\Services\PostFileResolverService,
+    Mozza\Core\Services\PostFingerprinterService;
 
-class PostReaderService {
+class PostFileReaderService {
 
     protected $postresolver;
     protected $postresourceresolver;
+    protected $postfingerprinter;
     protected $timezone;
     protected $appconfig;
 
-    protected $runtimecache = array();
-
-    public function __construct(PostResolverService $postresolver, PostResourceResolverService $postresourceresolver, \DateTimeZone $timezone, array $appconfig) {
+    public function __construct(PostFileResolverService $postresolver, PostResourceResolverService $postresourceresolver, PostFingerprinterService $postfingerprinter, \DateTimeZone $timezone, array $appconfig) {
         $this->postresolver = $postresolver;
         $this->postresourceresolver = $postresourceresolver;
+        $this->postfingerprinter = $postfingerprinter;
         $this->timezone = $timezone;
         $this->appconfig = $appconfig;
     }
 
     public function getPost($filepath) {
-
-        if(array_key_exists($filepath, $this->runtimecache)) {
-            return $this->runtimecache[$filepath];
-        }
 
         if(!$this->postresolver->isFilepathLegit($filepath)) {
             return null;
@@ -36,6 +33,9 @@ class PostReaderService {
         if(!file_exists($filepath)) {
             return null;
         }
+
+        $lastmodified = \DateTime::createFromFormat('U', filemtime($filepath));
+        $lastmodified->setTimezone($this->timezone);
 
         # Obtaining the markdown
         $filepath = realpath($filepath);
@@ -48,7 +48,7 @@ class PostReaderService {
         $postData = $this->splitFrontMatterFromSource($markdown);
         $postText = $this->splitIntroFromContent($postData['markdown']);
 
-        $post = new Post();
+        $post = new PostFile();
         $post->setIntro($postText['intro']);
         $post->setContent($postText['content']);
 
@@ -90,9 +90,7 @@ class PostReaderService {
             $post->setDate($date);
         } else {
             # the file creation date
-            $datetime = \DateTime::createFromFormat('U', filectime($filepath));
-            $datetime->setTimezone($this->timezone);
-            $post->setDate($datetime);
+            $post->setDate($lastmodified);
         }
 
         # Extract Status
@@ -157,9 +155,19 @@ class PostReaderService {
             $post->setImage(null);
         }
 
-        $this->runtimecache[$filepath] = $post;
-        
-        return $this->runtimecache[$filepath];
+        $post->setFingerprint(
+            $this->postfingerprinter->fingerprint($post)
+        );
+
+        $post->setFilepath(
+            $filepath
+        );
+
+        $post->setLastModified(
+            $lastmodified
+        );
+
+        return $post;
     }
 
     protected function splitFrontMatterFromSource($markdown) {
