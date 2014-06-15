@@ -1,0 +1,15 @@
+Mozza\Core\Entity\SystemStatus:
+    type: entity
+    table: ~
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+        postcachelastupdate:
+            type: datetime
+            nullable: true
+
+    lifecycleCallbacks: {  }

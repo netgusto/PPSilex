@@ -5,7 +5,7 @@ namespace Mozza\Core\Services;
 use Symfony\Component\Filesystem\Filesystem,
     Symfony\Component\Filesystem\Exception\IOException;
 
-use Mozza\Core\Entity\Post;
+use Mozza\Core\Entity\AbstractPost;
 
 class PostResourceResolverService {
 
@@ -17,7 +17,7 @@ class PostResourceResolverService {
         $this->resourcespath = rtrim($resourcespath, '/') . '/';
     }
 
-    public function filepathForPostAndResourceName(Post $post, $name) {
+    public function filepathForPostAndResourceName(AbstractPost $post, $name) {
         
         $filepath = $this->resourcespath . $name;
 
@@ -28,7 +28,7 @@ class PostResourceResolverService {
         return $filepath;
     }
 
-    public function relativeFilepathForPostAndResourceName(Post $post, $name) {
+    public function relativeFilepathForPostAndResourceName(AbstractPost $post, $name) {
         
         $filepath = $this->filepathForPostAndResourceName($post, $name);
         if(!$filepath) {

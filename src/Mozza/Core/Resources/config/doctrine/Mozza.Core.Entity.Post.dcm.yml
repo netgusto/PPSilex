@@ -1,0 +1,74 @@
+Mozza\Core\Entity\Post:
+    type: entity
+    table: ~
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+        slug:
+            type: string
+            length: 255
+            nullable: false
+
+        title:
+            type: string
+            length: 255
+            nullable: true
+
+        author:
+            type: string
+            length: 255
+            nullable: true
+
+        twitter:
+            type: string
+            length: 255
+            nullable: true
+
+        date:
+            type: datetime
+            nullable: false
+
+        status:
+            type: string
+            length: 255
+            nullable: false
+
+        intro:
+            type: text
+            nullable: true
+
+        content:
+            type: text
+            nullable: true
+
+        image:
+            type: string
+            length: 255
+            nullable: true
+
+        comments:
+            type: boolean
+            nullable: false
+
+        about:
+            type: json_array
+            nullable: true
+
+        meta:
+            type: json_array
+            nullable: true
+
+        fingerprint:
+            type: string
+            length: 32
+            nullable: false
+
+        lastmodified:
+            type: datetime
+            nullable: false
+
+    lifecycleCallbacks: {  }

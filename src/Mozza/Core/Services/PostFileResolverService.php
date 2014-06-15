@@ -2,7 +2,7 @@
 
 namespace Mozza\Core\Services;
 
-class PostResolverService {
+class PostFileResolverService {
 
     protected $postspath;
     protected $postfileextension;
