@@ -5,29 +5,28 @@ namespace Mozza\Core\Controller;
 use Silex\Application,
     Symfony\Component\HttpFoundation\Request,
     Symfony\Component\HttpFoundation\Response,
-    Symfony\Component\Routing\Generator\UrlGenerator,
-    Twig_Environment;
+    Symfony\Component\Routing\Generator\UrlGenerator;
 
 use \Suin\RSSWriter\Feed,
     \Suin\RSSWriter\Channel,
     \Suin\RSSWriter\Item;
 
 use Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\MarkdownProcessorInterface,
+    Mozza\Core\Services\PostSerializerService,
+    Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\URLAbsolutizerService;
 
 class FeedController {
 
-    protected $twig;
     protected $postRepo;
-    protected $markdownprocessor;
-    protected $urlgenerator;
+    protected $postserializer;
+    protected $postresourceresolver;
+    protected $urlabsolutizer;
 
-    public function __construct(Twig_Environment $twig, PostRepository $postRepo, MarkdownProcessorInterface $markdownprocessor, UrlGenerator $urlgenerator, URLAbsolutizerService $urlabsolutizer) {
-        $this->twig = $twig;
+    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer) {
         $this->postRepo = $postRepo;
-        $this->markdownprocessor = $markdownprocessor;
-        $this->urlgenerator = $urlgenerator;
+        $this->postserializer = $postserializer;
+        $this->postresourceresolver = $postresourceresolver;
         $this->urlabsolutizer = $urlabsolutizer;
     }
 
@@ -41,18 +40,27 @@ class FeedController {
             ->url($this->urlabsolutizer->absoluteSiteURL())
             ->appendTo($feed);
 
+        $finfo = finfo_open(FILEINFO_MIME_TYPE|FILEINFO_PRESERVE_ATIME);
         $posts = $this->postRepo->findAll();
+
         foreach($posts as $post) {
 
-            $postcontent = trim($this->markdownprocessor->toHtml($post->getIntro()));
+            $serializedpost = $this->postserializer->serialize($post);
 
             $item = new Item();
             $item
-                ->title($post->getTitle())
-                ->description($postcontent)
+                ->title($serializedpost['title'])
+                ->description($serializedpost['intro'])
                 ->pubdate($post->getDate()->getTimestamp())
-                ->url($this->urlabsolutizer->absoluteURLFromRoutePath($this->urlgenerator->generate('post', array('slug' => $post->getSlug()))))
-                ->appendTo($channel);
+                ->url($serializedpost['url']);
+
+            if($post->getImage()) {
+                $imagepath = $this->postresourceresolver->filepathForPostAndResourceName($post, $post->getImage());
+                $mimetype = finfo_file($finfo, $imagepath);
+                $item->enclosure($serializedpost['image'], filesize($imagepath), $mimetype);
+            }
+
+            $item->appendTo($channel);
         }
 
         $response = new Response(

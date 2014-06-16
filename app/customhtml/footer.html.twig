@@ -1,14 +1,12 @@
 <!-- Footer defined in app/customhtml/footer.html.twig -->
-<footer>
-    <p>Made with <i class="fa fa-heart"></i> by
-        {% if site.owner.website is defined %}<a href="{{ site.owner.website }}">{% endif %}
-        {{ site.owner.name }}
-        {% if site.owner.website is defined %}</a>{% endif %}
+<section class="customfooter">Made by
+    {% if site.owner.website is defined %}<a href="{{ site.owner.website }}">{% endif %}
+    {{ site.owner.name }}
+    {% if site.owner.website is defined %}</a>{% endif %}
 
-        {% if site.owner.twitter is defined %} | <a href="https://twitter.com/{{ site.owner.twitter }}">Follow us on twitter</a>{% endif %}
+    {% if site.owner.twitter is defined %} | <a href="https://twitter.com/{{ site.owner.twitter }}">Follow us on twitter</a>{% endif %}
 
-        {% if site.about is defined and site.about.slug is defined and site.about.slug|length %}
-            | <a href="{{ posturl(site.about.slug) }}"> About this blog</a>
-        {% endif %}
-    </p>
-</footer>
+    {% if site.about is defined and site.about.slug is defined and site.about.slug|length %}
+        | <a href="{{ posturl(site.about.slug) }}"> About this blog</a>
+    {% endif %}
+</section>

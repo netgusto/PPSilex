@@ -1,5 +1,6 @@
 app/cache/twig/*
 app/cache/db/proxies/*
+app/cache/profiler/*
 app/cache/db/cache.db
 !app/cache/db
 !app/cache

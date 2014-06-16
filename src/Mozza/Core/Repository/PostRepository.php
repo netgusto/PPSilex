@@ -22,13 +22,33 @@ class PostRepository {
         return $this->em->getRepository('Mozza\Core\Entity\Post')->findOneBySlug($slug);
     }
 
-    public function findAll() {
-        $qb = $this->em->createQueryBuilder()
+    public function qb_findAllPublished() {
+        return $this->em->createQueryBuilder()
             ->select('p')
             ->from('Mozza\Core\Entity\Post', 'p')
             ->add('where', 'p.status=:status')->setParameter('status', 'publish')
             ->add('orderBy', 'p.date DESC');
+    }
+
+    public function findAll() {
+        return $this->qb_findAllPublished()->getQuery()->getResult();
+    }
+
+    public function findAllAtPage($page, $perpage) {
+        $qb = $this->qb_findAllPublished();
+
+        $start = ($page - 1) * $perpage;
+        $qb->setFirstResult($start);
+        $qb->setMaxResults($perpage);
+
         return $qb->getQuery()->getResult();
+    }
+
+    public function count() {
+        $qb = $this->qb_findAllPublished();
+        return intval($qb->select('COUNT(p)')
+            ->getQuery()
+            ->getSingleScalarResult());
     }
 
     public function deleteAll() {
