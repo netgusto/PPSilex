@@ -21,6 +21,8 @@ class PostFileToPostConverterService {
         $to->setSlug($from->getSlug());
         $to->setTitle($from->getTitle());
         $to->setAuthor($from->getAuthor());
+        $to->setWebsite($from->getWebsite());
+        $to->setBio($from->getBio());
         $to->setTwitter($from->getTwitter());
         $to->setDate($from->getDate());
         $to->setStatus($from->getStatus());
