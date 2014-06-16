@@ -39,7 +39,6 @@ class PostCacheHandlerService {
         $lastmodified->setTimezone($this->timezone);
 
         if(is_null($postcachelastupdate) || $lastmodified > $postcachelastupdate) {
-            echo '<h2>Cache update</h2>';
             $this->updateCache();
             $this->systemstatus->setPostCacheLastUpdate($lastmodified);
         }
@@ -113,6 +112,24 @@ class PostCacheHandlerService {
 
         if(!is_null($output)) {
             $output->writeln('<info>Post cache has been updated.</info>');
+        }
+    }
+
+    public function rebuildCache(OutputInterface $output = null) {
+        
+        $this->postrepository->deleteAll();
+        $postfiles = $this->postfilerepository->findAll();
+        
+        foreach($postfiles as $postfile) {
+            $this->em->persist(
+                $this->postfiletopostconverter->convertToPost($postfile)
+            );
+        }
+
+        $this->em->flush();
+
+        if(!is_null($output)) {
+            $output->writeln('<info>Post cache has been rebuilt.</info>');
         }
     }
 }

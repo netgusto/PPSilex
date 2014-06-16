@@ -16,7 +16,7 @@ class PostUpdateCacheCommand extends \Knp\Command\Command {
     protected function configure()
     {
         $this
-            ->setName('mozza:post:updatecache')
+            ->setName('mozza:cache:update')
             ->setDescription('Updates the post cache');
     }
 
