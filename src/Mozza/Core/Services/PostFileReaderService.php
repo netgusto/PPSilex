@@ -75,6 +75,22 @@ class PostFileReaderService {
             $post->setAuthor($this->appconfig['site']['owner']['name']);
         }
 
+        # Extract website
+        if(array_key_exists('website', $postData['ymf'])) {
+            $post->setWebsite($postData['ymf']['website']);
+        } else {
+            # Use the site website
+            $post->setWebsite($this->appconfig['site']['owner']['website']);
+        }
+
+        # Extract bio
+        if(array_key_exists('bio', $postData['ymf'])) {
+            $post->setBio($postData['ymf']['bio']);
+        } else {
+            # Use the site website
+            $post->setBio($this->appconfig['site']['owner']['bio']);
+        }
+
         # Extract twitter
         if(array_key_exists('twitter', $postData['ymf'])) {
             $post->setTwitter($postData['ymf']['twitter']);

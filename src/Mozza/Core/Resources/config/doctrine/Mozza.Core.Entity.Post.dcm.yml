@@ -18,6 +18,16 @@ Mozza\Core\Entity\Post:
             length: 255
             nullable: true
 
+        website:
+            type: string
+            length: 255
+            nullable: true
+
+        bio:
+            type: string
+            length: 255
+            nullable: true
+
         author:
             type: string
             length: 255

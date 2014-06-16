@@ -25,6 +25,16 @@ abstract class AbstractPost {
     /**
      * @var string
      */
+    protected $website;
+
+    /**
+     * @var string
+     */
+    protected $bio;
+
+    /**
+     * @var string
+     */
     protected $twitter;
 
     /**
@@ -144,6 +154,52 @@ abstract class AbstractPost {
     public function getAuthor()
     {
         return $this->author;
+    }
+
+    /**
+     * Set author website
+     *
+     * @param string $author
+     * @return AbstractPost
+     */
+    public function setWebsite($website)
+    {
+        $this->website = $website;
+
+        return $this;
+    }
+
+    /**
+     * Get author website
+     *
+     * @return string 
+     */
+    public function getWebsite()
+    {
+        return $this->website;
+    }
+
+    /**
+     * Set author bio
+     *
+     * @param string $author
+     * @return AbstractPost
+     */
+    public function setBio($bio)
+    {
+        $this->bio = $bio;
+
+        return $this;
+    }
+
+    /**
+     * Get author website
+     *
+     * @return string 
+     */
+    public function getBio()
+    {
+        return $this->bio;
     }
 
     /**

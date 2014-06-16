@@ -8,11 +8,15 @@ site:
         twitter: GetMozza                       # Your twitter username; required
         mail: mozza@netgusto.com                # Your email; required
         website: http://netgusto.com            # Your website URL (not this blog); required
+        bio: "GIF punk, personal branding hacktivist, talent acquisition engineer. 80s kid."
     images:
         logo: logo-netgusto.png                 # Your logo; relative to res/
         cover: jet-sky.jpg                      # A nice hi-res illustrative jpg (~150KB max) used by compatible templates; relative to res/
     about:
         slug: about                             # the slug of a post used for your About page; optional
+
+home:
+    postsperpage: 5
 
 date:
     timezone: Europe/Paris                      # Timezone, as per http://en.wikipedia.org/wiki/List_of_tz_database_time_zones; required
