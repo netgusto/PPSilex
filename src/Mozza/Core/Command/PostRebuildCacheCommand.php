@@ -16,7 +16,7 @@ class PostRebuildCacheCommand extends \Knp\Command\Command {
     protected function configure()
     {
         $this
-            ->setName('mozza:post:rebuildcache')
+            ->setName('mozza:cache:rebuild')
             ->setDescription('Rebuilds completely the post cache');
     }
 
@@ -30,18 +30,6 @@ class PostRebuildCacheCommand extends \Knp\Command\Command {
         $dialog = $this->getHelperSet()->get('dialog');
         $app = $this->getSilexApplication();
 
-        $app['post.repository']->deleteAll();
-
-        $postfiles = $app['postfile.repository']->findAll();
-        
-        foreach($postfiles as $postfile) {
-            $app['orm.em']->persist(
-                $app['postfile.topostconverter']->convertToPost($postfile)
-            );
-        }
-
-        $app['orm.em']->flush();
-
-        $output->writeln('<info>Post cache has been rebuilt.</info>');
+        $app['post.cachehandler']->rebuildCache($output);
     }
 }
