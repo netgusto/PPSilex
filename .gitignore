@@ -1,7 +1,7 @@
 app/cache/twig/*
 app/cache/db/proxies/*
 app/cache/db/cache.db
-app/cache/*
+!app/cache/db
 !app/cache
 app/parameters.yml
 web/css/*
