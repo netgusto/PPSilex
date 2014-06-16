@@ -7,6 +7,7 @@
         "silex/web-profiler": "~1.0",
         "deralex/yaml-config-service-provider": "1.0.x-dev",
         "twig/twig": ">=1.8,<2.0-dev",
+        "twig/extensions": "v1.0.1",
         "symfony/twig-bridge": "~2.5",
         "symfony/finder": "~2.5",
         "symfony/filesystem": "~2.5",
@@ -19,10 +20,12 @@
 
         "font-awesome/font-awesome": "~4.1",
         "suin/php-rss-writer": ">=1.0",
+        "dflydev/doctrine-orm-service-provider": "v1.0.4",
+        "knplabs/console-service-provider": "dev-master",
+
         "netgusto/mozza-theme-dropplets": "~1.0",
         "netgusto/mozza-theme-medium": "~1.0",
-        "dflydev/doctrine-orm-service-provider": "v1.0.4",
-        "knplabs/console-service-provider": "dev-master"
+        "netgusto/mozza-theme-casper": "~1.0"
     },
     "repositories": [
         {
@@ -31,6 +34,10 @@
         },
         {
             "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
+            "type": "git"
+        },
+        {
+            "url": "https://github.com/netgusto/Mozza-Theme-Casper.git",
             "type": "git"
         },
         {
@@ -108,7 +115,8 @@
                 "zipball/highlightjs",
                 "font-awesome/font-awesome",
                 "netgusto/mozza-theme-dropplets",
-                "netgusto/mozza-theme-medium"
+                "netgusto/mozza-theme-medium",
+                "netgusto/mozza-theme-casper"
             ]
         }
     }

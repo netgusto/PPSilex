@@ -27,10 +27,12 @@ use Mozza\Core\Repository\PostRepository,
     Mozza\Core\Services\PostFileReaderService,
     Mozza\Core\Services\PostFileRepositoryService,
     Mozza\Core\Services\PostURLGeneratorService,
+    Mozza\Core\Services\ResourceResolverService,
     Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\PostSerializerService,
     Mozza\Core\Services\PostCacheHandlerService,
     Mozza\Core\Services\CebeMarkdownProcessorService,
+    Mozza\Core\Exception\PostNotFoundException,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
 
 ###############################################################################
@@ -147,6 +149,17 @@ $app['url.absolutizer'] = $app->share(function() use ($app) {
 });
 
 #
+# Resource filepath resolver
+#
+
+$app['resource.resolver'] = $app->share(function() use ($app) {
+    return new ResourceResolverService(
+        $app['abspath']['web'],
+        $app['abspath']['postsresources']
+    );
+});
+
+#
 # Post resource filepath resolver
 #
 
@@ -186,7 +199,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addGlobal('site', $app['config']['site']);
     $twig->addGlobal('config', $app['config']);
 
-    $twig->addExtension(new \Twig_Extension_StringLoader());
+    $twig->addExtension(new \Twig_Extensions_Extension_Text($app));
 
     $twig->addExtension(
         new TwigMozzaExtension(
@@ -195,6 +208,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
             $app['url_generator'],
             $app['post.urlgenerator'],
             $app['markdown.processor'],
+            $app['resource.resolver'],
             $app['post.resource.resolver'],
             $app['url.absolutizer'],
             $app['sitedomain'],
@@ -214,9 +228,9 @@ $app['twig.loader.filesystem']->addPath($app['abspath']['customhtml'], 'Custom')
 #
 
 if($app['debug']) {
-    $app->register(new WebProfilerServiceProvider(), array(
-        'profiler.cache_dir' => ROOT_DIR . '/app/cache/profiler',
-    ));
+    #$app->register(new WebProfilerServiceProvider(), array(
+    #    'profiler.cache_dir' => ROOT_DIR . '/app/cache/profiler',
+    #));
 }
 
 #
@@ -311,7 +325,8 @@ $app['home.controller'] = $app->share(function() use ($app) {
     return new HomeController(
         $app['twig'],
         $app['post.repository'],
-        $app['postfile.resolver']
+        $app['postfile.resolver'],
+        $app['config']['home']['postsperpage']
     );
 });
 
@@ -327,10 +342,9 @@ $app['post.controller'] = $app->share(function() use ($app) {
 # The controller responsible for the RSS/Atoms feeds
 $app['feed.controller'] = $app->share(function() use ($app) {
     return new FeedController(
-        $app['twig'],
         $app['post.repository'],
-        $app['markdown.processor'],
-        $app['url_generator'],
+        $app['post.serializer'],
+        $app['post.resource.resolver'],
         $app['url.absolutizer']
     );
 });
@@ -360,9 +374,14 @@ $app['error.controller'] = $app->share(function() use ($app) {
 $app->get('/', 'home.controller:indexAction')
     ->bind('home');
 
+# Home page with page > 1
+$app->match('/page/{page}', 'home.controller:indexAction')
+    ->assert('page', '[2-9]|[0-9]{2,}')
+    ->bind('home_paged');
+
 # Filename /rss or /atom: RSS Feed
 $app->get('rss', 'feed.controller:indexAction')
-    ->bind('feed');
+    ->bind('rss');
 
 # Filename /rss or /atom: RSS Feed
 $app->get('json/posts', 'json.controller:indexAction')
@@ -374,21 +393,16 @@ $app->get('json/posts/{slug}', 'json.controller:postAction')
     ->bind('json.post');
 
 # Filename path/to/post.md: Single Post Pages
-$app->match('blog/{slug}', 'post.controller:indexAction')
+$app->match('{slug}', 'post.controller:indexAction')
     ->assert('slug', '.+')
     ->bind('post');
-
-# Filename path/to/post.md: Single Post Pages
-$app->match('blog{trailingslash}', function(Request $request) use ($app) {
-    return new RedirectResponse($app['url_generator']->generate('home'));
-})->assert('trailingslash', '/?');
 
 
 if(!$app['debug']) {
     # If debug mode is disabled, we handle the error messages nicely
     $app->error(function (\Exception $e, $code) use ($app) {
 
-        if($code === 404) {
+        if($code === 404 || $e instanceof PostNotFoundException) {
             return $app['error.controller']->notFoundAction(
                 $app['request'],
                 $app,

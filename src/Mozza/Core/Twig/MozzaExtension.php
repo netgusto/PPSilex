@@ -5,6 +5,7 @@ namespace Mozza\Core\Twig;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 use Mozza\Core\Services\MarkdownProcessorInterface,
+    Mozza\Core\Services\ResourceResolverService,
     Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\URLAbsolutizerService,
     Mozza\Core\Services\PostURLGeneratorService,
@@ -19,17 +20,19 @@ class MozzaExtension extends \Twig_Extension {
     protected $urlgenerator;
     protected $posturlgenerator;
     protected $markdownProcessor;
+    protected $resourceresolver;
     protected $postresourceresolver;
     protected $urlabsolutizer;
     protected $domainname;
     protected $appconfig;
 
-    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, UrlGenerator $urlgenerator, PostURLGeneratorService $posturlgenerator, MarkdownProcessorInterface $markdownProcessor, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, $domainname, array $appconfig) {
+    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, UrlGenerator $urlgenerator, PostURLGeneratorService $posturlgenerator, MarkdownProcessorInterface $markdownProcessor, ResourceResolverService $resourceresolver, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, $domainname, array $appconfig) {
         $this->postRepo = $postRepo;
         $this->postserializer = $postserializer;
         $this->urlgenerator = $urlgenerator;
         $this->posturlgenerator = $posturlgenerator;
         $this->markdownProcessor = $markdownProcessor;
+        $this->resourceresolver = $resourceresolver;
         $this->postresourceresolver = $postresourceresolver;
         $this->urlabsolutizer = $urlabsolutizer;
         $this->domainname = $domainname;
@@ -45,6 +48,7 @@ class MozzaExtension extends \Twig_Extension {
             'markdown' => new \Twig_Filter_Method($this, 'markdown', array('is_safe' => array('html'))),
             'inlinemarkdown' => new \Twig_Filter_Method($this, 'inlinemarkdown', array('is_safe' => array('html'))),
             'toresourceurl' => new \Twig_Filter_Method($this, 'toresourceurl', array('is_safe' => array('html'))),
+            'topostresourceurl' => new \Twig_Filter_Method($this, 'topostresourceurl', array('is_safe' => array('html'))),
             'toabsoluteurl' => new \Twig_Filter_Method($this, 'toabsoluteurl', array('is_safe' => array('html'))),
             'serializepost' => new \Twig_Filter_Method($this, 'serializepost'),
         );
@@ -82,10 +86,18 @@ class MozzaExtension extends \Twig_Extension {
         return $this->markdownProcessor->toInlineHtml($markdownsource);
     }
 
-    public function toresourceurl($relfilepath, Post $post) {
+    public function topostresourceurl($relfilepath, Post $post) {
         return $this->urlabsolutizer->absoluteURLFromRelativePath(
             $this->postresourceresolver->relativeFilepathForPostAndResourceName(
                 $post,
+                $relfilepath
+            )
+        );
+    }
+
+    public function toresourceurl($relfilepath) {
+        return $this->urlabsolutizer->absoluteURLFromRelativePath(
+            $this->resourceresolver->relativeFilepathForResourceName(
                 $relfilepath
             )
         );
@@ -217,7 +229,7 @@ SCRIPT;
         $metas['description'] = '<meta name="description" content="' . htmlspecialchars($sitedescription) . '">';
 
         # RSS feed
-        $rssRoutePath = $this->urlgenerator->generate('feed');
+        $rssRoutePath = $this->urlgenerator->generate('rss');
         $metas['rss'] = '<link rel="alternate" type="application/rss+xml" title="Subscribe using RSS" href="' . $this->urlabsolutizer->absoluteURLFromRoutePath($rssRoutePath) . '" />';
 
         return $metas;
@@ -251,7 +263,7 @@ SCRIPT;
         
         $imagerelpath = $post->getImage();
         if($imagerelpath) {
-            $imageurl = $this->toresourceurl($imagerelpath, $post);
+            $imageurl = $this->topostresourceurl($imagerelpath, $post);
         } else {
             $imageurl = null;
         }
