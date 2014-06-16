@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b7d6c5275a1b92a409aa485ebe179408",
+    "hash": "16d6e52a45c9c7e96bd4591633afe6a6",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -803,12 +803,44 @@
             "type": "library"
         },
         {
+            "name": "netgusto/mozza-theme-casper",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/netgusto/Mozza-Theme-Casper.git",
+                "reference": "f0f5639b00f8f3064ea953ddedf81ef4f45b7c31"
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "package",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Net Gusto",
+                    "email": "contact@netgusto.com"
+                }
+            ],
+            "description": "The Casper Theme from Ghost, adapted to Mozza",
+            "homepage": "https://github.com/netgusto/mozza-theme-casper",
+            "keywords": [
+                "casper",
+                "ghost",
+                "mozza",
+                "silex",
+                "theme"
+            ],
+            "time": "2014-06-16 17:16:15"
+        },
+        {
             "name": "netgusto/mozza-theme-dropplets",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Dropplets.git",
-                "reference": "3801c136a6684ae0e06e365dd8ba2a0cedbf79dd"
+                "reference": "668dcc8c4fc1332b6362041c8f18a7a10b1ccb2d"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -830,15 +862,15 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-13 10:26:57"
+            "time": "2014-06-16 17:23:42"
         },
         {
             "name": "netgusto/mozza-theme-medium",
-            "version": "1.0.11",
+            "version": "1.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
-                "reference": "b629658ab5cf96442e0f0de2507e4d802868c1d6"
+                "reference": "72b7480f62f178c4c3ff6f0e2107896d8e9b7244"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -861,7 +893,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-14 05:47:39"
+            "time": "2014-06-16 17:26:11"
         },
         {
             "name": "pimple/pimple",
