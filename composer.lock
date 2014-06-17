@@ -804,11 +804,11 @@
         },
         {
             "name": "netgusto/mozza-theme-casper",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Casper.git",
-                "reference": "f0f5639b00f8f3064ea953ddedf81ef4f45b7c31"
+                "reference": "fa33eb6e44968d79e8770910b6941c6f19669d72"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -832,15 +832,15 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-16 17:16:15"
+            "time": "2014-06-17 07:32:45"
         },
         {
             "name": "netgusto/mozza-theme-dropplets",
-            "version": "1.0.7",
+            "version": "1.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Dropplets.git",
-                "reference": "668dcc8c4fc1332b6362041c8f18a7a10b1ccb2d"
+                "reference": "0f6c80f72aaeaa8c5dcfa6dcc6c17621d46c053c"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -862,15 +862,15 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-16 17:23:42"
+            "time": "2014-06-17 13:32:53"
         },
         {
             "name": "netgusto/mozza-theme-medium",
-            "version": "1.0.12",
+            "version": "1.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
-                "reference": "72b7480f62f178c4c3ff6f0e2107896d8e9b7244"
+                "reference": "7317bb398289271857012a6ed08bc8edf7b90ca7"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -893,7 +893,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-16 17:26:11"
+            "time": "2014-06-17 13:31:55"
         },
         {
             "name": "pimple/pimple",
