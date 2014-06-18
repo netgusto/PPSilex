@@ -10,6 +10,7 @@ use Mozza\Core\Services\MarkdownProcessorInterface,
     Mozza\Core\Services\URLAbsolutizerService,
     Mozza\Core\Services\PostURLGeneratorService,
     Mozza\Core\Services\PostSerializerService,
+    Mozza\Core\Services\CultureService,
     Mozza\Core\Repository\PostRepository,
     Mozza\Core\Entity\Post;
 
@@ -24,9 +25,10 @@ class MozzaExtension extends \Twig_Extension {
     protected $postresourceresolver;
     protected $urlabsolutizer;
     protected $domainname;
+    protected $culture;
     protected $appconfig;
 
-    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, UrlGenerator $urlgenerator, PostURLGeneratorService $posturlgenerator, MarkdownProcessorInterface $markdownProcessor, ResourceResolverService $resourceresolver, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, $domainname, array $appconfig) {
+    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, UrlGenerator $urlgenerator, PostURLGeneratorService $posturlgenerator, MarkdownProcessorInterface $markdownProcessor, ResourceResolverService $resourceresolver, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, $domainname, CultureService $culture, array $appconfig) {
         $this->postRepo = $postRepo;
         $this->postserializer = $postserializer;
         $this->urlgenerator = $urlgenerator;
@@ -36,6 +38,7 @@ class MozzaExtension extends \Twig_Extension {
         $this->postresourceresolver = $postresourceresolver;
         $this->urlabsolutizer = $urlabsolutizer;
         $this->domainname = $domainname;
+        $this->culture = $culture;
         $this->appconfig = $appconfig;
     }
     
@@ -51,6 +54,7 @@ class MozzaExtension extends \Twig_Extension {
             'topostresourceurl' => new \Twig_Filter_Method($this, 'topostresourceurl', array('is_safe' => array('html'))),
             'toabsoluteurl' => new \Twig_Filter_Method($this, 'toabsoluteurl', array('is_safe' => array('html'))),
             'serializepost' => new \Twig_Filter_Method($this, 'serializepost'),
+            'humandate' => new \Twig_Filter_Method($this, 'humandate'),
         );
     }
 
@@ -113,6 +117,10 @@ class MozzaExtension extends \Twig_Extension {
 
     public function posturlabsolute($slug) {
         return $this->posturlgenerator->absolutefromSlug($slug);
+    }
+
+    public function humandate(\DateTime $date) {
+        return $this->culture->humanDate($date);
     }
 
     public function component_disqus(Post $post) {

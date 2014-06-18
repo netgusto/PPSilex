@@ -4,24 +4,28 @@ namespace Mozza\Core\Services;
 
 use Symfony\Component\Yaml\Yaml;
 
-use Mozza\Core\Entity\PostFile,
-    Mozza\Core\Services\PostFileResolverService,
-    Mozza\Core\Services\PostFingerprinterService;
+use Mozza\Core\Entity\PostFile;
 
 class PostFileReaderService {
 
     protected $postresolver;
     protected $postresourceresolver;
     protected $postfingerprinter;
-    protected $timezone;
-    protected $appconfig;
+    protected $culture;
+    protected $siteconfig;
 
-    public function __construct(PostFileResolverService $postresolver, PostResourceResolverService $postresourceresolver, PostFingerprinterService $postfingerprinter, \DateTimeZone $timezone, array $appconfig) {
+    public function __construct(
+        PostFileResolverService $postresolver,
+        PostResourceResolverService $postresourceresolver,
+        PostFingerprinterService $postfingerprinter,
+        CultureService $culture,
+        SiteConfigService $siteconfig
+    ) {
         $this->postresolver = $postresolver;
         $this->postresourceresolver = $postresourceresolver;
         $this->postfingerprinter = $postfingerprinter;
-        $this->timezone = $timezone;
-        $this->appconfig = $appconfig;
+        $this->culture = $culture;
+        $this->siteconfig = $siteconfig;
     }
 
     public function getPost($filepath) {
@@ -35,7 +39,7 @@ class PostFileReaderService {
         }
 
         $lastmodified = \DateTime::createFromFormat('U', filemtime($filepath));
-        $lastmodified->setTimezone($this->timezone);
+        $lastmodified->setTimezone($this->culture->getTimezone());
 
         # Obtaining the markdown
         $filepath = realpath($filepath);
@@ -72,7 +76,7 @@ class PostFileReaderService {
             $post->setAuthor($postData['ymf']['author']);
         } else {
             # Use the site author
-            $post->setAuthor($this->appconfig['site']['owner']['name']);
+            $post->setAuthor($this->siteconfig->getOwnername());
         }
 
         # Extract website
@@ -80,7 +84,7 @@ class PostFileReaderService {
             $post->setWebsite($postData['ymf']['website']);
         } else {
             # Use the site website
-            $post->setWebsite($this->appconfig['site']['owner']['website']);
+            $post->setWebsite($this->siteconfig->getOwnerwebsite());
         }
 
         # Extract bio
@@ -88,7 +92,7 @@ class PostFileReaderService {
             $post->setBio($postData['ymf']['bio']);
         } else {
             # Use the site website
-            $post->setBio($this->appconfig['site']['owner']['bio']);
+            $post->setBio($this->siteconfig->getOwnerbio());
         }
 
         # Extract twitter
@@ -96,13 +100,13 @@ class PostFileReaderService {
             $post->setTwitter($postData['ymf']['twitter']);
         } else {
             # Use the site twitter
-            $post->setTwitter($this->appconfig['site']['owner']['twitter']);
+            $post->setTwitter($this->siteconfig->getOwnertwitter());
         }
 
         # Extract date
         if(array_key_exists('date', $postData['ymf'])) {
             $dateString = $postData['ymf']['date'];
-            $date = new \DateTime($dateString, $this->timezone);
+            $date = new \DateTime($dateString, $this->culture->getTimezone());
             $post->setDate($date);
         } else {
             # the file creation date

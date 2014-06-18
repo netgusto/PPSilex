@@ -13,25 +13,16 @@ use Symfony\Component\HttpFoundation\Request,
 
 use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
 
+use Aws\S3\S3Client,
+    Aws\Common\Credentials\Credentials;
+
 use Mozza\Core\Repository\PostRepository,
     Mozza\Core\Controller\HomeController,
     Mozza\Core\Controller\PostController,
     Mozza\Core\Controller\FeedController,
     Mozza\Core\Controller\JsonController,
     Mozza\Core\Controller\ErrorController,
-    Mozza\Core\Services\SystemStatusService,
-    Mozza\Core\Services\URLAbsolutizerService,
-    Mozza\Core\Services\PostFileResolverService,
-    Mozza\Core\Services\PostFingerprinterService,
-    Mozza\Core\Services\PostFileToPostConverterService,
-    Mozza\Core\Services\PostFileReaderService,
-    Mozza\Core\Services\PostFileRepositoryService,
-    Mozza\Core\Services\PostURLGeneratorService,
-    Mozza\Core\Services\ResourceResolverService,
-    Mozza\Core\Services\PostResourceResolverService,
-    Mozza\Core\Services\PostSerializerService,
-    Mozza\Core\Services\PostCacheHandlerService,
-    Mozza\Core\Services\CebeMarkdownProcessorService,
+    Mozza\Core\Services as MozzaServices,
     Mozza\Core\Exception\PostNotFoundException,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
 
@@ -58,7 +49,7 @@ $app['siteurl'] = $rootrequest->getScheme() . '://' . $rootrequest->getHttpHost(
 # Configuring the application
 ###############################################################################
 
-$configfile = ROOT_DIR . '/app/parameters.yml';
+$configfile = ROOT_DIR . '/app/config/config.yml';
 
 if(!file_exists($configfile)) {
     # If no config: run wizard
@@ -66,56 +57,73 @@ if(!file_exists($configfile)) {
     $app->register(new DerAlex\Silex\YamlConfigServiceProvider($configfile));
 }
 
-if(isset($app['config']['debug']) && is_bool($app['config']['debug'])) {
-    $app['debug'] = $app['config']['debug'];
-} else {
-    $app['debug'] = FALSE;  # debug is disabled by default
-}
+###############################################################################
+# Building config services
+###############################################################################
 
-# Building the realpathes for configures pathes
+#
+# Culture Service
+#
+
+$app['culture'] = $app->share(function() use ($app) {
+    return new MozzaServices\CultureService(
+        $app['config']['culture']['locale'],
+        $app['config']['culture']['date']['format'],
+        $app['config']['culture']['date']['timezone']
+    );
+});
+
+$app['culture']->setupEnvironment();
+
+#
+# System config service
+#
+
+$app['config.system'] = $app->share(function() use ($app) {
+    return new MozzaServices\SystemConfigService(
+        $app['config']['system']
+    );
+});
+
+#
+# Site config service
+#
+
+$app['config.site'] = $app->share(function() use ($app) {
+    return new MozzaServices\SiteConfigService(
+        $app['config']['site']
+    );
+});
+
+###############################################################################
+# Building config-based services
+###############################################################################
+
+# Realpathes for configured pathes
 
 $webdir = ROOT_DIR . '/web';
 $app['abspath'] = array(
     'root' => ROOT_DIR,
-    'posts' => ROOT_DIR . '/' . trim($app['config']['posts']['dir'], '/'),
-    'customhtml' => ROOT_DIR . '/app/customhtml/',
     'web' => $webdir,
-    'theme' => $webdir . '/vendor/' . $app['config']['site']['theme'],
-    'postsresources' => $webdir . '/' . trim($app['config']['posts']['webresdir'], '/'),
+    'theme' => $webdir . '/vendor/' . $app['config.site']->getTheme(),
+
     'app' => ROOT_DIR . '/app',
     'cache' => ROOT_DIR . '/app/cache',
     'source' => ROOT_DIR . '/src',
     'cachedbproxies' => ROOT_DIR . '/app/cache/db/proxies',
     'cachedbsqlite' => ROOT_DIR . '/app/cache/db/cache.db',
+
+    # Data pathes
+    'posts' => ROOT_DIR . '/' . trim($app['config.system']->getPostsdir(), '/'),
+    'customhtml' => ROOT_DIR . '/app/customhtml/',
+    'postsresources' => $webdir . '/' . trim($app['config.system']->getPostswebresdir(), '/'),
 );
-
-# Setting server timezone and locale
-date_default_timezone_set($app['config']['date']['timezone']);
-setlocale(LC_ALL, $app['config']['site']['locale']);
-$app['timezone'] = new \DateTimeZone($app['config']['date']['timezone']);
-
-###############################################################################
-# Building services
-###############################################################################
 
 #
 # Doctrine and Doctrine ORM Services
 #
-
 $app->register(new DoctrineServiceProvider, array(
-    'db.options' => array(
-        'driver' => 'pdo_sqlite',
-        'path' => $app['abspath']['cachedbsqlite'],
-    ),
-    /*'db.options'    => array(
-        'driver'        => 'pdo_mysql',
-        'host'          => 'localhost',
-        'dbname'        => 'mozza',
-        'user'          => 'root',
-        'password'      => '',
-        'charset'       => 'utf8',
-        'driverOptions' => array(1002 => 'SET NAMES utf8'),
-    )*/
+    'db.options' => $app['config.system']->getCachedb(),
 ));
 
 $app->register(new DoctrineOrmServiceProvider, array(
@@ -142,7 +150,7 @@ $app->register(new UrlGeneratorServiceProvider());
 # URL absolutizer service
 #
 $app['url.absolutizer'] = $app->share(function() use ($app) {
-    return new URLAbsolutizerService(
+    return new MozzaServices\URLAbsolutizerService(
         $app['siteurl'],
         $app['abspath']['web']
     );
@@ -153,7 +161,7 @@ $app['url.absolutizer'] = $app->share(function() use ($app) {
 #
 
 $app['resource.resolver'] = $app->share(function() use ($app) {
-    return new ResourceResolverService(
+    return new MozzaServices\ResourceResolverService(
         $app['abspath']['web'],
         $app['abspath']['postsresources']
     );
@@ -164,14 +172,14 @@ $app['resource.resolver'] = $app->share(function() use ($app) {
 #
 
 $app['post.resource.resolver'] = $app->share(function() use ($app) {
-    return new PostResourceResolverService(
+    return new MozzaServices\PostResourceResolverService(
         $app['abspath']['web'],
         $app['abspath']['postsresources']
     );
 });
 
 $app['post.urlgenerator'] = $app->share(function() use ($app) {
-    return new PostURLGeneratorService(
+    return new MozzaServices\PostURLGeneratorService(
         $app['post.repository'],
         $app['url_generator'],
         $app['url.absolutizer']
@@ -190,6 +198,36 @@ $app->register(new TwigServiceProvider(), array(
         'debug' => TRUE,
     ),
 ));
+
+# Enabling debug (needs twig, so immediately after twig)
+
+if($app['config.system']->getDebug()) {
+    
+    $app->register(new WebProfilerServiceProvider(), array(
+        'profiler.cache_dir' => ROOT_DIR . '/app/cache/profiler',
+    ));
+
+} else {
+    # If debug mode is disabled, we handle the error messages nicely
+    $app->error(function (\Exception $e, $code) use ($app) {
+
+        if($code === 404 || $e instanceof PostNotFoundException) {
+            return $app['error.controller']->notFoundAction(
+                $app['request'],
+                $app,
+                $e,
+                $code
+            );
+        }
+
+        return $app['error.controller']->errorAction(
+            $app['request'],
+            $app,
+            $e,
+            $code
+        );
+    });
+}
 
 # Allows to use service name as controller in route definition
 $app->register(new ServiceControllerServiceProvider());
@@ -212,6 +250,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
             $app['post.resource.resolver'],
             $app['url.absolutizer'],
             $app['sitedomain'],
+            $app['culture'],
             $app['config']
         )
     );
@@ -223,85 +262,77 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 $app['twig.loader.filesystem']->addPath($app['abspath']['theme'] . '/views', 'MozzaTheme');
 $app['twig.loader.filesystem']->addPath($app['abspath']['customhtml'], 'Custom');
 
-#
-# Web profiler service
-#
 
-if($app['debug']) {
-    #$app->register(new WebProfilerServiceProvider(), array(
-    #    'profiler.cache_dir' => ROOT_DIR . '/app/cache/profiler',
-    #));
-}
 
 #
 # Business logic related services
 #
 
 $app['markdown.processor'] = $app->share(function() use ($app) {
-    return new CebeMarkdownProcessorService();
+    return new MozzaServices\CebeMarkdownProcessorService();
 });
 
 $app['post.fingerprinter'] = $app->share(function() use ($app) {
-    return new PostFingerprinterService();
+    return new MozzaServices\PostFingerprinterService();
 });
 
 $app['postfile.topostconverter'] = $app->share(function() use ($app) {
-    return new PostFileToPostConverterService();
+    return new MozzaServices\PostFileToPostConverterService();
 });
 
 # Url to Post filepath resolver
 $app['postfile.resolver'] = $app->share(function() use ($app) {
-    return new PostFileResolverService(
+    return new MozzaServices\PostFileResolverService(
         $app['abspath']['posts'],
-        $app['config']['posts']['extension']
+        $app['config.system']->getPostsExtension()
     );
 });
 
 
 $app['postfile.repository'] = $app->share(function() use ($app) {
-    return new PostFileRepositoryService(
+    return new MozzaServices\PostFileRepositoryService(
         $app['postfile.resolver'],
         $app['postfile.reader'],
         $app['abspath']['posts'],
-        $app['config']['posts']['extension']
+        $app['config.system']->getPostsExtension()
     );
 });
 
 $app['postfile.reader'] = $app->share(function() use ($app) {
-    return new PostFileReaderService(
+    return new MozzaServices\PostFileReaderService(
         $app['postfile.resolver'],
         $app['post.resource.resolver'],
         $app['post.fingerprinter'],
-        $app['timezone'],
-        $app['config']
+        $app['culture'],
+        $app['config.site']
     );
 });
 
 $app['post.serializer'] = $app->share(function() use ($app) {
-    return new PostSerializerService(
+    return new MozzaServices\PostSerializerService(
         $app['post.repository'],
         $app['markdown.processor'],
         $app['post.urlgenerator'],
         $app['url.absolutizer'],
         $app['post.resource.resolver'],
-        $app['config']
+        $app['culture']
     );
 });
 
 $app['post.cachehandler'] = $app->share(function() use ($app) {
-    return new PostCacheHandlerService(
+    return new MozzaServices\PostCacheHandlerService(
         $app['system.status'],
         $app['postfile.repository'],
         $app['post.repository'],
         $app['postfile.topostconverter'],
         $app['orm.em'],
         $app['abspath']['posts'],
-        $app['timezone']
+        $app['culture']
     );
 });
 
 $app['system.status'] = $app->share(function() use ($app) {
-    return new SystemStatusService(
+    return new MozzaServices\SystemStatusService(
         $app['orm.em']
     );
 });
@@ -393,32 +424,10 @@ $app->get('json/posts/{slug}', 'json.controller:postAction')
     ->bind('json.post');
 
 # Filename path/to/post.md: Single Post Pages
-$app->match('{slug}', 'post.controller:indexAction')
+$app->get('{slug}', 'post.controller:indexAction')
     ->assert('slug', '.+')
+    ->assert('slug', '^((?!_profiler).)*$')
     ->bind('post');
-
-
-if(!$app['debug']) {
-    # If debug mode is disabled, we handle the error messages nicely
-    $app->error(function (\Exception $e, $code) use ($app) {
-
-        if($code === 404 || $e instanceof PostNotFoundException) {
-            return $app['error.controller']->notFoundAction(
-                $app['request'],
-                $app,
-                $e,
-                $code
-            );
-        }
-
-        return $app['error.controller']->errorAction(
-            $app['request'],
-            $app,
-            $e,
-            $code
-        );
-    });
-}
 
 ###############################################################################
 # Handling cache

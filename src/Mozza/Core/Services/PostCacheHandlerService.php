@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 
 use Mozza\Core\Entity\AbstractPost,
     Mozza\Core\Repository\PostRepository,
+    Mozza\Core\Services\CultureService,
     Mozza\Core\Services\SystemStatusService,
     Mozza\Core\Services\PostFileRepositoryService,
     Mozza\Core\Services\PostFileToPostConverterService;
@@ -20,23 +21,25 @@ class PostCacheHandlerService {
     protected $postfiletopostconverter;
     protected $em;
     protected $postspath;
-    protected $timezone;
+    protected $culture;
 
-    public function __construct(SystemStatusService $systemstatus, PostFileRepositoryService $postfilerepository, PostRepository $postrepository, PostFileToPostConverterService $postfiletopostconverter, EntityManager $em, /* string */ $postspath, \DateTimeZone $timezone) {
+    public function __construct(SystemStatusService $systemstatus, PostFileRepositoryService $postfilerepository, PostRepository $postrepository, PostFileToPostConverterService $postfiletopostconverter, EntityManager $em, /* string */ $postspath, CultureService $culture) {
         $this->systemstatus = $systemstatus;
         $this->postfilerepository = $postfilerepository;
         $this->postrepository = $postrepository;
         $this->postfiletopostconverter = $postfiletopostconverter;
         $this->em = $em;
         $this->postspath = $postspath;
-        $this->timezone = $timezone;
+        $this->culture = $culture;
     }
 
     public function updateCacheIfNeeded() {
+        # Watching file changes; if configuration changes (like the file extension, for instance), you have to rebuild the cache manually (php console mozza:cache:rebuild)
+        
         $postcachelastupdate = $this->systemstatus->getPostCacheLastUpdate();
 
         $lastmodified = \DateTime::createFromFormat('U', filemtime($this->postspath));
-        $lastmodified->setTimezone($this->timezone);
+        $lastmodified->setTimezone($this->culture->getTimezone());
 
         if(is_null($postcachelastupdate) || $lastmodified > $postcachelastupdate) {
             $this->updateCache();

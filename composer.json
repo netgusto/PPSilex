@@ -25,7 +25,8 @@
 
         "netgusto/mozza-theme-dropplets": "~1.0",
         "netgusto/mozza-theme-medium": "~1.0",
-        "netgusto/mozza-theme-casper": "~1.0"
+        "netgusto/mozza-theme-casper": "~1.0",
+        "aws/aws-sdk-php": "2.6.7"
     },
     "repositories": [
         {

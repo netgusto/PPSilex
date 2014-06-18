@@ -1,0 +1,4 @@
+imports:
+    - { resource: system.yml }
+    - { resource: ../../data/config/site.yml }
+    - { resource: ../../data/config/components.yml }

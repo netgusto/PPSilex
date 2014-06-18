@@ -3,10 +3,6 @@
 namespace Mozza\Core\Services;
 
 use Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\MarkdownProcessorInterface,
-    Mozza\Core\Services\URLAbsolutizerService,
-    Mozza\Core\Services\PostResourceResolverService,
-    Mozza\Core\Services\PostURLGeneratorService,
     Mozza\Core\Exception;
 
 class PostSerializerService {
@@ -16,18 +12,26 @@ class PostSerializerService {
     protected $posturlgenerator;
     protected $urlabsolutizer;
     protected $postresourceresolver;
-    protected $appconfig;
+    protected $siteconfig;
     
-    public function __construct(PostRepository $postRepo, MarkdownProcessorInterface $markdownprocessor, PostURLGeneratorService $posturlgenerator, URLAbsolutizerService $urlabsolutizer, PostResourceResolverService $postresourceresolver, array $appconfig) {
+    public function __construct(
+        PostRepository $postRepo,
+        MarkdownProcessorInterface $markdownprocessor,
+        PostURLGeneratorService $posturlgenerator,
+        URLAbsolutizerService $urlabsolutizer,
+        PostResourceResolverService $postresourceresolver,
+        CultureService $culture
+    ) {
         $this->postRepo = $postRepo;
         $this->markdownprocessor = $markdownprocessor;
         $this->posturlgenerator = $posturlgenerator;
         $this->urlabsolutizer = $urlabsolutizer;
         $this->postresourceresolver = $postresourceresolver;
-        $this->appconfig = $appconfig;
+        $this->culture = $culture;
     }
 
     public function serialize($post) {
+
         $postintro = trim($this->markdownprocessor->toInlineHtml($post->getIntro()));
         $postcontent = trim($this->markdownprocessor->toHtml($post->getContent()));
 
@@ -58,7 +62,7 @@ class PostSerializerService {
             'author' => $post->getAuthor(),
             'twitter' => $post->getTwitter(),
             'about' => $post->getAbout(),
-            'date_human' => $post->getDate()->format($this->appconfig['date']['format']),
+            'date_human' => $this->culture->humanDate($post->getDate()),
             'date_iso' => $post->getDate()->format('c'),    # ISO 8601; equivalent to (new Date()).toJSON() in javascript
             'comments' => $post->getComments(), # true / false
             'next_slug' => $nextpost ? $nextpost->getSlug() : null,

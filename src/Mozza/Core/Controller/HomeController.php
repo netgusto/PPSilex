@@ -29,13 +29,6 @@ class HomeController {
     public function indexAction(Request $request, Application $app, $page=1) {
 
         $nbposts = $this->postRepo->count();
-        $nbpages = ceil($nbposts / $this->postsperpage);
-        $posts = $this->postRepo->findAllAtPage($page, $this->postsperpage);
-
-        if($page > $nbpages) {
-            return new RedirectResponse($app['url_generator']->generate('home'));
-        }
-        
         if($nbposts === 0) {
             
             $post = new Post();
@@ -48,6 +41,13 @@ class HomeController {
             return $this->twig->render('@MozzaTheme/Post/index.html.twig', array(
                 'post' => $post,
             ));
+        }
+        
+        $nbpages = ceil($nbposts / $this->postsperpage);
+        $posts = $this->postRepo->findAllAtPage($page, $this->postsperpage);
+
+        if($page > $nbpages) {
+            return new RedirectResponse($app['url_generator']->generate('home'));
         }
 
         return $this->twig->render('@MozzaTheme/Home/index.html.twig', array(
