@@ -4,8 +4,7 @@ use Silex\Application,
     Silex\Provider\ServiceControllerServiceProvider,
     Silex\Provider\TwigServiceProvider,
     Silex\Provider\UrlGeneratorServiceProvider,
-    Silex\Provider\WebProfilerServiceProvider,
-    Silex\Provider\DoctrineServiceProvider;
+    Silex\Provider\WebProfilerServiceProvider;
 
 use Symfony\Component\HttpFoundation\Request,
     Symfony\Component\HttpFoundation\Response,
@@ -30,8 +29,8 @@ use Mozza\Core\Repository\PostRepository,
 # Keeping track of paths
 ###############################################################################
 
-define('ROOT_DIR', realpath(__DIR__ . '/..'));
-require_once ROOT_DIR . '/vendor/autoload.php';
+$rootdir = realpath(__DIR__ . '/..');
+require_once $rootdir . '/vendor/autoload.php';
 
 ###############################################################################
 # Initializing the application
@@ -39,6 +38,9 @@ require_once ROOT_DIR . '/vendor/autoload.php';
 
 $app = new Application();
 $app['version'] = '1.0.0';
+$app['path.rootdir'] = $rootdir;
+
+unset($rootdir); # from now on, we will only use the DI container's version
 
 # Building a temporary root request to determine host url, as we cannot access the request service out of the scope of a controller
 $rootrequest = Request::createFromGlobals();
@@ -46,16 +48,24 @@ $app['sitedomain'] = $rootrequest->getHost();
 $app['siteurl'] = $rootrequest->getScheme() . '://' . $rootrequest->getHttpHost() . $rootrequest->getBaseUrl();
 
 ###############################################################################
+# Loading environment
+###############################################################################
+
+Dotenv::load($app['path.rootdir']);
+
+###############################################################################
 # Configuring the application
 ###############################################################################
 
-$configfile = ROOT_DIR . '/app/config/config.yml';
+$configfile = $app['path.rootdir'] . '/app/config/config.yml';
 
 if(!file_exists($configfile)) {
     # If no config: run wizard
 } else {
     $app->register(new DerAlex\Silex\YamlConfigServiceProvider($configfile));
 }
+
+$app['debug'] = $app['config']['system']['debug'];
 
 ###############################################################################
 # Building config services
@@ -73,7 +83,25 @@ $app['culture'] = $app->share(function() use ($app) {
     );
 });
 
-$app['culture']->setupEnvironment();
+$app['database.urlresolver'] = $app->share(function() use($app) {
+    return new MozzaServices\DatabaseUrlResolverService(
+        $app['path.rootdir']
+    );
+});
+
+$app['config.loader'] = $app->share(function() use($app) {
+    return new MozzaServices\ConfigLoaderService(
+        $app['path.rootdir']
+    );
+});
+
+$app['environment'] = $app->share(function() use ($app) {
+    return new MozzaServices\EnvironmentService(
+        $app['database.urlresolver'],
+        $app['config.loader'],
+        $app['culture']
+    );
+});
 
 #
 # System config service
@@ -101,30 +129,27 @@ $app['config.site'] = $app->share(function() use ($app) {
 
 # Realpathes for configured pathes
 
-$webdir = ROOT_DIR . '/web';
+$webdir = $app['path.rootdir'] . '/web';
 $app['abspath'] = array(
-    'root' => ROOT_DIR,
+    'root' => $app['path.rootdir'],
     'web' => $webdir,
     'theme' => $webdir . '/vendor/' . $app['config.site']->getTheme(),
 
-    'app' => ROOT_DIR . '/app',
-    'cache' => ROOT_DIR . '/app/cache',
-    'source' => ROOT_DIR . '/src',
-    'cachedbproxies' => ROOT_DIR . '/app/cache/db/proxies',
-    'cachedbsqlite' => ROOT_DIR . '/app/cache/db/cache.db',
+    'app' => $app['path.rootdir'] . '/app',
+    'cache' => $app['path.rootdir'] . '/app/cache',
+    'source' => $app['path.rootdir'] . '/src',
+    'cachedbproxies' => $app['path.rootdir'] . '/app/cache/db/proxies',
+    'cachedbsqlite' => $app['path.rootdir'] . '/app/cache/db/cache.db',
 
     # Data pathes
-    'posts' => ROOT_DIR . '/' . trim($app['config.system']->getPostsdir(), '/'),
-    'customhtml' => ROOT_DIR . '/app/customhtml/',
+    'posts' => $app['path.rootdir'] . '/' . trim($app['config.system']->getPostsdir(), '/'),
+    'customhtml' => $app['path.rootdir'] . '/app/customhtml/',
     'postsresources' => $webdir . '/' . trim($app['config.system']->getPostswebresdir(), '/'),
 );
 
 #
-# Doctrine and Doctrine ORM Services
+# Doctrine ORM Services
 #
-$app->register(new DoctrineServiceProvider, array(
-    'db.options' => $app['config.system']->getCachedb(),
-));
 
 $app->register(new DoctrineOrmServiceProvider, array(
     "orm.proxies_dir" => $app['abspath']['cachedbproxies'],
@@ -192,10 +217,10 @@ $app['post.urlgenerator'] = $app->share(function() use ($app) {
 
 $app->register(new TwigServiceProvider(), array(
     'twig.options' => array(
-        'cache' => ROOT_DIR . '/app/cache/twig',
+        'cache' => $app['path.rootdir'] . '/app/cache/twig',
         'strict_variables' => TRUE,
         'autoescape' => TRUE,
-        'debug' => TRUE,
+        'debug' => $app['debug'],
     ),
 ));
 
@@ -204,7 +229,7 @@ $app->register(new TwigServiceProvider(), array(
 if($app['config.system']->getDebug()) {
     
     $app->register(new WebProfilerServiceProvider(), array(
-        'profiler.cache_dir' => ROOT_DIR . '/app/cache/profiler',
+        'profiler.cache_dir' => $app['path.rootdir'] . '/app/cache/profiler',
     ));
 
 } else {
@@ -437,6 +462,8 @@ $app->get('{slug}', 'post.controller:indexAction')
 $app->before(function(Request $req) use($app) {
     $app['post.cachehandler']->updateCacheIfNeeded();
 });
+
+$app['environment']->initialize($app);
 
 # Serving the app
 return $app;

@@ -26,7 +26,10 @@
         "netgusto/mozza-theme-dropplets": "~1.0",
         "netgusto/mozza-theme-medium": "~1.0",
         "netgusto/mozza-theme-casper": "~1.0",
-        "aws/aws-sdk-php": "2.6.7"
+        "aws/aws-sdk-php": "2.6.7",
+        
+        "vlucas/phpdotenv": "1.0.6",
+        "brianium/habitat": "v1.0.0"
     },
     "repositories": [
         {
