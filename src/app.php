@@ -10,10 +10,10 @@ use Symfony\Component\HttpFoundation\Request,
     Symfony\Component\HttpFoundation\Response,
     Symfony\Component\HttpFoundation\RedirectResponse;
 
-use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
+#use Aws\S3\S3Client,
+    #Aws\Common\Credentials\Credentials;
 
-use Aws\S3\S3Client,
-    Aws\Common\Credentials\Credentials;
+use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
 
 use Mozza\Core\Repository\PostRepository,
     Mozza\Core\Controller\HomeController,
@@ -38,7 +38,7 @@ require_once $rootdir . '/vendor/autoload.php';
 
 $app = new Application();
 $app['version'] = '1.0.0';
-$app['path.rootdir'] = $rootdir;
+$app['rootdir'] = $rootdir;
 
 unset($rootdir); # from now on, we will only use the DI container's version
 
@@ -51,21 +51,37 @@ $app['siteurl'] = $rootrequest->getScheme() . '://' . $rootrequest->getHttpHost(
 # Loading environment
 ###############################################################################
 
-Dotenv::load($app['path.rootdir']);
+$app['environment'] = $app->share(function() use ($app) {
+    return new MozzaServices\EnvironmentService(
+        $app['rootdir']
+    );
+});
 
-###############################################################################
-# Configuring the application
-###############################################################################
+# Loading platforms
 
-$configfile = $app['path.rootdir'] . '/app/config/config.yml';
+$platformprovider = $app['environment']->getEnv('PLATFORM');
+$app->register(new $platformprovider(), array(
+    #"hello" => "world",
+));
 
-if(!file_exists($configfile)) {
-    # If no config: run wizard
-} else {
-    $app->register(new DerAlex\Silex\YamlConfigServiceProvider($configfile));
-}
+#######################################################################
+# ORM
+#######################################################################
 
-$app['debug'] = $app['config']['system']['debug'];
+$app->register(new DoctrineOrmServiceProvider, array(
+    "orm.proxies_dir" => $app['environment']->getCacheDir(),
+    "orm.em.options" => array(
+        "mappings" => array(
+            # Using actual filesystem paths
+            array(
+                'type' => 'yml',
+                'namespace' => 'Mozza\Core\Entity',
+                'path' => $app['environment']->getSrcDir() . '/Mozza/Core/Resources/config/doctrine',
+            ),
+        ),
+    ),
+));
+
 
 ###############################################################################
 # Building config services
@@ -80,26 +96,6 @@ $app['culture'] = $app->share(function() use ($app) {
         $app['config']['culture']['locale'],
         $app['config']['culture']['date']['format'],
         $app['config']['culture']['date']['timezone']
-    );
-});
-
-$app['database.urlresolver'] = $app->share(function() use($app) {
-    return new MozzaServices\DatabaseUrlResolverService(
-        $app['path.rootdir']
-    );
-});
-
-$app['config.loader'] = $app->share(function() use($app) {
-    return new MozzaServices\ConfigLoaderService(
-        $app['path.rootdir']
-    );
-});
-
-$app['environment'] = $app->share(function() use ($app) {
-    return new MozzaServices\EnvironmentService(
-        $app['database.urlresolver'],
-        $app['config.loader'],
-        $app['culture']
     );
 });
 
@@ -127,24 +123,15 @@ $app['config.site'] = $app->share(function() use ($app) {
 # Building config-based services
 ###############################################################################
 
-# Realpathes for configured pathes
 
-$webdir = $app['path.rootdir'] . '/web';
-$app['abspath'] = array(
-    'root' => $app['path.rootdir'],
-    'web' => $webdir,
-    'theme' => $webdir . '/vendor/' . $app['config.site']->getTheme(),
 
-    'app' => $app['path.rootdir'] . '/app',
-    'cache' => $app['path.rootdir'] . '/app/cache',
-    'source' => $app['path.rootdir'] . '/src',
-    'cachedbproxies' => $app['path.rootdir'] . '/app/cache/db/proxies',
-    'cachedbsqlite' => $app['path.rootdir'] . '/app/cache/db/cache.db',
 
+$app['abspath.data'] = array(
     # Data pathes
-    'posts' => $app['path.rootdir'] . '/' . trim($app['config.system']->getPostsdir(), '/'),
-    'customhtml' => $app['path.rootdir'] . '/app/customhtml/',
-    'postsresources' => $webdir . '/' . trim($app['config.system']->getPostswebresdir(), '/'),
+    'theme' => $app['environment']->getWebDir() . '/vendor/' . $app['config.site']->getTheme(),
+    'posts' => $app['environment']->getRootDir() . '/' . trim($app['config.system']->getPostsdir(), '/'),
+    'customhtml' => $app['environment']->getRootDir() . '/app/customhtml/',
+    'postsresources' => $app['environment']->getWebDir() . '/' . trim($app['config.system']->getPostswebresdir(), '/')
 );
 
 #
@@ -152,14 +139,14 @@ $app['abspath'] = array(
 #
 
 $app->register(new DoctrineOrmServiceProvider, array(
-    "orm.proxies_dir" => $app['abspath']['cachedbproxies'],
+    "orm.proxies_dir" => $app['environment']->getCacheDir(),
     "orm.em.options" => array(
         "mappings" => array(
             # Using actual filesystem paths
             array(
                 'type' => 'yml',
                 'namespace' => 'Mozza\Core\Entity',
-                'path' => $app['abspath']['source'] . '/Mozza/Core/Resources/config/doctrine',
+                'path' => $app['environment']->getSrcDir() . '/Mozza/Core/Resources/config/doctrine',
             ),
         ),
     ),
@@ -177,7 +164,7 @@ $app->register(new UrlGeneratorServiceProvider());
 $app['url.absolutizer'] = $app->share(function() use ($app) {
     return new MozzaServices\URLAbsolutizerService(
         $app['siteurl'],
-        $app['abspath']['web']
+        $app['environment']->getWebDir()
     );
 });
 
@@ -187,8 +174,8 @@ $app['url.absolutizer'] = $app->share(function() use ($app) {
 
 $app['resource.resolver'] = $app->share(function() use ($app) {
     return new MozzaServices\ResourceResolverService(
-        $app['abspath']['web'],
-        $app['abspath']['postsresources']
+        $app['environment']->getWebDir(),
+        $app['abspath.data']['postsresources']
     );
 });
 
@@ -198,8 +185,8 @@ $app['resource.resolver'] = $app->share(function() use ($app) {
 
 $app['post.resource.resolver'] = $app->share(function() use ($app) {
     return new MozzaServices\PostResourceResolverService(
-        $app['abspath']['web'],
-        $app['abspath']['postsresources']
+        $app['environment']->getWebDir(),
+        $app['abspath.data']['postsresources']
     );
 });
 
@@ -217,7 +204,7 @@ $app['post.urlgenerator'] = $app->share(function() use ($app) {
 
 $app->register(new TwigServiceProvider(), array(
     'twig.options' => array(
-        'cache' => $app['path.rootdir'] . '/app/cache/twig',
+        'cache' => $app['rootdir'] . '/app/cache/twig',
         'strict_variables' => TRUE,
         'autoescape' => TRUE,
         'debug' => $app['debug'],
@@ -229,7 +216,7 @@ $app->register(new TwigServiceProvider(), array(
 if($app['config.system']->getDebug()) {
     
     $app->register(new WebProfilerServiceProvider(), array(
-        'profiler.cache_dir' => $app['path.rootdir'] . '/app/cache/profiler',
+        'profiler.cache_dir' => $app['rootdir'] . '/app/cache/profiler',
     ));
 
 } else {
@@ -284,8 +271,8 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 }));
 
 # Setting the theme namespace
-$app['twig.loader.filesystem']->addPath($app['abspath']['theme'] . '/views', 'MozzaTheme');
-$app['twig.loader.filesystem']->addPath($app['abspath']['customhtml'], 'Custom');
+$app['twig.loader.filesystem']->addPath($app['abspath.data']['theme'] . '/views', 'MozzaTheme');
+$app['twig.loader.filesystem']->addPath($app['abspath.data']['customhtml'], 'Custom');
 
 
 
@@ -308,7 +295,7 @@ $app['postfile.topostconverter'] = $app->share(function() use ($app) {
 # Url to Post filepath resolver
 $app['postfile.resolver'] = $app->share(function() use ($app) {
     return new MozzaServices\PostFileResolverService(
-        $app['abspath']['posts'],
+        $app['abspath.data']['posts'],
         $app['config.system']->getPostsExtension()
     );
 });
@@ -318,7 +305,7 @@ $app['postfile.repository'] = $app->share(function() use ($app) {
     return new MozzaServices\PostFileRepositoryService(
         $app['postfile.resolver'],
         $app['postfile.reader'],
-        $app['abspath']['posts'],
+        $app['abspath.data']['posts'],
         $app['config.system']->getPostsExtension()
     );
 });
@@ -351,7 +338,7 @@ $app['post.cachehandler'] = $app->share(function() use ($app) {
         $app['post.repository'],
         $app['postfile.topostconverter'],
         $app['orm.em'],
-        $app['abspath']['posts'],
+        $app['abspath.data']['posts'],
         $app['culture']
     );
 });
@@ -462,8 +449,6 @@ $app->get('{slug}', 'post.controller:indexAction')
 $app->before(function(Request $req) use($app) {
     $app['post.cachehandler']->updateCacheIfNeeded();
 });
-
-$app['environment']->initialize($app);
 
 # Serving the app
 return $app;

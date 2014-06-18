@@ -8,17 +8,3 @@ system:
         extension: md
         dir: data/posts
         webresdir: res      # Relative to web/
-
-    cachedb:
-
-        driver: pdo_sqlite
-        path: app/cache/db/cache.db
-
-        #driver: pdo_mysql
-        #host: 127.0.0.1
-        #port: ~
-        #name: mozza
-        #user: root
-        #password: ~
-        #charset: utf8
-        #driverOptions: { 1002: 'SET NAMES utf8' }

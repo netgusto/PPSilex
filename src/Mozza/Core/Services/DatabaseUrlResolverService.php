@@ -46,12 +46,6 @@ class DatabaseUrlResolverService {
         'pdo_mssql' => 'pdo_sqlsrv',
     );
 
-    protected $rootdir;
-
-    public function __construct($rootdir) {
-        $this->rootdir = $rootdir;
-    }
-
     public function resolve($url)
     {
         // some special cases for sqlite urls
@@ -95,7 +89,7 @@ class DatabaseUrlResolverService {
             if (isset($parts['query'])) {
                 parse_str($parts['query'], $query);
                 if (isset($query['relative'])) {
-                    $parameters['path'] = $this->rootdir . '/' . ltrim($parameters['path'], '/');
+                    $parameters['path'] = ltrim($parameters['path'], '/');
                 }
             }
 

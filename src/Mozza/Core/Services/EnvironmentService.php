@@ -2,48 +2,56 @@
 
 namespace Mozza\Core\Services;
 
-use Silex\Application,
-    Silex\Provider\DoctrineServiceProvider;
+use Silex\Application;
 
-use Habitat\Habitat;
+use Habitat\Habitat,
+    josegonzalez\Dotenv;
 
 class EnvironmentService {
 
-    protected $databasedsn;
+    protected $env;
 
-    public function __construct(DatabaseUrlResolverService $databaseurlresolver, ConfigLoaderService $configloader, CultureService $culture) {
+    public function __construct($rootdir) {
+        $envloader = new Dotenv\Loader($rootdir . '/.env');
+        $this->env = $envloader->parse()->toArray();
 
-        $this->culture = $culture;
-
-        if(($databaseurl = Habitat::getenv('DATABASE_URL')) === FALSE) {
-            throw new \UnexpectedValueException('DATABASE_URL is not set in environment.');
-        }
-
-        $this->databasedsn = $databaseurlresolver->resolve($databaseurl);
-
-        if(($configurl = Habitat::getenv('CONFIG_URL')) === FALSE) {
-            throw new \UnexpectedValueException('CONFIG_URL is not set in environment.');
-        }
-
-        $this->configarray = $configloader->load($configurl);
-
-        #var_dump($this->databasedsn);
-        #debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $this->rootdir = $rootdir;
+        $this->webdir = $rootdir . '/web';
+        $this->srcdir = $rootdir . '/src';
+        $this->appdir = $rootdir . '/app';
+        $this->cachedir = $this->appdir . '/cache';
     }
 
-    public function initialize(Application $app) {
+    public function getEnv($what) {
+        return array_key_exists($what, $this->env) ? $this->env[$what] : null;
+    }
+
+    public function getRootDir() {
+        return $this->rootdir;
+    }
+
+    public function getWebDir() {
+        return $this->webdir;
+    }
+
+    public function getSrcDir() {
+        return $this->srcdir;
+    }
+
+    public function getAppDir() {
+        return $this->appdir;
+    }
+
+    public function getCacheDir() {
+        return $this->cachedir;
+    }
+
+    /*public function initialize(Application $app) {
         #
         # Culture
         #
 
         date_default_timezone_set($this->culture->getTimezone()->getName());
         setlocale(LC_ALL, $this->culture->getLocale());
-
-        #
-        # Database connection
-        #
-        $app->register(new DoctrineServiceProvider, array(
-            'db.options' => $this->databasedsn,
-        ));
-    }
+    }*/
 }

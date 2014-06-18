@@ -16,7 +16,6 @@ class SystemConfigService {
         $this->postsextension = $systemconfig['posts']['extension'];
         $this->postsdir = $systemconfig['posts']['dir'];
         $this->postswebresdir = $systemconfig['posts']['webresdir'];
-        $this->cachedb = $systemconfig['cachedb'];
     }
 
     public function getDebug() {
@@ -33,9 +32,5 @@ class SystemConfigService {
 
     public function getPostswebresdir() {
         return $this->postswebresdir;
-    }
-
-    public function getCachedb() {
-        return $this->cachedb;
     }
 }
