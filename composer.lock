@@ -1057,11 +1057,11 @@
         },
         {
             "name": "netgusto/mozza-theme-casper",
-            "version": "1.0.4",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netgusto/Mozza-Theme-Casper.git",
-                "reference": "1cb1031a8dc38d335b7e79f3caab1f0745ad782c"
+                "reference": "f94c40afe3cf762ded7396f9fd5f35174cfb9833"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -1085,7 +1085,7 @@
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-18 10:41:59"
+            "time": "2014-06-19 11:42:31"
         },
         {
             "name": "netgusto/mozza-theme-dropplets",
