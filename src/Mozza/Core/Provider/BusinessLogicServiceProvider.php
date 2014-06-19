@@ -28,6 +28,16 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
         # Data repositories Services
         #
 
+        $app['postfile.repository'] = $app->share(function() use ($app) {
+            return new MozzaServices\PostFileRepositoryService(
+                $app['fs.persistent'],
+                $app['postfile.resolver'],
+                $app['postfile.reader'],
+                $app['config.system']->getPostsdir(),
+                $app['config.system']->getPostsExtension()
+            );
+        });
+
         $app['post.repository'] = $app->share(function() use ($app) {
             return new PostRepository(
                 $app['orm.em']
@@ -54,17 +64,9 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
             );
         });
 
-        $app['postfile.repository'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostFileRepositoryService(
-                $app['postfile.resolver'],
-                $app['postfile.reader'],
-                $app['abspath.data']['posts'],
-                $app['config.system']->getPostsExtension()
-            );
-        });
-
         $app['postfile.reader'] = $app->share(function() use ($app) {
             return new MozzaServices\PostFileReaderService(
+                $app['fs.persistent'],
                 $app['postfile.resolver'],
                 $app['post.resource.resolver'],
                 $app['post.fingerprinter'],

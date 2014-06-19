@@ -36,7 +36,8 @@ class PostFileResolverService {
 
     public function isFilepathLegit($filepath) {
 
-        $filepath = trim(realpath($filepath));
+        $filepath = trim($filepath);
+
         if($filepath === '') {
             return FALSE;
         }

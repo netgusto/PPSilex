@@ -2,12 +2,15 @@
 
 namespace Mozza\Core\Services;
 
-use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Yaml,
+    Symfony\Component\Finder\SplFileInfo;
 
-use Mozza\Core\Entity\PostFile;
+use Mozza\Core\Entity\PostFile,
+    Mozza\Core\Services\PersistentStorageServiceInterface;
 
 class PostFileReaderService {
 
+    protected $fs;
     protected $postresolver;
     protected $postresourceresolver;
     protected $postfingerprinter;
@@ -15,12 +18,14 @@ class PostFileReaderService {
     protected $siteconfig;
 
     public function __construct(
+        PersistentStorageServiceInterface $fs,
         PostFileResolverService $postresolver,
         PostResourceResolverService $postresourceresolver,
         PostFingerprinterService $postfingerprinter,
         CultureService $culture,
         SiteConfigService $siteconfig
     ) {
+        $this->fs = $fs;
         $this->postresolver = $postresolver;
         $this->postresourceresolver = $postresourceresolver;
         $this->postfingerprinter = $postfingerprinter;
@@ -28,7 +33,9 @@ class PostFileReaderService {
         $this->siteconfig = $siteconfig;
     }
 
-    public function getPost($filepath) {
+    public function getPost(SplFileInfo $file) {
+
+        $filepath = $file->getRelativePath() . '/' . $file->getRelativePathname();
 
         if(!$this->postresolver->isFilepathLegit($filepath)) {
             return null;

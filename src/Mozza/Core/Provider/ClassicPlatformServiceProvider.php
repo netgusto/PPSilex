@@ -6,10 +6,11 @@ use Silex\Application,
     Silex\ServiceProviderInterface,
     Silex\Provider\DoctrineServiceProvider;
 
-use Mozza\Core\Services as MozzaServices,
-    Mozza\Core\Provider\FileBasedConfigServiceProvider;
+use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
 
-class TraditionalPlatformServiceProvider implements ServiceProviderInterface {
+use Mozza\Core\Services as MozzaServices;
+
+class ClassicPlatformServiceProvider implements ServiceProviderInterface {
     
     public function register(Application $app) {
         
@@ -21,38 +22,30 @@ class TraditionalPlatformServiceProvider implements ServiceProviderInterface {
         # System config service
         #
 
-        $app['parameters'] = array(
+        $parameters = array(
             'hello' => 'World !',
         );
 
-        $app['config.system'] = $app->share(function() use ($app) {
-            $provider = new FileBasedConfigServiceProvider(
-                $app['environment']->getRootDir() . '/app/config/config.yml',
-                $app['parameters']
-            );
+        $filebackedconfig = new MozzaServices\FileBackedConfigLoaderService($parameters);
 
+        $app['config.system'] = $app->share(function() use ($app, $filebackedconfig) {
             return new MozzaServices\SystemConfigService(
-                $provider->getAsArray()
-            );
-        });
-
-        #
-        # Site config service
-        #
-
-        $app['config.site'] = $app->share(function() use ($app) {
-            $provider = new FileBasedConfigServiceProvider(
-                $app['environment']->getDataDir() . '/config/config.yml',
-                $app['parameters']
-            );
-
-            return new MozzaServices\SiteConfigService(
-                $provider->getAsArray()
+                $filebackedconfig->load($app['environment']->getRootDir() . '/app/config/config.yml')
             );
         });
 
         # Debug ?
         $app['debug'] = $app['config.system']->getDebug();
+
+        #
+        # Site config service
+        #
+
+        $app['config.site'] = $app->share(function() use ($app, $filebackedconfig) {
+            return new MozzaServices\SiteConfigService(
+                $filebackedconfig->load($app['environment']->getDataDir() . '/config/config.yml')
+            );
+        });
 
         #######################################################################
         # Database connection
@@ -70,19 +63,56 @@ class TraditionalPlatformServiceProvider implements ServiceProviderInterface {
             'db.options' => $this->databasedsn,
         ));
 
+        #
+        # ORM; platform independent, but config may depend on it (in paas, the site config is stored in DB)
+        #
+
+        $app->register(new DoctrineOrmServiceProvider, array(
+            "orm.proxies_dir" => $app['environment']->getCacheDir(),
+            "orm.em.options" => array(
+                "mappings" => array(
+                    # Using actual filesystem paths
+                    array(
+                        'type' => 'yml',
+                        'namespace' => 'Mozza\Core\Entity',
+                        'path' => $app['environment']->getSrcDir() . '/Mozza/Core/Resources/config/doctrine',
+                    ),
+                ),
+            ),
+        ));
+
         #######################################################################
         # Persistent storage
         #######################################################################
 
         #
-        # Pathes
+        # LocalFS Client
         #
 
-        $app['abspath.data'] = array(
-            'posts' => $app['environment']->getRootDir() . '/' . trim($app['config.system']->getPostsdir(), '/'),
-            'customhtml' => $app['environment']->getRootDir() . '/app/customhtml/',
-            'postsresources' => $app['environment']->getWebDir() . '/' . trim($app['config.system']->getPostswebresdir(), '/')
-        );
+        $app['fs.persistent'] = $app->share(function() use ($app) {
+            return new MozzaServices\PersistentStorageLocalFSService(
+                $app['environment']->getRootDir()
+            );
+        });
+
+        /*$files = $app['fs.persistent']->getAll('data/posts', 'md');
+        echo '<pre>';
+        print_r($files);
+        echo '</pre>';
+
+        echo '<pre>';
+        print_r($app['fs.persistent']->getOne('data/posts/about.md'));
+        echo '</pre>';
+
+        foreach($files as $file) {
+            echo 'file:' . $file->getRelativePath() . '/' . $file->getRelativePathname() . '<br/>';
+        }
+
+        echo '<hr/>';
+
+        echo $app['fs.persistent']->getOne('data/posts/about.md')->getRelativePath() . '/' . $file->getRelativePathname() . '<br />';
+
+        die('fin');*/
 
         #
         # Resource filepath resolver
@@ -91,7 +121,7 @@ class TraditionalPlatformServiceProvider implements ServiceProviderInterface {
         $app['resource.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\ResourceResolverService(
                 $app['environment']->getWebDir(),
-                $app['abspath.data']['postsresources']
+                $app['config.system']->getPostswebresdir()
             );
         });
 
@@ -102,7 +132,7 @@ class TraditionalPlatformServiceProvider implements ServiceProviderInterface {
         $app['post.resource.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\PostResourceResolverService(
                 $app['environment']->getWebDir(),
-                $app['abspath.data']['postsresources']
+                $app['config.system']->getPostswebresdir()
             );
         });
 
@@ -112,7 +142,7 @@ class TraditionalPlatformServiceProvider implements ServiceProviderInterface {
 
         $app['postfile.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\PostFileResolverService(
-                $app['abspath.data']['posts'],
+                $app['config.system']->getPostsdir(),
                 $app['config.system']->getPostsExtension()
             );
         });
@@ -128,7 +158,7 @@ class TraditionalPlatformServiceProvider implements ServiceProviderInterface {
                 $app['post.repository'],
                 $app['postfile.topostconverter'],
                 $app['orm.em'],
-                $app['abspath.data']['posts'],
+                $app['config.system']->getPostsdir(),
                 $app['culture']
             );
         });

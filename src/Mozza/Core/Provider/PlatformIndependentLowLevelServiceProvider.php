@@ -12,8 +12,6 @@ use Silex\Application,
 use Mozza\Core\Services as MozzaServices,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
 
-use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
-
 class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInterface {
 
     public function register(Application $app) {
@@ -24,24 +22,6 @@ class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInter
 
         # Allows to use service name as controller in route definition
         $app->register(new ServiceControllerServiceProvider());
-        
-        #
-        # ORM; platform independent, but depends on the database connection service registered by the platform provider
-        #
-
-        $app->register(new DoctrineOrmServiceProvider, array(
-            "orm.proxies_dir" => $app['environment']->getCacheDir(),
-            "orm.em.options" => array(
-                "mappings" => array(
-                    # Using actual filesystem paths
-                    array(
-                        'type' => 'yml',
-                        'namespace' => 'Mozza\Core\Entity',
-                        'path' => $app['environment']->getSrcDir() . '/Mozza/Core/Resources/config/doctrine',
-                    ),
-                ),
-            ),
-        ));
 
         #
         # URL Generator service
@@ -109,7 +89,7 @@ class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInter
 
             # Setting the theme namespace
             $app['twig.loader.filesystem']->addPath($app['environment']->getThemesDir() . '/' . $app['config.site']->getTheme() . '/views', 'MozzaTheme');
-            $app['twig.loader.filesystem']->addPath($app['abspath.data']['customhtml'], 'Custom');
+            $app['twig.loader.filesystem']->addPath($app['environment']->getAppDir() . '/customhtml', 'Custom');
 
             return $twig;
         }));

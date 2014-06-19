@@ -48,7 +48,7 @@ class PostCacheHandlerService {
     }
 
     public function updateCache(OutputInterface $output = null) {
-
+        
         $postfiles = $this->postfilerepository->findAll();
         $posts = $this->postrepository->findAll();
 
@@ -119,7 +119,7 @@ class PostCacheHandlerService {
     }
 
     public function rebuildCache(OutputInterface $output = null) {
-        
+
         $this->postrepository->deleteAll();
         $postfiles = $this->postfilerepository->findAll();
         
