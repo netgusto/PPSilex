@@ -27,7 +27,6 @@ class HomeController {
     }
 
     public function indexAction(Request $request, Application $app, $page=1) {
-
         $nbposts = $this->postRepo->count();
         if($nbposts === 0) {
             

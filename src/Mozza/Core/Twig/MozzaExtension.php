@@ -11,6 +11,7 @@ use Mozza\Core\Services\MarkdownProcessorInterface,
     Mozza\Core\Services\PostURLGeneratorService,
     Mozza\Core\Services\PostSerializerService,
     Mozza\Core\Services\CultureService,
+    Mozza\Core\Services\SiteConfigService,
     Mozza\Core\Repository\PostRepository,
     Mozza\Core\Entity\Post;
 
@@ -26,9 +27,21 @@ class MozzaExtension extends \Twig_Extension {
     protected $urlabsolutizer;
     protected $domainname;
     protected $culture;
-    protected $appconfig;
+    protected $siteconfig;
 
-    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, UrlGenerator $urlgenerator, PostURLGeneratorService $posturlgenerator, MarkdownProcessorInterface $markdownProcessor, ResourceResolverService $resourceresolver, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer, $domainname, CultureService $culture, array $appconfig) {
+    public function __construct(
+        PostRepository $postRepo,
+        PostSerializerService $postserializer,
+        UrlGenerator $urlgenerator,
+        PostURLGeneratorService $posturlgenerator,
+        MarkdownProcessorInterface $markdownProcessor,
+        ResourceResolverService $resourceresolver,
+        PostResourceResolverService $postresourceresolver,
+        URLAbsolutizerService $urlabsolutizer,
+        $domainname,
+        CultureService $culture,
+        SiteConfigService $siteconfig
+    ) {
         $this->postRepo = $postRepo;
         $this->postserializer = $postserializer;
         $this->urlgenerator = $urlgenerator;
@@ -39,7 +52,7 @@ class MozzaExtension extends \Twig_Extension {
         $this->urlabsolutizer = $urlabsolutizer;
         $this->domainname = $domainname;
         $this->culture = $culture;
-        $this->appconfig = $appconfig;
+        $this->siteconfig = $siteconfig;
     }
     
     public function getName() {
@@ -129,25 +142,21 @@ class MozzaExtension extends \Twig_Extension {
             return '';
         }
 
-        if(
-            !array_key_exists('components', $this->appconfig) ||
-            !array_key_exists('disqus', $this->appconfig['components']) ||
-            !array_key_exists('shortname', $this->appconfig['components']['disqus']) ||
-            trim($this->appconfig['components']['disqus']['shortname']) === ''
-        ) {
+        $shortname = trim($this->siteconfig->getComponentsDisqusShortname());
+        if($shortname === '') {
             return '';
         }
 
-        $shortname = trim($this->appconfig['components']['disqus']['shortname']);
+        $js_shortname = json_encode((string)$shortname);
 
         $html =<<<HTML
         <!-- The disqus component -->
         <div id="disqus_thread"></div>
         <script type="text/javascript">
-            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-            var disqus_shortname = '{$shortname}'; // required: replace example with your forum shortname
+            // CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE
+            var disqus_shortname = {$js_shortname}; // required: replace example with your forum shortname
 
-            /* * * DON'T EDIT BELOW THIS LINE * * */
+            // DON'T EDIT BELOW THIS LINE
             (function() {
                 var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                 dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
@@ -163,37 +172,33 @@ HTML;
 
     public function component_googleanalytics() {
 
-        if(
-            !array_key_exists('components', $this->appconfig) ||
-            !array_key_exists('googleanalytics', $this->appconfig['components']) ||
-            !array_key_exists('uacode', $this->appconfig['components']['googleanalytics']) ||
-            trim($this->appconfig['components']['googleanalytics']['uacode']) === ''
-        ) {
+        $ga_uacode = trim($this->siteconfig->getComponentsGoogleanalyticsUacode());
+        $ga_domainname = $this->siteconfig->getComponentsGoogleanalyticsDomain();
+        
+        if($ga_uacode === '') {
             return '';
         }
 
-        $uacode = trim($this->appconfig['components']['googleanalytics']['uacode']);
-        $domainname = $this->domainname;
+        if(trim($ga_domainname) === '') {
+            $ga_domainname = $this->domainname;
+        } else {
+            # Process given domain name to ensure validity
 
-        # A custom domain name is set (for instance, to aggregate a subdomain and the main domain in GA)
-        if(array_key_exists('domain', $this->appconfig['components']['googleanalytics'])) {
+            $ga_domainname = rtrim($ga_domainname, '/');
+            $ga_domainname = trim($ga_domainname);
 
-            $customdomainname = trim($this->appconfig['components']['googleanalytics']['domain']);
-            $customdomainname = rtrim($customdomainname, '/');
-            $customdomainname = trim($customdomainname);
-
-            if(preg_match('%^https?://%i', $customdomainname)) {
-                $domainparts = parse_url($customdomainname);
-                $customdomainname = $domainparts['host'];
+            if(preg_match('%^https?://%i', $ga_domainname)) {
+                $domainparts = parse_url($ga_domainname);
+                $ga_domainname = $domainparts['host'];
             }
 
-            if(trim($customdomainname) !== '') {
-                $domainname = $customdomainname;
+            if(trim($ga_domainname) === '') {
+                $ga_domainname = $this->domainname;
             }
         }
 
-        $jsuacode = json_encode($uacode);
-        $jsdomainname = json_encode($domainname);
+        $jsuacode = json_encode((string)$ga_uacode);
+        $jsdomainname = json_encode((string)$ga_domainname);
 
         $script =<<<SCRIPT
 <!-- The google analytics component -->
@@ -228,9 +233,9 @@ SCRIPT;
     protected function metatagsWithoutPost() {
         $metas = array();
 
-        $sitedescription = $this->cleanupMetaString($this->appconfig['site']['description']);
-        $author = $this->cleanupMetaString($this->appconfig['site']['owner']['name']);
-        $ownertwitter = $this->cleanupMetaString($this->appconfig['site']['owner']['twitter']);
+        $sitedescription = $this->cleanupMetaString($this->siteconfig->getDescription());
+        $author = $this->cleanupMetaString($this->siteconfig->getOwnername());
+        $ownertwitter = $this->cleanupMetaString($this->siteconfig->getOwnertwitter());
 
         $metas['title'] = '<title>' . htmlspecialchars($this->documenttitleforposttitle('')) . '</title>';
         $metas['author'] = '<meta name="author" content="' . htmlspecialchars($author) . '">';
@@ -244,7 +249,7 @@ SCRIPT;
     }
 
     public function documenttitleforposttitle(/*string*/ $posttitle = '') {
-        $sitetitle = $this->cleanupMetaString($this->appconfig['site']['title']);
+        $sitetitle = $this->cleanupMetaString($this->siteconfig->getTitle());
         $posttitle = $this->cleanupMetaString($posttitle);
 
         if(trim($posttitle) === '') {
@@ -262,12 +267,12 @@ SCRIPT;
 
         $metas = $this->metatagsWithoutPost();
 
-        $sitetitle = $this->cleanupMetaString($this->appconfig['site']['title']);
-        $sitedescription = $this->cleanupMetaString($this->appconfig['site']['description']);
+        $sitetitle = $this->cleanupMetaString($this->siteconfig->getTitle());
+        $sitedescription = $this->cleanupMetaString($this->siteconfig->getDescription());
         $posttitle = $this->cleanupMetaString($post->getTitle());
         $intro = $this->cleanupMetaString($this->markdown($post->getIntro()));
-        $author = $this->cleanupMetaString($this->appconfig['site']['owner']['name']);
-        $ownertwitter = $this->cleanupMetaString($this->appconfig['site']['owner']['twitter']);
+        $author = $this->cleanupMetaString($this->siteconfig->getOwnername());
+        $ownertwitter = $this->cleanupMetaString($this->siteconfig->getOwnertwitter());
         
         $imagerelpath = $post->getImage();
         if($imagerelpath) {

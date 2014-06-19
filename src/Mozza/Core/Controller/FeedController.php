@@ -12,6 +12,7 @@ use \Suin\RSSWriter\Feed,
     \Suin\RSSWriter\Item;
 
 use Mozza\Core\Repository\PostRepository,
+    Mozza\Core\Services\SiteConfigService,
     Mozza\Core\Services\PostSerializerService,
     Mozza\Core\Services\PostResourceResolverService,
     Mozza\Core\Services\URLAbsolutizerService;
@@ -22,12 +23,20 @@ class FeedController {
     protected $postserializer;
     protected $postresourceresolver;
     protected $urlabsolutizer;
+    protected $siteconfig;
 
-    public function __construct(PostRepository $postRepo, PostSerializerService $postserializer, PostResourceResolverService $postresourceresolver, URLAbsolutizerService $urlabsolutizer) {
+    public function __construct(
+        PostRepository $postRepo,
+        PostSerializerService $postserializer,
+        PostResourceResolverService $postresourceresolver,
+        URLAbsolutizerService $urlabsolutizer,
+        SiteConfigService $siteconfig
+    ) {
         $this->postRepo = $postRepo;
         $this->postserializer = $postserializer;
         $this->postresourceresolver = $postresourceresolver;
         $this->urlabsolutizer = $urlabsolutizer;
+        $this->siteconfig = $siteconfig;
     }
 
     public function indexAction(Request $request, Application $app) {
@@ -35,8 +44,8 @@ class FeedController {
         $feed = new Feed();
         $channel = new Channel();
         $channel
-            ->title($app['config']['site']['title'])
-            ->description($app['config']['site']['description'])
+            ->title($this->siteconfig->getTitle())
+            ->description($this->siteconfig->getDescription())
             ->url($this->urlabsolutizer->absoluteSiteURL())
             ->appendTo($feed);
 

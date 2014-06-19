@@ -5,7 +5,10 @@
     "require": {
         "silex/silex": "~1.2",
         "silex/web-profiler": "~1.0",
-        "deralex/yaml-config-service-provider": "1.0.x-dev",
+
+        "igorw/config-service-provider": "v1.2.1",
+        "symfony/yaml": "~2.1",
+        
         "twig/twig": ">=1.8,<2.0-dev",
         "twig/extensions": "v1.0.1",
         "symfony/twig-bridge": "~2.5",

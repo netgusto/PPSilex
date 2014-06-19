@@ -1,4 +1,6 @@
-imports:
-    - { resource: system.yml }
-    - { resource: ../../data/config/site.yml }
-    - { resource: ../../data/config/components.yml }
+debug: true
+
+posts:
+    extension: md
+    dir: data/posts
+    webresdir: res      # Relative to web/

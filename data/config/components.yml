@@ -1,7 +1,0 @@
-components:
-    
-    disqus:
-        shortname: mozzablog                    # the Disqus ID for your blog; optional
-
-    googleanalytics:
-        uacode: UA-XXXXXXXX-X                   # the Google analytic UA code; optional

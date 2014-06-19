@@ -4,72 +4,77 @@ namespace Mozza\Core\Services;
 
 class SiteConfigService {
 
-    protected $title;
-    protected $description;
-    protected $theme;
+    protected $config;
 
-    protected $ownername;
-    protected $ownertwitter;
-    protected $ownermail;
-    protected $ownerwebsite;
-    protected $ownerbio;
-
-    protected $imagelogo;
-    protected $imagecover;
-
-    public function __construct(array $siteconfig) {
-
-        $this->title = $siteconfig['title'];
-        $this->description = $siteconfig['description'];
-        $this->theme = $siteconfig['theme'];
-
-        $this->ownername = $siteconfig['owner']['name'];
-        $this->ownertwitter = $siteconfig['owner']['twitter'];
-        $this->ownermail = $siteconfig['owner']['mail'];
-        $this->ownerwebsite = $siteconfig['owner']['website'];
-        $this->ownerbio = $siteconfig['owner']['bio'];
-
-        $this->imagelogo = $siteconfig['images']['logo'];
-        $this->imagecover = $siteconfig['images']['cover'];
+    public function __construct(array $config) {
+        $this->config = $config;
     }
 
     public function getTitle() {
-        return $this->title;
+        return $this->config['title'];
     }
 
     public function getDescription() {
-        return $this->description;
+        return $this->config['description'];
     }
 
     public function getTheme() {
-        return $this->theme;
+        return $this->config['theme'];
     }
 
     public function getOwnername() {
-        return $this->ownername;
+        return $this->config['owner']['name'];
     }
 
     public function getOwnertwitter() {
-        return $this->ownertwitter;
+        return $this->config['owner']['twitter'];
     }
 
     public function getOwnermail() {
-        return $this->ownermail;
+        return $this->config['owner']['mail'];
     }
 
     public function getOwnerwebsite() {
-        return $this->ownerwebsite;
+        return $this->config['owner']['website'];
     }
 
     public function getOwnerbio() {
-        return $this->ownerbio;
+        return $this->config['owner']['bio'];
     }
 
     public function getImagelogo() {
-        return $this->imagelogo;
+        return $this->config['images']['logo'];
     }
 
     public function getImagecover() {
-        return $this->imagecover;
+        return $this->config['images']['cover'];
+    }
+
+    public function getHomepostsperpage() {
+        return $this->config['home']['postsperpage'];
+    }
+
+    public function getCultureLocale() {
+        return $this->config['culture']['locale'];
+    }
+
+    public function getCulturedatetimezone() {
+        return $this->config['culture']['date']['timezone'];
+    }
+
+    public function getCulturedateformat() {
+        return $this->config['culture']['date']['format'];
+    }
+
+    public function getComponentsGoogleanalyticsUacode() {
+        return $this->config['components']['googleanalytics']['uacode'];
+    }
+
+    public function getComponentsGoogleanalyticsDomain() {
+        return $this->config['components']['googleanalytics']['domain'];
+    }
+
+    public function getComponentsDisqusShortname() {
+        return $this->config['components']['disqus']['shortname'];
     }
 }
