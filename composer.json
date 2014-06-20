@@ -123,6 +123,11 @@
                 "netgusto/mozza-theme-medium",
                 "netgusto/mozza-theme-casper"
             ]
+        },
+        "heroku": {
+            "document-root": "web",
+            "index-document": "index.php",
+            "framework": "silex"
         }
     }
 }
