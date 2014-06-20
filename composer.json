@@ -114,7 +114,11 @@
         "heroku": {
             "document-root": "web",
             "index-document": "index.php",
-            "framework": "silex"
+            "framework": "silex",
+            "php-config": [
+                "display_errors=off",
+                "log_errors=on"
+            ]
         },
         "assetsforwarding": {
             "destdir": "web/vendor",
