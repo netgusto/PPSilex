@@ -35,22 +35,22 @@ class PostFileReaderService {
 
     public function getPost(SplFileInfo $file) {
 
-        $filepath = $file->getRelativePath() . '/' . $file->getRelativePathname();
+        $relfilepath = $file->getRelativePath() . '/' . $file->getRelativePathname();
 
-        if(!$this->postresolver->isFilepathLegit($filepath)) {
+        if(!$this->postresolver->isFilepathLegit($relfilepath)) {
             return null;
         }
 
-        if(!file_exists($filepath)) {
+        $file = $this->fs->getOne($relfilepath);
+        if(!$this->fs->exists($file)) {
             return null;
         }
 
-        $lastmodified = \DateTime::createFromFormat('U', filemtime($filepath));
+        $lastmodified = $this->fs->getLastmodified($file);
         $lastmodified->setTimezone($this->culture->getTimezone());
 
         # Obtaining the markdown
-        $filepath = realpath($filepath);
-        $markdown = file_get_contents($filepath);
+        $markdown = $this->fs->getContents($file);
         if(trim($markdown) === '') {
             return null;
         }
@@ -67,7 +67,7 @@ class PostFileReaderService {
         if(array_key_exists('slug', $postData['ymf'])) {
             $post->setSlug($postData['ymf']['slug']);
         } else {
-            $fileinfo = pathinfo($filepath);
+            $fileinfo = pathinfo($file->getRelativePathname());
             $post->setSlug($fileinfo['filename']);  # without extension
         }
 
@@ -174,10 +174,8 @@ class PostFileReaderService {
         # Extract Image
         if(array_key_exists('image', $postData['ymf'])) {
             $imagerelpath = $postData['ymf']['image'];
-            $imagepath = $this->postresourceresolver->filepathForPostAndResourceName($post, $imagerelpath);
-            if($imagepath) {
-                $post->setImage($imagerelpath); # As set in the post source, to be future-proof
-            }
+            #$imagepath = $this->postresourceresolver->filepathForPostAndResourceName($post, $imagerelpath);
+            $post->setImage($imagerelpath); # As set in the post source, to be future-proof
         } else {
             $post->setImage(null);
         }

@@ -39,11 +39,9 @@ class PostSerializerService {
 
         $imagerelpath = $post->getImage();
         if($imagerelpath) {
-            $imageurl = $this->urlabsolutizer->absoluteURLFromRelativePath(
-                $this->postresourceresolver->relativeFilepathForPostAndResourceName(
-                    $post,
-                    $imagerelpath
-                )
+            $imageurl = $this->postresourceresolver->urlForPostAndResourceName(
+                $post,
+                $imagerelpath
             );
         } else {
             $imageurl = null;

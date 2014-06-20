@@ -33,8 +33,8 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
                 $app['fs.persistent'],
                 $app['postfile.resolver'],
                 $app['postfile.reader'],
-                $app['config.system']->getPostsdir(),
-                $app['config.system']->getPostsExtension()
+                $app['config.site']->getPostsdir(),
+                $app['config.site']->getPostsExtension()
             );
         });
 

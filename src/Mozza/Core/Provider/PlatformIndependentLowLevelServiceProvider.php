@@ -96,7 +96,7 @@ class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInter
 
         # Enabling debug (needs twig, so immediately after twig)
 
-        if($app['config.system']->getDebug()) {
+        if($app['debug']) {
             
             $app->register(new WebProfilerServiceProvider(), array(
                 'profiler.cache_dir' => $app['rootdir'] . '/app/cache/profiler',

@@ -1,6 +1,0 @@
-debug: true
-
-posts:
-    extension: md
-    dir: data/posts
-    webresdir: res      # Relative to web/

@@ -14,6 +14,10 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
     
     public function register(Application $app) {
         
+        # Defaults:
+        #   * Persistent file storage is Local FS
+        #   * Database is sqlite DB
+
         ###############################################################################
         # Registering the config services
         ###############################################################################
@@ -23,27 +27,17 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $parameters = array(
-            'hello' => 'World !',
+            'data.dir' => 'data',
         );
-
-        $filebackedconfig = new MozzaServices\FileBackedConfigLoaderService($parameters);
-
-        $app['config.system'] = $app->share(function() use ($app, $filebackedconfig) {
-            return new MozzaServices\SystemConfigService(
-                $filebackedconfig->load($app['environment']->getRootDir() . '/app/config/config.yml')
-            );
-        });
-
-        # Debug ?
-        $app['debug'] = $app['config.system']->getDebug();
 
         #
         # Site config service
         #
 
-        $app['config.site'] = $app->share(function() use ($app, $filebackedconfig) {
+        $app['config.site'] = $app->share(function() use ($app, $parameters) {
+            $filebackedconfig = new MozzaServices\FileBackedConfigLoaderService($parameters);
             return new MozzaServices\SiteConfigService(
-                $filebackedconfig->load($app['environment']->getDataDir() . '/config/config.yml')
+                $filebackedconfig->load($app['environment']->getRootDir() . '/data/config/config.yml')
             );
         });
 
@@ -54,7 +48,7 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         $dbresolver = new MozzaServices\DatabaseUrlResolverService();
 
         if(($databaseurl = $app['environment']->getEnv('DATABASE_URL')) === null) {
-            throw new \UnexpectedValueException('DATABASE_URL is not set in environment.');
+            $databaseurl = 'sqlite://' . $app['environment']->getCacheDir() . '/db/cache.db';
         }
 
         $this->databasedsn = $dbresolver->resolve($databaseurl);
@@ -89,30 +83,16 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         # LocalFS Client
         #
 
-        $app['fs.persistent'] = $app->share(function() use ($app) {
-            return new MozzaServices\PersistentStorageLocalFSService(
-                $app['environment']->getRootDir()
-            );
-        });
-
-        /*$files = $app['fs.persistent']->getAll('data/posts', 'md');
-        echo '<pre>';
-        print_r($files);
-        echo '</pre>';
-
-        echo '<pre>';
-        print_r($app['fs.persistent']->getOne('data/posts/about.md'));
-        echo '</pre>';
-
-        foreach($files as $file) {
-            echo 'file:' . $file->getRelativePath() . '/' . $file->getRelativePathname() . '<br/>';
+        if(!is_null($app['environment']->getEnv('STORAGE'))) {
+            throw new \UnexpectedValueException('STORAGE can not be set in environment using Classic Platform Provider.');
         }
 
-        echo '<hr/>';
-
-        echo $app['fs.persistent']->getOne('data/posts/about.md')->getRelativePath() . '/' . $file->getRelativePathname() . '<br />';
-
-        die('fin');*/
+        $app['fs.persistent'] = $app->share(function() use ($app) {
+            return new MozzaServices\PersistentStorageLocalFSService(
+                $app['environment']->getRootDir(),
+                $app['environment']->getSiteUrl()
+            );
+        });
 
         #
         # Resource filepath resolver
@@ -120,8 +100,8 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
 
         $app['resource.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\ResourceResolverService(
-                $app['environment']->getWebDir(),
-                $app['config.system']->getPostswebresdir()
+                $app['fs.persistent'],
+                $app['config.site']->getResourcesdir()
             );
         });
 
@@ -131,8 +111,8 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
 
         $app['post.resource.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\PostResourceResolverService(
-                $app['environment']->getWebDir(),
-                $app['config.system']->getPostswebresdir()
+                $app['fs.persistent'],
+                $app['config.site']->getResourcesdir()
             );
         });
 
@@ -142,8 +122,8 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
 
         $app['postfile.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\PostFileResolverService(
-                $app['config.system']->getPostsdir(),
-                $app['config.system']->getPostsExtension()
+                $app['config.site']->getPostsdir(),
+                $app['config.site']->getPostsExtension()
             );
         });
 
@@ -152,13 +132,14 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['post.cachehandler'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostCacheHandlerService(
+            return new MozzaServices\PostCacheHandlerLastModifiedService(
+                $app['fs.persistent'],
                 $app['system.status'],
                 $app['postfile.repository'],
                 $app['post.repository'],
                 $app['postfile.topostconverter'],
                 $app['orm.em'],
-                $app['config.system']->getPostsdir(),
+                $app['config.site']->getPostsdir(),
                 $app['culture']
             );
         });

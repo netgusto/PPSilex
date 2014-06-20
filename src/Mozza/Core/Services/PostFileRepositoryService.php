@@ -93,7 +93,7 @@ class PostFileRepositoryService {
     }
 
     public function findAll() {
-
+        
         $files = $this->fs->getAll($this->postspath, $this->postfileextension);
 
         foreach($files as $file) {

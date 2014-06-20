@@ -19,11 +19,9 @@ class EnvironmentService {
     protected $datadir;
     protected $themesdir;
 
-    public function __construct($rootdir) {
+    public function __construct(array $env, $rootdir) {
 
-        $envloader = new Dotenv\Loader($rootdir . '/.env');
-        $this->env = $envloader->parse()->toArray();
-
+        $this->env = $env;
         $this->rootdir = $rootdir;
         $this->webdir = $rootdir . '/web';
         $this->srcdir = $rootdir . '/src';
@@ -31,12 +29,11 @@ class EnvironmentService {
         $this->cachedir = $this->appdir . '/cache';
         $this->themesdir = $this->webdir . '/vendor';
 
-        $this->datadir = $rootdir . '/data';
-
         # Building a temporary root request to determine host url, as we cannot access the request service out of the scope of a controller
         $rootrequest = Request::createFromGlobals();
         $this->domain = $rootrequest->getHost();
-        $this->siteurl = $rootrequest->getScheme() . '://' . $rootrequest->getHttpHost() . $rootrequest->getBaseUrl();
+        $this->scheme = $rootrequest->getScheme();
+        $this->siteurl = $this->scheme . '://' . $rootrequest->getHttpHost() . $rootrequest->getBaseUrl();
     }
 
     public function getEnv($what) {
@@ -45,6 +42,10 @@ class EnvironmentService {
 
     public function getDomain() {
         return $this->domain;
+    }
+
+    public function getScheme() {
+        return $this->scheme;
     }
 
     public function getSiteurl() {
@@ -74,17 +75,4 @@ class EnvironmentService {
     public function getThemesDir() {
         return $this->themesdir;
     }
-
-    public function getDataDir() {
-        return $this->datadir;
-    }
-
-    /*public function initialize(Application $app) {
-        #
-        # Culture
-        #
-
-        date_default_timezone_set($this->culture->getTimezone()->getName());
-        setlocale(LC_ALL, $this->culture->getLocale());
-    }*/
 }

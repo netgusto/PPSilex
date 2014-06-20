@@ -10,12 +10,14 @@ use Aws\S3\S3Client,
 
 class PersistentStorageS3Service implements PersistentStorageServiceInterface {
 
-    protected $client;
     protected $bucket;
+    protected $client;
+    protected $httpbaseurl;
 
-    public function __construct(/* string */ $bucket, /* string */ $key, /* string */ $secret) {
+    public function __construct(/* string */ $bucket, /* string */ $key, /* string */ $secret, $httpbaseurl) {
         
         $this->bucket = $bucket;
+        $this->httpbaseurl = rtrim($httpbaseurl, '/') . '/';
 
         $this->client = S3Client::factory(array(
             'credentials' => new S3Credentials(
@@ -57,5 +59,21 @@ class PersistentStorageS3Service implements PersistentStorageServiceInterface {
             dirname($relfilepath),
             basename($relfilepath)
         );
+    }
+
+    public function exists(SplFileInfo $file) {
+        return file_exists($file);
+    }
+
+    public function getLastModified(SplFileInfo $file) {
+        return \DateTime::createFromFormat('U', filemtime($file->getPathName()));
+    }
+
+    public function getContents(SplFileInfo $file) {
+        return file_get_contents($file->getPathName());
+    }
+
+    public function getUrl(SplFileInfo $file) {
+        return $this->httpbaseurl . $file->getRelativePath() . '/' . $file->getRelativePathname();
     }
 }

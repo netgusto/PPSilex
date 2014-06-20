@@ -23,19 +23,8 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $parameters = array(
-            'hello' => 'World !',
+            'data.dir' => '',
         );
-
-        $filebackedconfig = new MozzaServices\FileBackedConfigLoaderService($parameters);
-
-        $app['config.system'] = $app->share(function() use ($app, $filebackedconfig) {
-            return new MozzaServices\SystemConfigService(
-                $filebackedconfig->load($app['environment']->getRootDir() . '/app/config/config.yml')
-            );
-        });
-
-        # Debug ?
-        $app['debug'] = $app['config.system']->getDebug();
 
         #######################################################################
         # Database connection
@@ -75,12 +64,13 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
         # Site config service
         #
 
-        $dbbackedconfig = new MozzaServices\DbBackedConfigLoaderService(
-            $app['orm.em'],
-            $parameters
-        );
+        $app['config.site'] = $app->share(function() use ($app, $parameters) {
+            
+            $dbbackedconfig = new MozzaServices\DbBackedConfigLoaderService(
+                $app['orm.em'],
+                $parameters
+            );
 
-        $app['config.site'] = $app->share(function() use ($app, $dbbackedconfig) {
             return new MozzaServices\SiteConfigService(
                 $dbbackedconfig->load('config.site')
             );
@@ -94,62 +84,55 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
         # S3 Client
         #
 
-        if($app['environment']->getEnv('STORAGE') === 'S3') {
+        $storage = $app['environment']->getEnv('STORAGE');
+
+        if($storage === 'S3') {
 
             $app['fs.persistent'] = $app->share(function() use ($app) {
                 
                 $s3_bucket = $app['environment']->getEnv('S3_BUCKET');
                 $s3_keyid = $app['environment']->getEnv('S3_KEYID');
                 $s3_secret = $app['environment']->getEnv('S3_SECRET');
+                $s3_httpbaseurl = $app['environment']->getEnv('S3_HTTPBASEURL');
+                
+                if(empty($s3_httpbaseurl)) {
+                    $s3_httpbaseurl = $app['environment']->getScheme() . '://' . $s3_bucket . '.s3.amazonaws.com';
+                }
 
                 return new MozzaServices\PersistentStorageS3Service(
                     $s3_bucket,
                     $s3_keyid,
-                    $s3_secret
+                    $s3_secret,
+                    $s3_httpbaseurl
                 );
             });
         } else {
-            throw new \InvalidArgumentException('Unsupported STORAGE engine for PAAS platform.');
+            if(trim($storage) === '') {
+                throw new \InvalidArgumentException('STORAGE engine should be set in the environment.');
+            } else {
+                throw new \InvalidArgumentException('Unsupported STORAGE engine ' . $storage . ' for PAAS platform.');
+            }
         }
-
-        /*$files = $app['fs.persistent']->getAll('posts', 'md');
-        echo '<pre>';
-        print_r($files);
-        echo '</pre>';
-
-        echo '<pre>';
-        print_r($app['fs.persistent']->getOne('posts/about.md'));
-        echo '</pre>';
-
-        foreach($files as $file) {
-            echo 'file:' . $file->getRelativePath() . '/' . $file->getRelativePathname() . '<br/>';
-        }
-
-        echo '<hr/>';
-
-        echo $app['fs.persistent']->getOne('posts/about.md')->getRelativePath() . '/' . $file->getRelativePathname() . '<br />';
-
-        die('FIN');*/
 
         #
-        # Resource filepath resolver
+        # Resource path resolver
         #
 
         $app['resource.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\ResourceResolverService(
-                $app['environment']->getWebDir(),
-                $app['config.system']->getPostswebresdir()
+                $app['fs.persistent'],
+                $app['config.site']->getResourcesdir()
             );
         });
 
         #
-        # Post resource filepath resolver
+        # Post resource path resolver
         #
 
         $app['post.resource.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\PostResourceResolverService(
-                $app['environment']->getWebDir(),
-                $app['config.system']->getPostswebresdir()
+                $app['fs.persistent'],
+                $app['config.site']->getResourcesdir()
             );
         });
 
@@ -159,8 +142,8 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
 
         $app['postfile.resolver'] = $app->share(function() use ($app) {
             return new MozzaServices\PostFileResolverService(
-                $app['config.system']->getPostsdir(),
-                $app['config.system']->getPostsExtension()
+                $app['config.site']->getPostsdir(),
+                $app['config.site']->getPostsExtension()
             );
         });
 
@@ -169,13 +152,14 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['post.cachehandler'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostCacheHandlerService(
+            return new MozzaServices\PostCacheHandlerEventedUpdateService(
+                $app['fs.persistent'],
                 $app['system.status'],
                 $app['postfile.repository'],
                 $app['post.repository'],
                 $app['postfile.topostconverter'],
                 $app['orm.em'],
-                $app['config.system']->getPostsdir(),
+                $app['config.site']->getPostsdir(),
                 $app['culture']
             );
         });

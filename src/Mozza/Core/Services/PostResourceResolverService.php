@@ -6,17 +6,17 @@ use Mozza\Core\Entity\AbstractPost;
 
 class PostResourceResolverService extends ResourceResolverService {
 
-    public function filepathForPostAndResourceName(AbstractPost $post, $name) {
-        return $this->filepathForResourceName($name);
+    public function fileForPostAndResourceName(AbstractPost $post, $name) {
+        return $this->fileForResourceName($name);
     }
 
-    public function relativeFilepathForPostAndResourceName(AbstractPost $post, $name) {
+    public function urlForPostAndResourceName(AbstractPost $post, $name) {
         
-        $filepath = $this->filepathForPostAndResourceName($post, $name);
-        if(!$filepath) {
+        $file = $this->fileForPostAndResourceName($post, $name);
+        if(is_null($file)) {
             return null;
         }
 
-        return $this->makeRelative($filepath);
+        return $this->fs->getUrl($file);
     }
 }

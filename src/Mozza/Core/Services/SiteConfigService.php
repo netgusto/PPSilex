@@ -66,6 +66,18 @@ class SiteConfigService {
         return $this->config['culture']['date']['format'];
     }
 
+    public function getPostsdir() {
+        return ltrim($this->config['posts']['dir'], '/');   # relative fo fs service root
+    }
+
+    public function getPostsextension() {
+        return $this->config['posts']['extension'];
+    }
+
+    public function getResourcesdir() {
+        return $this->config['resources']['dir'];
+    }
+
     public function getComponentsGoogleanalyticsUacode() {
         return $this->config['components']['googleanalytics']['uacode'];
     }

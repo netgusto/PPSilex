@@ -26,22 +26,30 @@ unset($rootdir); # from now on, we will only use the DI container's version
 ###############################################################################
 
 $app['environment'] = $app->share(function() use ($app) {
+    $envloader = new MozzaServices\DotEnvFileReaderService();
     return new MozzaServices\EnvironmentService(
+        $envloader->read($app['rootdir'] . '/.env'),
         $app['rootdir']
     );
 });
+
+# Debug ?
+$app['debug'] = (bool)$app['environment']->getEnv('DEBUG');
 
 ###############################################################################
 # Mounting platform (infrastructure services we rely upon)
 ###############################################################################
 
 $platformprovider = $app['environment']->getEnv('PLATFORM');
+if(!$platformprovider) {
+    $platformprovider = 'Mozza\Core\Provider\ClassicPlatformServiceProvider';
+}
 $app->register(new $platformprovider());
 
 # We now have:
 #
 # * an environment
-# * a loaded app configuration (config.system and config.site)
+# * a loaded app configuration (config.site)
 # * a database connection
 # * a persistent storage
 

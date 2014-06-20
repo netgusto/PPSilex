@@ -104,19 +104,15 @@ class MozzaExtension extends \Twig_Extension {
     }
 
     public function topostresourceurl($relfilepath, Post $post) {
-        return $this->urlabsolutizer->absoluteURLFromRelativePath(
-            $this->postresourceresolver->relativeFilepathForPostAndResourceName(
-                $post,
-                $relfilepath
-            )
+        return $this->postresourceresolver->urlForPostAndResourceName(
+            $post,
+            $relfilepath
         );
     }
 
     public function toresourceurl($relfilepath) {
-        return $this->urlabsolutizer->absoluteURLFromRelativePath(
-            $this->resourceresolver->relativeFilepathForResourceName(
-                $relfilepath
-            )
+        return $this->resourceresolver->urlForResourceName(
+            $relfilepath
         );
     }
 

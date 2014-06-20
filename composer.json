@@ -30,7 +30,6 @@
         "netgusto/mozza-theme-casper": "~1.0",
         "aws/aws-sdk-php": "2.6.7",
         
-        "josegonzalez/dotenv": "dev-master",
         "brianium/habitat": "v1.0.0"
     },
     "repositories": [
