@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d2b4f1e326cac5465e04d83a775e5a0b",
+    "hash": "9a2e5d16337d3fb77581fe844b277c54",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -886,110 +886,6 @@
                 "web service"
             ],
             "time": "2014-05-07 17:04:22"
-        },
-        {
-            "name": "igorw/config-service-provider",
-            "version": "v1.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/igorw/ConfigServiceProvider.git",
-                "reference": "8e8f60b3ec86d63733db3bd6371117a758027ec6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/igorw/ConfigServiceProvider/zipball/8e8f60b3ec86d63733db3bd6371117a758027ec6",
-                "reference": "8e8f60b3ec86d63733db3bd6371117a758027ec6",
-                "shasum": ""
-            },
-            "require": {
-                "silex/silex": "~1.0"
-            },
-            "require-dev": {
-                "jamesmoss/toml": "~0.1",
-                "symfony/yaml": "~2.1"
-            },
-            "suggest": {
-                "jamesmoss/toml": "~0.1",
-                "symfony/yaml": "~2.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.2-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Igorw\\Silex": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Igor Wiedler",
-                    "email": "igor@wiedler.ch",
-                    "homepage": "http://wiedler.ch/igor/"
-                },
-                {
-                    "name": "Contributors",
-                    "homepage": "https://github.com/igorw/ConfigServiceProvider/contributors"
-                }
-            ],
-            "description": "A config ServiceProvider for Silex with support for php, json and yaml.",
-            "keywords": [
-                "silex"
-            ],
-            "time": "2013-05-31 14:23:34"
-        },
-        {
-            "name": "josegonzalez/dotenv",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/josegonzalez/php-dotenv.git",
-                "reference": "7979bc305f3a9a197d94db5f5d24d51ff7ab0871"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/josegonzalez/php-dotenv/zipball/7979bc305f3a9a197d94db5f5d24d51ff7ab0871",
-                "reference": "7979bc305f3a9a197d94db5f5d24d51ff7ab0871",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "josegonzalez\\Dotenv": [
-                        "src",
-                        "tests"
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jose Diaz-Gonzalez",
-                    "email": "dotenv@josegonzalez.com",
-                    "homepage": "http://josediazgonzalez.com",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "dotenv file parsing for PHP",
-            "homepage": "https://github.com/josegonzalez/php-dotenv",
-            "keywords": [
-                "configuration",
-                "dotenv",
-                "php"
-            ],
-            "time": "2014-05-28 14:40:35"
         },
         {
             "name": "jquery/jquery",
@@ -2365,8 +2261,7 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "knplabs/console-service-provider": 20,
-        "josegonzalez/dotenv": 20
+        "knplabs/console-service-provider": 20
     },
     "platform": [
 

@@ -10,7 +10,7 @@ use Silex\Application,
 
 use Mozza\Core\Entity\Post,
     Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\PostFileResolverService;
+    Mozza\Core\Services\PostFile\PostFileResolverService;
 
 class HomeController {
 
@@ -30,11 +30,15 @@ class HomeController {
         $nbposts = $this->postRepo->count();
         if($nbposts === 0) {
             
+            $date = new \DateTime();
+            $date->setTimezone($app['culture']->getTimezone());
+
             $post = new Post();
             $post->setTitle('Oh no ! not a single post to display !');
-            $post->setSlug('no-post');
+            $post->setSlug('');
             $post->setIntro("It looks like you don't have any post in your blog yet. To add a post, create a file in `data/posts`.");
-            $post->setAuthor($app['config']['site']['owner']['name']);
+            $post->setAuthor($app['config.site']->getOwnername());
+            $post->setDate($date);
             $post->setComments(FALSE);
 
             return $this->twig->render('@MozzaTheme/Post/index.html.twig', array(

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\Config;
 
 class SiteConfigService {
 
@@ -64,6 +64,18 @@ class SiteConfigService {
 
     public function getCulturedateformat() {
         return $this->config['culture']['date']['format'];
+    }
+
+    public function getPostsdir() {
+        return ltrim($this->config['posts']['dir'], '/');   # relative fo fs service root
+    }
+
+    public function getPostsextension() {
+        return $this->config['posts']['extension'];
+    }
+
+    public function getResourcesdir() {
+        return $this->config['resources']['dir'];
     }
 
     public function getComponentsGoogleanalyticsUacode() {

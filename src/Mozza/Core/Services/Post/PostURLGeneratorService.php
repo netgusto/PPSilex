@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\Post;
 
 use Symfony\Component\Routing\Generator\UrlGenerator;
 

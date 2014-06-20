@@ -5,8 +5,7 @@
     "require": {
         "silex/silex": "~1.2",
         "silex/web-profiler": "~1.0",
-
-        "igorw/config-service-provider": "v1.2.1",
+        
         "symfony/yaml": "~2.1",
         
         "twig/twig": ">=1.8,<2.0-dev",
@@ -31,7 +30,6 @@
         "netgusto/mozza-theme-casper": "~1.0",
         "aws/aws-sdk-php": "2.6.7",
         
-        "josegonzalez/dotenv": "dev-master",
         "brianium/habitat": "v1.0.0"
     },
     "repositories": [
@@ -113,6 +111,11 @@
         ]
     },
     "extra": {
+        "heroku": {
+            "document-root": "web",
+            "index-document": "index.php",
+            "framework": "silex"
+        },
         "assetsforwarding": {
             "destdir": "web/vendor",
             "packages": [

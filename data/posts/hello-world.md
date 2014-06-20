@@ -1,5 +1,5 @@
 ---
-title: Hello, World !
+title: Hello, World
 slug: hello-world
 author: Jérôme Schneider
 date: 2014-06-10 21:00

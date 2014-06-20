@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\CacheHandler;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -8,12 +8,13 @@ use Doctrine\ORM\EntityManager;
 
 use Mozza\Core\Entity\AbstractPost,
     Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\CultureService,
-    Mozza\Core\Services\SystemStatusService,
-    Mozza\Core\Services\PostFileRepositoryService,
-    Mozza\Core\Services\PostFileToPostConverterService;
+    Mozza\Core\Services\Context\CultureService,
+    Mozza\Core\Services\Context\SystemStatusService,
+    Mozza\Core\Services\PostFile\PostFileRepositoryService,
+    Mozza\Core\Services\PostFile\PostFileToPostConverterService,
+    Mozza\Core\Services\PersistentStorage\PersistentStorageServiceInterface;
 
-class PostCacheHandlerService {
+abstract class AbstractPostCacheHandlerService {
 
     protected $systemstatus;
     protected $postfilerepository;
@@ -23,7 +24,8 @@ class PostCacheHandlerService {
     protected $postspath;
     protected $culture;
 
-    public function __construct(SystemStatusService $systemstatus, PostFileRepositoryService $postfilerepository, PostRepository $postrepository, PostFileToPostConverterService $postfiletopostconverter, EntityManager $em, /* string */ $postspath, CultureService $culture) {
+    public function __construct(PersistentStorageServiceInterface $fs, SystemStatusService $systemstatus, PostFileRepositoryService $postfilerepository, PostRepository $postrepository, PostFileToPostConverterService $postfiletopostconverter, EntityManager $em, /* string */ $postspath, CultureService $culture) {
+        $this->fs = $fs;
         $this->systemstatus = $systemstatus;
         $this->postfilerepository = $postfilerepository;
         $this->postrepository = $postrepository;
@@ -33,17 +35,14 @@ class PostCacheHandlerService {
         $this->culture = $culture;
     }
 
+    abstract public function cacheNeedsUpdate();
+
     public function updateCacheIfNeeded() {
-        # Watching file changes; if configuration changes (like the file extension, for instance), you have to rebuild the cache manually (php console mozza:cache:rebuild)
-        
-        $postcachelastupdate = $this->systemstatus->getPostCacheLastUpdate();
-
-        $lastmodified = \DateTime::createFromFormat('U', filemtime($this->postspath));
-        $lastmodified->setTimezone($this->culture->getTimezone());
-
-        if(is_null($postcachelastupdate) || $lastmodified > $postcachelastupdate) {
+        if($this->cacheNeedsUpdate()) {
             $this->updateCache();
-            $this->systemstatus->setPostCacheLastUpdate($lastmodified);
+            $lastupdate = new \DateTime();
+            $lastupdate->setTimezone($this->culture->getTimezone());
+            $this->systemstatus->setPostCacheLastUpdate($lastupdate);
         }
     }
 
@@ -119,7 +118,7 @@ class PostCacheHandlerService {
     }
 
     public function rebuildCache(OutputInterface $output = null) {
-        
+
         $this->postrepository->deleteAll();
         $postfiles = $this->postfilerepository->findAll();
         

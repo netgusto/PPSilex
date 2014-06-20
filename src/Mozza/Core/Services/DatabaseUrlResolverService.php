@@ -97,13 +97,13 @@ class DatabaseUrlResolverService {
             $parameters['port'] = null;
             $parameters['user'] = null;
             $parameters['password'] = null;
-            $parameters['name'] = null;
+            $parameters['dbname'] = null;
         } else {
             $parameters['host'] = isset($parts['host']) ? $parts['host'] : null;
             $parameters['port'] = isset($parts['port']) ? $parts['port'] : null;
             $parameters['user'] = isset($parts['user']) ? $parts['user'] : null;
             $parameters['password'] = isset($parts['pass']) ? $parts['pass'] : null;
-            $parameters['name'] = isset($parts['path']) ? substr($parts['path'], 1) : null;
+            $parameters['dbname'] = isset($parts['path']) ? substr($parts['path'], 1) : null;
             $parameters['path'] = null;
             $parameters['memory'] = false;
         }

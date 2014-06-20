@@ -12,9 +12,7 @@ use Silex\Application,
 use Mozza\Core\Services as MozzaServices,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
 
-use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
-
-class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInterface {
+class LowLevelServiceProvider implements ServiceProviderInterface {
 
     public function register(Application $app) {
 
@@ -24,24 +22,6 @@ class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInter
 
         # Allows to use service name as controller in route definition
         $app->register(new ServiceControllerServiceProvider());
-        
-        #
-        # ORM; platform independent, but depends on the database connection service registered by the platform provider
-        #
-
-        $app->register(new DoctrineOrmServiceProvider, array(
-            "orm.proxies_dir" => $app['environment']->getCacheDir(),
-            "orm.em.options" => array(
-                "mappings" => array(
-                    # Using actual filesystem paths
-                    array(
-                        'type' => 'yml',
-                        'namespace' => 'Mozza\Core\Entity',
-                        'path' => $app['environment']->getSrcDir() . '/Mozza/Core/Resources/config/doctrine',
-                    ),
-                ),
-            ),
-        ));
 
         #
         # URL Generator service
@@ -65,7 +45,7 @@ class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInter
         #
 
         $app['culture'] = $app->share(function() use ($app) {
-            return new MozzaServices\CultureService(
+            return new MozzaServices\Context\CultureService(
                 $app['config.site']->getCulturelocale(),
                 $app['config.site']->getCulturedateformat(),
                 $app['config.site']->getCulturedatetimezone()
@@ -109,14 +89,14 @@ class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInter
 
             # Setting the theme namespace
             $app['twig.loader.filesystem']->addPath($app['environment']->getThemesDir() . '/' . $app['config.site']->getTheme() . '/views', 'MozzaTheme');
-            $app['twig.loader.filesystem']->addPath($app['abspath.data']['customhtml'], 'Custom');
+            $app['twig.loader.filesystem']->addPath($app['environment']->getAppDir() . '/customhtml', 'Custom');
 
             return $twig;
         }));
 
         # Enabling debug (needs twig, so immediately after twig)
 
-        if($app['config.system']->getDebug()) {
+        if($app['debug']) {
             
             $app->register(new WebProfilerServiceProvider(), array(
                 'profiler.cache_dir' => $app['rootdir'] . '/app/cache/profiler',

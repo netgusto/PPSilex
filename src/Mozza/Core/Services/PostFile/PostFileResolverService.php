@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\PostFile;
 
 class PostFileResolverService {
 
@@ -36,7 +36,8 @@ class PostFileResolverService {
 
     public function isFilepathLegit($filepath) {
 
-        $filepath = trim(realpath($filepath));
+        $filepath = trim($filepath);
+
         if($filepath === '') {
             return FALSE;
         }

@@ -1,13 +1,20 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\PostFile;
 
-use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Yaml,
+    Symfony\Component\Finder\SplFileInfo;
 
-use Mozza\Core\Entity\PostFile;
+use Mozza\Core\Entity\PostFile,
+    Mozza\Core\Services\Context\CultureService,
+    Mozza\Core\Services\Config\SiteConfigService,
+    Mozza\Core\Services\Post\PostFingerprinterService,
+    Mozza\Core\Services\Post\PostResourceResolverService,
+    Mozza\Core\Services\PersistentStorage\PersistentStorageServiceInterface;
 
 class PostFileReaderService {
 
+    protected $fs;
     protected $postresolver;
     protected $postresourceresolver;
     protected $postfingerprinter;
@@ -15,12 +22,14 @@ class PostFileReaderService {
     protected $siteconfig;
 
     public function __construct(
+        PersistentStorageServiceInterface $fs,
         PostFileResolverService $postresolver,
         PostResourceResolverService $postresourceresolver,
         PostFingerprinterService $postfingerprinter,
         CultureService $culture,
         SiteConfigService $siteconfig
     ) {
+        $this->fs = $fs;
         $this->postresolver = $postresolver;
         $this->postresourceresolver = $postresourceresolver;
         $this->postfingerprinter = $postfingerprinter;
@@ -28,22 +37,24 @@ class PostFileReaderService {
         $this->siteconfig = $siteconfig;
     }
 
-    public function getPost($filepath) {
+    public function getPost(SplFileInfo $file) {
 
-        if(!$this->postresolver->isFilepathLegit($filepath)) {
+        $relfilepath = $file->getRelativePath() . '/' . $file->getRelativePathname();
+
+        if(!$this->postresolver->isFilepathLegit($relfilepath)) {
             return null;
         }
 
-        if(!file_exists($filepath)) {
+        $file = $this->fs->getOne($relfilepath);
+        if(!$this->fs->exists($file)) {
             return null;
         }
 
-        $lastmodified = \DateTime::createFromFormat('U', filemtime($filepath));
+        $lastmodified = $this->fs->getLastmodified($file);
         $lastmodified->setTimezone($this->culture->getTimezone());
 
         # Obtaining the markdown
-        $filepath = realpath($filepath);
-        $markdown = file_get_contents($filepath);
+        $markdown = $this->fs->getContents($file);
         if(trim($markdown) === '') {
             return null;
         }
@@ -60,7 +71,7 @@ class PostFileReaderService {
         if(array_key_exists('slug', $postData['ymf'])) {
             $post->setSlug($postData['ymf']['slug']);
         } else {
-            $fileinfo = pathinfo($filepath);
+            $fileinfo = pathinfo($file->getRelativePathname());
             $post->setSlug($fileinfo['filename']);  # without extension
         }
 
@@ -167,10 +178,8 @@ class PostFileReaderService {
         # Extract Image
         if(array_key_exists('image', $postData['ymf'])) {
             $imagerelpath = $postData['ymf']['image'];
-            $imagepath = $this->postresourceresolver->filepathForPostAndResourceName($post, $imagerelpath);
-            if($imagepath) {
-                $post->setImage($imagerelpath); # As set in the post source, to be future-proof
-            }
+            #$imagepath = $this->postresourceresolver->filepathForPostAndResourceName($post, $imagerelpath);
+            $post->setImage($imagerelpath); # As set in the post source, to be future-proof
         } else {
             $post->setImage(null);
         }

@@ -2,6 +2,13 @@ title: My Mozza blog                        # The name of your blog; required
 description: "Stuff about everything"       # A short description of this blog; required
 theme: netgusto/mozza-theme-medium       # the package name of the theme; required
 
+posts:
+    dir: %data.dir%/posts
+    extension: md
+
+resources:
+    dir: res
+
 owner:
     name: Me                                # Your full name, or your company name; required
     twitter: GetMozza                       # Your twitter username; required

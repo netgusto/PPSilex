@@ -26,22 +26,30 @@ unset($rootdir); # from now on, we will only use the DI container's version
 ###############################################################################
 
 $app['environment'] = $app->share(function() use ($app) {
-    return new MozzaServices\EnvironmentService(
+    $envloader = new MozzaServices\Context\DotEnvFileReaderService();
+    return new MozzaServices\Context\EnvironmentService(
+        $envloader->read($app['rootdir'] . '/.env'),
         $app['rootdir']
     );
 });
+
+# Debug ?
+$app['debug'] = (bool)$app['environment']->getEnv('DEBUG');
 
 ###############################################################################
 # Mounting platform (infrastructure services we rely upon)
 ###############################################################################
 
 $platformprovider = $app['environment']->getEnv('PLATFORM');
+if(!$platformprovider) {
+    $platformprovider = 'Mozza\Core\Provider\Platform\ClassicPlatformServiceProvider';
+}
 $app->register(new $platformprovider());
 
 # We now have:
 #
 # * an environment
-# * a loaded app configuration (config.system and config.site)
+# * a loaded app configuration (config.site)
 # * a database connection
 # * a persistent storage
 
@@ -49,7 +57,7 @@ $app->register(new $platformprovider());
 # Building platform independent or platform-abstracted services
 ###############################################################################
 
-$app->register(new MozzaProvider\PlatformIndependentLowLevelServiceProvider());
+$app->register(new MozzaProvider\LowLevelServiceProvider());
 
 ###############################################################################
 # Building business logic services

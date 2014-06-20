@@ -1,24 +1,27 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\PostFile;
 
 use Symfony\Component\Finder\Finder;
 
-use Mozza\Core\Services\PostFileResolverService,
-    Mozza\Core\Services\PostFileReaderService,
+use Mozza\Core\Services\PersistentStorage\PersistentStorageServiceInterface,
     Mozza\Core\Entity\Post;
 
 class PostFileRepositoryService {
+    
+    protected $fs;
     protected $postresolver;
     protected $postpath;
     protected $postfileextension;
     protected $runtimecache;
     
-    public function __construct(PostFileResolverService $postresolver, PostFileReaderService $postreader, $postspath, $postfileextension) {
+    public function __construct(PersistentStorageServiceInterface $fs, PostFileResolverService $postresolver, PostFileReaderService $postreader, $postspath, $postfileextension) {
+        $this->fs = $fs;
         $this->postresolver = $postresolver;
         $this->postreader = $postreader;
         $this->postspath = rtrim($postspath, '/') . '/';
         $this->postfileextension = ltrim($postfileextension, '.');
+        $this->runtimecache = array();
     }
 
     public function findOneBySlug($slug) {
@@ -88,13 +91,11 @@ class PostFileRepositoryService {
     }
 
     public function findAll() {
+        
+        $files = $this->fs->getAll($this->postspath, $this->postfileextension);
 
-        $posts = array();
-
-        $finder = new Finder();
-        $files = $finder->files()->in($this->postspath)->name('*.' . $this->postfileextension);
         foreach($files as $file) {
-            $post = $this->postreader->getPost($file->getRealpath());
+            $post = $this->postreader->getPost($file);
             if($post->getStatus() === 'publish') {
                 $posts[] = $post;
             }
