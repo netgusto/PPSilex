@@ -116,7 +116,7 @@
             "index-document": "index.php",
             "framework": "silex",
             "php-config": [
-                "display_errors=off",
+                "display_errors=on",
                 "log_errors=on"
             ]
         },
