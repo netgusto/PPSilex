@@ -83,7 +83,7 @@ class SiteConfigService {
     }
 
     public function getComponentsGoogleanalyticsDomain() {
-        return $this->config['components']['googleanalytics']['domain'];
+        return array_key_exists('domain', $this->config['components']['googleanalytics']) ? $this->config['components']['googleanalytics']['domain'] : null;
     }
 
     public function getComponentsDisqusShortname() {

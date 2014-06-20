@@ -111,6 +111,16 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                     $e,
                     $code
                 );
+            } else if($e instanceof \Doctrine\DBAL\DBALException && (
+                strpos($e->getMessage(), 'Invalid table name') !== FALSE ||
+                strpos($e->getMessage(), 'no such table') !== FALSE
+            )) {
+                return $app['error.maintenance']->reactToExceptionAction(
+                    $app['request'],
+                    $app,
+                    new MozzaException\DatabaseNeedsUpdateException(),
+                    $code
+                );
             }
 
             if(!$app['debug']) {

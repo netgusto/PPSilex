@@ -35,6 +35,14 @@ class MaintenanceController {
             );
         }
 
+        if($e instanceOf MozzaException\DatabaseNeedsUpdateException) {
+            return $this->databaseNeedsUpdateAction(
+                $request,
+                $app,
+                $e
+            );
+        }
+
         return new Response('Application needs maintenance.');
 
         #return $this->twig->render('@MozzaTheme/Error/error.notfound.html.twig');
@@ -46,5 +54,9 @@ class MaintenanceController {
 
     public function systemStatusMissingAction(Request $request, Application $app, MozzaException\SystemStatusMissingException $e) {
         return $this->twig->render('@MozzaCore/Maintenance/systemstatusmissing.html.twig');
+    }
+
+    public function databaseNeedsUpdateAction(Request $request, Application $app, MozzaException\DatabaseNeedsUpdateException $e) {
+        return $this->twig->render('@MozzaCore/Maintenance/databaseneedsupdate.html.twig');
     }
 }
