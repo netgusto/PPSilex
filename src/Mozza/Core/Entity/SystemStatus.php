@@ -11,6 +11,8 @@ class SystemStatus {
 
     protected $postcachelastupdate;
 
+    protected $configuredversion;
+
     /**
      * Get id
      *
@@ -22,10 +24,10 @@ class SystemStatus {
     }
 
     /**
-     * Set postcachestatus
+     * Set postcachelastupdate
      *
      * @param string $title
-     * @return AbstractPost
+     * @return SystemStatus
      */
     public function setPostcachelastupdate($postcachelastupdate)
     {
@@ -35,12 +37,35 @@ class SystemStatus {
     }
 
     /**
-     * Get title
+     * Get postcachelastupdate
      *
      * @return string 
      */
     public function getPostcachelastupdate()
     {
         return $this->postcachelastupdate;
+    }
+
+    /**
+     * Set configuredversion
+     *
+     * @param string $configuredversion
+     * @return SystemStatus
+     */
+    public function setConfiguredversion($configuredversion)
+    {
+        $this->configuredversion = $configuredversion;
+
+        return $this;
+    }
+
+    /**
+     * Get configuredversion
+     *
+     * @return string 
+     */
+    public function getConfiguredversion()
+    {
+        return $this->configuredversion;
     }
 }

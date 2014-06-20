@@ -12,4 +12,9 @@ Mozza\Core\Entity\SystemStatus:
             type: datetime
             nullable: true
 
+        configuredversion:
+            type: string
+            length: 32
+            nullable: false
+
     lifecycleCallbacks: {  }

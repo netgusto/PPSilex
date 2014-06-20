@@ -8,7 +8,8 @@ use Silex\Application,
 
 use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
 
-use Mozza\Core\Services as MozzaServices;
+use Mozza\Core\Services as MozzaServices,
+    Mozza\Core\Exception as MozzaException;
 
 class ClassicPlatformServiceProvider implements ServiceProviderInterface {
     
@@ -17,29 +18,6 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         # Defaults:
         #   * Persistent file storage is Local FS
         #   * Database is sqlite DB
-
-        ###############################################################################
-        # Registering the config services
-        ###############################################################################
-
-        #
-        # System config service
-        #
-
-        $parameters = array(
-            'data.dir' => 'data',
-        );
-
-        #
-        # Site config service
-        #
-
-        $app['config.site'] = $app->share(function() use ($app, $parameters) {
-            $filebackedconfig = new MozzaServices\Config\Loader\FileBackedConfigLoaderService($parameters);
-            return new MozzaServices\Config\SiteConfigService(
-                $filebackedconfig->load($app['environment']->getRootDir() . '/data/config/config.yml')
-            );
-        });
 
         #######################################################################
         # Database connection
@@ -74,6 +52,42 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
                 ),
             ),
         ));
+
+        #
+        # System status service (needs ORM)
+        #
+
+        $app['system.status'] = $app->share(function() use ($app) {
+            return new MozzaServices\Context\SystemStatusService(
+                $app['orm.em']
+            );
+        });
+
+        ###############################################################################
+        # Config services
+        ###############################################################################
+
+        $parameters = array(
+            'data.dir' => 'data',   # posts are in data/ with on the classic platform setup
+        );
+
+        #
+        # Site config service
+        #
+
+        $configfile = $app['environment']->getRootDir() . '/data/config/config.yml';
+        if(!is_file($configfile)) {
+            $exception = new MozzaException\SiteConfigFileMissingException();
+            $exception->setFilepath($configfile);
+            throw $exception;
+        }
+
+        $app['config.site'] = $app->share(function() use ($app, $parameters, $configfile) {
+            $filebackedconfig = new MozzaServices\Config\Loader\FileBackedConfigLoaderService($parameters);
+            return new MozzaServices\Config\SiteConfigService(
+                $filebackedconfig->load($configfile)
+            );
+        });
 
         #######################################################################
         # Persistent storage

@@ -6,7 +6,9 @@ use Silex\Application,
     Silex\ServiceProviderInterface,
     Silex\ControllerProviderInterface;
 
-use Mozza\Core\Controller as MozzaController;
+use Mozza\Core\Controller as MozzaController,
+    Mozza\Core\Services as MozzaServices,
+    Mozza\Core\Exception as MozzaException;
 
 class ControllerProvider implements ServiceProviderInterface, ControllerProviderInterface {
     
@@ -55,6 +57,13 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                 $app['twig']
             );
         });
+
+        # The controller responsible for maintenance handling
+        $app['error.maintenance'] = $app->share(function() use ($app) {
+            return new MozzaController\MaintenanceController(
+                $app['twig']
+            );
+        });
     }
 
     public function connect(Application $app) {
@@ -92,5 +101,39 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
             ->assert('slug', '.+')
             ->assert('slug', '^((?!_profiler).)*$')
             ->bind('post');
+
+        $app->error(function (\Exception $e, $code) use ($app) {
+
+            if($e instanceof MozzaException\ApplicationNeedsMaintenanceExceptionInterface) {
+                return $app['error.maintenance']->reactToExceptionAction(
+                    $app['request'],
+                    $app,
+                    $e,
+                    $code
+                );
+            }
+
+            if(!$app['debug']) {
+                
+                # Debug is not enabled; we display a nice, error-message free informative page
+
+                if($code === 404 || $e instanceof PostNotFoundException) {
+                    return $app['error.controller']->notFoundAction(
+                        $app['request'],
+                        $app,
+                        $e,
+                        $code
+                    );
+                }
+
+                return $app['error.controller']->errorAction(
+                    $app['request'],
+                    $app,
+                    $e,
+                    $code
+                );
+            }
+
+        });
     }
 }

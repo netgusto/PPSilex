@@ -9,32 +9,6 @@ use Composer\Script\CommandEvent,
 
 class ScriptHandler {
 
-    public static function createParametersYml(CommandEvent $event) {
-
-        $source = realpath('.') . '/src/Mozza/Core/Resources/config/parameters.yml.dist';
-        $destination = realpath('.') . '/app/parameters.yml';
-
-        $filesystem = new Filesystem();
-
-        if($filesystem->exists($destination)) {
-            $event->getIO()->write('<error>Could not create "app/parameters.yml", as the file already exists.</error>');
-            return;
-        }
-
-        if(!$filesystem->exists($source)) {
-            $event->getIO()->write('<error>Could not create "app/parameters.yml", as the source file is not found ("' . $source . '").</error>');
-            return;
-        }
-
-        try {
-            $filesystem->copy($source, $destination);
-        } catch(IOException $e) {
-            $event->getIO()->write('<error>Could not create "app/parameters.yml"; ' . $e->getMessage() . '.</error>');
-        }
-
-        $event->getIO()->write('<info>The config file <comment>"app/parameters.yml"</comment> has been created using default values.</info>');
-    }
-
     public static function forwardAssetsToWebDir(CommandEvent $event) {
         $extra = $event->getComposer()->getPackage()->getExtra();
 

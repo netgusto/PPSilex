@@ -18,12 +18,6 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
 
     public function register(Application $app) {
 
-        $app['system.status'] = $app->share(function() use ($app) {
-            return new MozzaServices\Context\SystemStatusService(
-                $app['orm.em']
-            );
-        });
-
         #
         # Data repositories Services
         #

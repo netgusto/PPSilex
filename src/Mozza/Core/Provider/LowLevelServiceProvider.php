@@ -89,6 +89,7 @@ class LowLevelServiceProvider implements ServiceProviderInterface {
 
             # Setting the theme namespace
             $app['twig.loader.filesystem']->addPath($app['environment']->getThemesDir() . '/' . $app['config.site']->getTheme() . '/views', 'MozzaTheme');
+            $app['twig.loader.filesystem']->addPath($app['environment']->getSrcdir() . '/Mozza/Core/Resources/views', 'MozzaCore');
             $app['twig.loader.filesystem']->addPath($app['environment']->getAppDir() . '/customhtml', 'Custom');
 
             return $twig;
@@ -96,33 +97,15 @@ class LowLevelServiceProvider implements ServiceProviderInterface {
 
         # Enabling debug (needs twig, so immediately after twig)
 
+        /*
         if($app['debug']) {
             
             $app->register(new WebProfilerServiceProvider(), array(
                 'profiler.cache_dir' => $app['rootdir'] . '/app/cache/profiler',
             ));
 
-        } else {
-            # If debug mode is disabled, we handle the error messages nicely
-            $app->error(function (\Exception $e, $code) use ($app) {
-
-                if($code === 404 || $e instanceof PostNotFoundException) {
-                    return $app['error.controller']->notFoundAction(
-                        $app['request'],
-                        $app,
-                        $e,
-                        $code
-                    );
-                }
-
-                return $app['error.controller']->errorAction(
-                    $app['request'],
-                    $app,
-                    $e,
-                    $code
-                );
-            });
         }
+        */
     }
 
     public function boot(Application $app) {

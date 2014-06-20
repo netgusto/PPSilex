@@ -26,23 +26,20 @@ unset($rootdir); # from now on, we will only use the DI container's version
 ###############################################################################
 
 $app['environment'] = $app->share(function() use ($app) {
-
-    $env = Habitat\Habitat::getAll();
-
-    $envfile = $app['rootdir'] . '/.env';
-    if(is_file($app['rootdir'] . '/.env')) {
-        $envloader = new MozzaServices\Context\DotEnvFileReaderService();
-        $env = array_merge($envloader->read($app['rootdir'] . '/.env'), $env);
-    }
-
+    
+    # Resolving environment (merging env with dotenv file if present)
+    $environmentresolver = new MozzaServices\Context\EnvironmentResolverService(
+        $app['rootdir'] . '/.env'
+    );
+    
     return new MozzaServices\Context\EnvironmentService(
-        $env,
+        $environmentresolver->getResolvedEnv(),
         $app['rootdir']
     );
 });
 
 # Debug ?
-$app['debug'] = (bool)$app['environment']->getEnv('DEBUG');
+$app['debug'] = (bool)(in_array(strtolower($app['environment']->getEnv('DEBUG')), array('true', '1', 'on')));
 
 ###############################################################################
 # Mounting platform (infrastructure services we rely upon)

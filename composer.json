@@ -16,6 +16,9 @@
         "cebe/markdown": "0.9.2",
         
         "zipball/highlightjs": "~8.0",
+        "zipball/purecss": "~0.5",
+        "zipball/purecss-layout-sidemenu": "~0.5",
+        "zipball/purecss-layout-email": "~0.5",
         "requirejs/requirejs": "2.1.11",
         "modernizr/modernizr": "2.7.1",
         "jquery/jquery": "2.1.0",
@@ -99,11 +102,43 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "zipball/purecss",
+                "version": "0.5.0",
+                "dist": {
+                    "url": "https://github.com/yui/pure-release/archive/v0.5.0.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "zipball/purecss-layout-sidemenu",
+                "version": "0.5.0",
+                "dist": {
+                    "url": "http://purecss.io/layouts/side-menu/download",
+                    "type": "zip"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "zipball/purecss-layout-email",
+                "version": "0.5.0",
+                "dist": {
+                    "url": "http://purecss.io/layouts/email/download",
+                    "type": "zip"
+                }
+            }
         }
     ],
     "scripts": {
         "post-install-cmd": [
-            "Mozza\\Core\\Composer\\ScriptHandler::createParametersYml",
             "Mozza\\Core\\Composer\\ScriptHandler::forwardAssetsToWebDir"
         ],
         "post-update-cmd": [
@@ -127,6 +162,11 @@
                 "jquery/jquery",
                 "modernizr/modernizr",
                 "zipball/highlightjs",
+
+                "zipball/purecss",
+                "zipball/purecss-layout-sidemenu",
+                "zipball/purecss-layout-email",
+
                 "font-awesome/font-awesome",
                 "netgusto/mozza-theme-dropplets",
                 "netgusto/mozza-theme-medium",

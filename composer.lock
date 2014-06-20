@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9a2e5d16337d3fb77581fe844b277c54",
+    "hash": "cffe35d9a3b278e6c15163c689b0b12a",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2247,6 +2247,39 @@
             "dist": {
                 "type": "zip",
                 "url": "https://github.com/components/highlightjs/archive/8.0.0.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "zipball/purecss",
+            "version": "0.5.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/yui/pure-release/archive/v0.5.0.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "zipball/purecss-layout-email",
+            "version": "0.5.0",
+            "dist": {
+                "type": "zip",
+                "url": "http://purecss.io/layouts/email/download",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "zipball/purecss-layout-sidemenu",
+            "version": "0.5.0",
+            "dist": {
+                "type": "zip",
+                "url": "http://purecss.io/layouts/side-menu/download",
                 "reference": null,
                 "shasum": null
             },
