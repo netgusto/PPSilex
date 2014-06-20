@@ -26,9 +26,17 @@ unset($rootdir); # from now on, we will only use the DI container's version
 ###############################################################################
 
 $app['environment'] = $app->share(function() use ($app) {
-    $envloader = new MozzaServices\Context\DotEnvFileReaderService();
+
+    $env = Habitat\Habitat::getAll();
+
+    $envfile = $app['rootdir'] . '/.env';
+    if(is_file($app['rootdir'] . '/.env')) {
+        $envloader = new MozzaServices\Context\DotEnvFileReaderService();
+        $env = array_merge($envloader->read($app['rootdir'] . '/.env'), $env);
+    }
+
     return new MozzaServices\Context\EnvironmentService(
-        $envloader->read($app['rootdir'] . '/.env'),
+        $env,
         $app['rootdir']
     );
 });
