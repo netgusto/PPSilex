@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\Config\Loader;
 
 use Doctrine\ORM\EntityManager;
 

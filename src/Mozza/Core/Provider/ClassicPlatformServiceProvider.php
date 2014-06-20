@@ -35,8 +35,8 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['config.site'] = $app->share(function() use ($app, $parameters) {
-            $filebackedconfig = new MozzaServices\FileBackedConfigLoaderService($parameters);
-            return new MozzaServices\SiteConfigService(
+            $filebackedconfig = new MozzaServices\Config\Loader\FileBackedConfigLoaderService($parameters);
+            return new MozzaServices\Config\SiteConfigService(
                 $filebackedconfig->load($app['environment']->getRootDir() . '/data/config/config.yml')
             );
         });
@@ -88,7 +88,7 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         }
 
         $app['fs.persistent'] = $app->share(function() use ($app) {
-            return new MozzaServices\PersistentStorageLocalFSService(
+            return new MozzaServices\PersistentStorage\LocalFSPersistentStorageService(
                 $app['environment']->getRootDir(),
                 $app['environment']->getSiteUrl()
             );
@@ -110,7 +110,7 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['post.resource.resolver'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostResourceResolverService(
+            return new MozzaServices\Post\PostResourceResolverService(
                 $app['fs.persistent'],
                 $app['config.site']->getResourcesdir()
             );
@@ -121,7 +121,7 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['postfile.resolver'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostFileResolverService(
+            return new MozzaServices\PostFile\PostFileResolverService(
                 $app['config.site']->getPostsdir(),
                 $app['config.site']->getPostsExtension()
             );
@@ -132,7 +132,7 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['post.cachehandler'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostCacheHandlerLastModifiedService(
+            return new MozzaServices\CacheHandler\LastModifiedPostCacheHandlerService(
                 $app['fs.persistent'],
                 $app['system.status'],
                 $app['postfile.repository'],

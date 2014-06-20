@@ -10,7 +10,7 @@ use Silex\Application,
 
 use Mozza\Core\Entity\Post,
     Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\PostFileResolverService;
+    Mozza\Core\Services\PostFile\PostFileResolverService;
 
 class HomeController {
 

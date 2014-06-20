@@ -1,8 +1,8 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\CacheHandler;
 
-class PostCacheHandlerLastModifiedService extends AbstractPostCacheHandlerService {
+class LastModifiedPostCacheHandlerService extends AbstractPostCacheHandlerService {
     
     public function cacheNeedsUpdate() {
         

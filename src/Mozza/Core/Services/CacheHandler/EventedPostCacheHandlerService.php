@@ -1,8 +1,8 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\CacheHandler;
 
-class PostCacheHandlerEventedUpdateService extends AbstractPostCacheHandlerService {
+class EventedPostCacheHandlerService extends AbstractPostCacheHandlerService {
     
     public function cacheNeedsUpdate() {
         # This service is not able to determine if cache needs to be updated on it's own

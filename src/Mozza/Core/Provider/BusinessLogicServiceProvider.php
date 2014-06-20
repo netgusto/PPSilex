@@ -19,7 +19,7 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
     public function register(Application $app) {
 
         $app['system.status'] = $app->share(function() use ($app) {
-            return new MozzaServices\SystemStatusService(
+            return new MozzaServices\Context\SystemStatusService(
                 $app['orm.em']
             );
         });
@@ -29,7 +29,7 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
         #
 
         $app['postfile.repository'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostFileRepositoryService(
+            return new MozzaServices\PostFile\PostFileRepositoryService(
                 $app['fs.persistent'],
                 $app['postfile.resolver'],
                 $app['postfile.reader'],
@@ -45,19 +45,19 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
         });
 
         $app['markdown.processor'] = $app->share(function() use ($app) {
-            return new MozzaServices\CebeMarkdownProcessorService();
+            return new MozzaServices\TextProcessor\Markdown\CebeMarkdownProcessorService();
         });
 
         $app['post.fingerprinter'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostFingerprinterService();
+            return new MozzaServices\Post\PostFingerprinterService();
         });
 
         $app['postfile.topostconverter'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostFileToPostConverterService();
+            return new MozzaServices\PostFile\PostFileToPostConverterService();
         });
 
         $app['post.urlgenerator'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostURLGeneratorService(
+            return new MozzaServices\Post\PostURLGeneratorService(
                 $app['post.repository'],
                 $app['url_generator'],
                 $app['url.absolutizer']
@@ -65,7 +65,7 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
         });
 
         $app['postfile.reader'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostFileReaderService(
+            return new MozzaServices\PostFile\PostFileReaderService(
                 $app['fs.persistent'],
                 $app['postfile.resolver'],
                 $app['post.resource.resolver'],
@@ -76,7 +76,7 @@ class BusinessLogicServiceProvider implements ServiceProviderInterface {
         });
 
         $app['post.serializer'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostSerializerService(
+            return new MozzaServices\Post\PostSerializerService(
                 $app['post.repository'],
                 $app['markdown.processor'],
                 $app['post.urlgenerator'],

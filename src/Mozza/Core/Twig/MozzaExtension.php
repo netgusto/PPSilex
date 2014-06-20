@@ -4,14 +4,14 @@ namespace Mozza\Core\Twig;
 
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
-use Mozza\Core\Services\MarkdownProcessorInterface,
-    Mozza\Core\Services\ResourceResolverService,
-    Mozza\Core\Services\PostResourceResolverService,
+use Mozza\Core\Services\ResourceResolverService,
     Mozza\Core\Services\URLAbsolutizerService,
-    Mozza\Core\Services\PostURLGeneratorService,
-    Mozza\Core\Services\PostSerializerService,
-    Mozza\Core\Services\CultureService,
-    Mozza\Core\Services\SiteConfigService,
+    Mozza\Core\Services\TextProcessor\Markdown\MarkdownProcessorInterface,
+    Mozza\Core\Services\Post\PostResourceResolverService,
+    Mozza\Core\Services\Post\PostURLGeneratorService,
+    Mozza\Core\Services\Post\PostSerializerService,
+    Mozza\Core\Services\Context\CultureService,
+    Mozza\Core\Services\Config\SiteConfigService,
     Mozza\Core\Repository\PostRepository,
     Mozza\Core\Entity\Post;
 

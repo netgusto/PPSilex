@@ -2,6 +2,8 @@
 
 namespace Mozza\Core\Services;
 
+use Mozza\Core\Services\PersistentStorage\PersistentStorageServiceInterface;
+
 class ResourceResolverService {
     
     protected $fs;

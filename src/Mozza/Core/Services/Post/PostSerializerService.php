@@ -1,8 +1,11 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\Post;
 
 use Mozza\Core\Repository\PostRepository,
+    Mozza\Core\Services\URLAbsolutizerService,
+    Mozza\Core\Services\Context\CultureService,
+    Mozza\Core\Services\TextProcessor\Markdown\MarkdownProcessorInterface,
     Mozza\Core\Exception;
 
 class PostSerializerService {

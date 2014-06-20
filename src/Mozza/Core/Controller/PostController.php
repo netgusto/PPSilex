@@ -7,7 +7,7 @@ use Silex\Application,
     Twig_Environment;
 
 use Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\PostFileResolverService,
+    Mozza\Core\Services\PostFile\PostFileResolverService,
     Mozza\Core\Exception;
 
 class PostController {

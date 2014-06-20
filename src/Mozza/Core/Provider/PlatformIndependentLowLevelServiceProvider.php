@@ -45,7 +45,7 @@ class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInter
         #
 
         $app['culture'] = $app->share(function() use ($app) {
-            return new MozzaServices\CultureService(
+            return new MozzaServices\Context\CultureService(
                 $app['config.site']->getCulturelocale(),
                 $app['config.site']->getCulturedateformat(),
                 $app['config.site']->getCulturedatetimezone()

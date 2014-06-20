@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\PersistentStorage;
 
 use Symfony\Component\Finder\Finder,
     Symfony\Component\Finder\SplFileInfo;
@@ -8,7 +8,7 @@ use Symfony\Component\Finder\Finder,
 use Aws\S3\S3Client,
     Aws\Common\Credentials\Credentials as S3Credentials;
 
-class PersistentStorageS3Service implements PersistentStorageServiceInterface {
+class S3PersistentStorageService implements PersistentStorageServiceInterface {
 
     protected $bucket;
     protected $client;

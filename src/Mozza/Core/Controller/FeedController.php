@@ -12,9 +12,9 @@ use \Suin\RSSWriter\Feed,
     \Suin\RSSWriter\Item;
 
 use Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\SiteConfigService,
-    Mozza\Core\Services\PostSerializerService,
-    Mozza\Core\Services\PostResourceResolverService,
+    Mozza\Core\Services\Config\SiteConfigService,
+    Mozza\Core\Services\Post\PostSerializerService,
+    Mozza\Core\Services\Post\PostResourceResolverService,
     Mozza\Core\Services\URLAbsolutizerService;
 
 class FeedController {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\CacheHandler;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -8,11 +8,11 @@ use Doctrine\ORM\EntityManager;
 
 use Mozza\Core\Entity\AbstractPost,
     Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\CultureService,
-    Mozza\Core\Services\SystemStatusService,
-    Mozza\Core\Services\PostFileRepositoryService,
-    Mozza\Core\Services\PostFileToPostConverterService,
-    Mozza\Core\Services\PersistentStorageServiceInterface;
+    Mozza\Core\Services\Context\CultureService,
+    Mozza\Core\Services\Context\SystemStatusService,
+    Mozza\Core\Services\PostFile\PostFileRepositoryService,
+    Mozza\Core\Services\PostFile\PostFileToPostConverterService,
+    Mozza\Core\Services\PersistentStorage\PersistentStorageServiceInterface;
 
 abstract class AbstractPostCacheHandlerService {
 

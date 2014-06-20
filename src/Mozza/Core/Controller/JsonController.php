@@ -7,7 +7,7 @@ use Silex\Application,
     Symfony\Component\HttpFoundation\JsonResponse;
 
 use Mozza\Core\Repository\PostRepository,
-    Mozza\Core\Services\PostSerializerService,
+    Mozza\Core\Services\Post\PostSerializerService,
     Mozza\Core\Exception;
 
 class JsonController {

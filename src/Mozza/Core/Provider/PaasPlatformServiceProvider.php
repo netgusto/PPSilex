@@ -66,12 +66,12 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
 
         $app['config.site'] = $app->share(function() use ($app, $parameters) {
             
-            $dbbackedconfig = new MozzaServices\DbBackedConfigLoaderService(
+            $dbbackedconfig = new MozzaServices\Config\Loader\DbBackedConfigLoaderService(
                 $app['orm.em'],
                 $parameters
             );
 
-            return new MozzaServices\SiteConfigService(
+            return new MozzaServices\Config\SiteConfigService(
                 $dbbackedconfig->load('config.site')
             );
         });
@@ -99,7 +99,7 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
                     $s3_httpbaseurl = $app['environment']->getScheme() . '://' . $s3_bucket . '.s3.amazonaws.com';
                 }
 
-                return new MozzaServices\PersistentStorageS3Service(
+                return new MozzaServices\PersistentStorage\S3PersistentStorageService(
                     $s3_bucket,
                     $s3_keyid,
                     $s3_secret,
@@ -130,7 +130,7 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['post.resource.resolver'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostResourceResolverService(
+            return new MozzaServices\Post\PostResourceResolverService(
                 $app['fs.persistent'],
                 $app['config.site']->getResourcesdir()
             );
@@ -141,7 +141,7 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['postfile.resolver'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostFileResolverService(
+            return new MozzaServices\PostFile\PostFileResolverService(
                 $app['config.site']->getPostsdir(),
                 $app['config.site']->getPostsExtension()
             );
@@ -152,7 +152,7 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
         #
 
         $app['post.cachehandler'] = $app->share(function() use ($app) {
-            return new MozzaServices\PostCacheHandlerEventedUpdateService(
+            return new MozzaServices\CacheHandler\EventedPostCacheHandlerService(
                 $app['fs.persistent'],
                 $app['system.status'],
                 $app['postfile.repository'],

@@ -6,7 +6,7 @@ use Symfony\Component\Finder\Finder;
 
 use Doctrine\ORM\EntityManager;
 
-use Mozza\Core\Services\PostFileRepositoryService,
+use Mozza\Core\Services\PostFile\PostFileRepositoryService,
     Mozza\Core\Entity\AbstractPost,
     Mozza\Core\Entity\Post;
 

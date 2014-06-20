@@ -1,11 +1,11 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\PersistentStorage;
 
 use Symfony\Component\Finder\Finder,
     Symfony\Component\Finder\SplFileInfo;
 
-class PersistentStorageLocalFSService implements PersistentStorageServiceInterface {
+class LocalFSPersistentStorageService implements PersistentStorageServiceInterface {
 
     protected $siteurl;
     protected $absbasedir;

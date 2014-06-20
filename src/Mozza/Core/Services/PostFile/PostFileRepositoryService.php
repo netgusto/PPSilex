@@ -1,12 +1,10 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\PostFile;
 
 use Symfony\Component\Finder\Finder;
 
-use Mozza\Core\Services\PostFileResolverService,
-    Mozza\Core\Services\PostFileReaderService,
-    Mozza\Core\Services\PersistentStorageServiceInterface,
+use Mozza\Core\Services\PersistentStorage\PersistentStorageServiceInterface,
     Mozza\Core\Entity\Post;
 
 class PostFileRepositoryService {

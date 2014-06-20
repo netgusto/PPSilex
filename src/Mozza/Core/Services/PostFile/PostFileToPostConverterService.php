@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\PostFile;
 
 use Symfony\Component\Yaml\Yaml;
 

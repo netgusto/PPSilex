@@ -26,8 +26,8 @@ unset($rootdir); # from now on, we will only use the DI container's version
 ###############################################################################
 
 $app['environment'] = $app->share(function() use ($app) {
-    $envloader = new MozzaServices\DotEnvFileReaderService();
-    return new MozzaServices\EnvironmentService(
+    $envloader = new MozzaServices\Context\DotEnvFileReaderService();
+    return new MozzaServices\Context\EnvironmentService(
         $envloader->read($app['rootdir'] . '/.env'),
         $app['rootdir']
     );

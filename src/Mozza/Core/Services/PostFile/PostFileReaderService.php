@@ -1,12 +1,16 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\PostFile;
 
 use Symfony\Component\Yaml\Yaml,
     Symfony\Component\Finder\SplFileInfo;
 
 use Mozza\Core\Entity\PostFile,
-    Mozza\Core\Services\PersistentStorageServiceInterface;
+    Mozza\Core\Services\Context\CultureService,
+    Mozza\Core\Services\Config\SiteConfigService,
+    Mozza\Core\Services\Post\PostFingerprinterService,
+    Mozza\Core\Services\Post\PostResourceResolverService,
+    Mozza\Core\Services\PersistentStorage\PersistentStorageServiceInterface;
 
 class PostFileReaderService {
 

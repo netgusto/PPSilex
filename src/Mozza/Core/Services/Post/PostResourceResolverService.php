@@ -1,8 +1,9 @@
 <?php
 
-namespace Mozza\Core\Services;
+namespace Mozza\Core\Services\Post;
 
-use Mozza\Core\Entity\AbstractPost;
+use Mozza\Core\Entity\AbstractPost,
+    Mozza\Core\Services\ResourceResolverService;
 
 class PostResourceResolverService extends ResourceResolverService {
 
