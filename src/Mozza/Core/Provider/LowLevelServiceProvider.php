@@ -12,7 +12,7 @@ use Silex\Application,
 use Mozza\Core\Services as MozzaServices,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
 
-class PlatformIndependentLowLevelServiceProvider implements ServiceProviderInterface {
+class LowLevelServiceProvider implements ServiceProviderInterface {
 
     public function register(Application $app) {
 

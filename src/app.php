@@ -42,7 +42,7 @@ $app['debug'] = (bool)$app['environment']->getEnv('DEBUG');
 
 $platformprovider = $app['environment']->getEnv('PLATFORM');
 if(!$platformprovider) {
-    $platformprovider = 'Mozza\Core\Provider\ClassicPlatformServiceProvider';
+    $platformprovider = 'Mozza\Core\Provider\Platform\ClassicPlatformServiceProvider';
 }
 $app->register(new $platformprovider());
 
@@ -57,7 +57,7 @@ $app->register(new $platformprovider());
 # Building platform independent or platform-abstracted services
 ###############################################################################
 
-$app->register(new MozzaProvider\PlatformIndependentLowLevelServiceProvider());
+$app->register(new MozzaProvider\LowLevelServiceProvider());
 
 ###############################################################################
 # Building business logic services

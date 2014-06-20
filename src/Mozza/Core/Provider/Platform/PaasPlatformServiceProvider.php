@@ -1,6 +1,6 @@
 <?php
 
-namespace Mozza\Core\Provider;
+namespace Mozza\Core\Provider\Platform;
 
 use Silex\Application,
     Silex\ServiceProviderInterface,
