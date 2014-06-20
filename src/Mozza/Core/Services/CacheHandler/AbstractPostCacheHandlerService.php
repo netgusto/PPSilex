@@ -40,7 +40,9 @@ abstract class AbstractPostCacheHandlerService {
     public function updateCacheIfNeeded() {
         if($this->cacheNeedsUpdate()) {
             $this->updateCache();
-            $this->systemstatus->setPostCacheLastUpdate($lastmodified);
+            $lastupdate = new \DateTime();
+            $lastupdate->setTimezone($this->culture->getTimezone());
+            $this->systemstatus->setPostCacheLastUpdate($lastupdate);
         }
     }
 
