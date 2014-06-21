@@ -25,6 +25,10 @@ unset($rootdir); # from now on, we will only use the DI container's version
 # Loading environment
 ###############################################################################
 
+$app['scalar.interpreter'] = $app->share(function() use ($app) {
+    return new MozzaServices\ScalarInterpreterService();
+});
+
 $app['environment'] = $app->share(function() use ($app) {
     
     # Resolving environment (merging env with dotenv file if present)
@@ -34,12 +38,13 @@ $app['environment'] = $app->share(function() use ($app) {
     
     return new MozzaServices\Context\EnvironmentService(
         $environmentresolver->getResolvedEnv(),
+        $app['scalar.interpreter'],
         $app['rootdir']
     );
 });
 
 # Debug ?
-$app['debug'] = (bool)(in_array(strtolower($app['environment']->getEnv('DEBUG')), array('true', '1', 'on')));
+$app['debug'] = $app['environment']->getDebug();
 
 ###############################################################################
 # Mounting platform (infrastructure services we rely upon)

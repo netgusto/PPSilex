@@ -1,0 +1,17 @@
+{% extends '@MozzaCore/base.html.twig' %}
+
+{% block stylesheets %}
+{{ parent() }}
+<!--[if lte IE 8]>
+<link rel="stylesheet" href="{{ app.request.basepath }}/vendor/zipball/purecss-layout-sidemenu/css/layouts/side-menu-old-ie.css">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+<link rel="stylesheet" href="{{ app.request.basepath }}/vendor/zipball/purecss-layout-sidemenu/css/layouts/side-menu.css">
+<!--<![endif]-->
+<link rel="stylesheet" href="{{ app.request.basepath }}/coreres/maintenance/maintenance.css">
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="{{ app.request.basepath }}/vendor/zipball/purecss-layout-sidemenu/js/ui.js"></script>
+{% endblock %}

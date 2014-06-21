@@ -7,7 +7,12 @@ use Silex\Application,
     Silex\Provider\ServiceControllerServiceProvider,
     Silex\Provider\TwigServiceProvider,
     Silex\Provider\UrlGeneratorServiceProvider,
-    Silex\Provider\WebProfilerServiceProvider;
+    Silex\Provider\WebProfilerServiceProvider,
+    Silex\Provider\FormServiceProvider,
+    Silex\Provider\ValidatorServiceProvider,
+    Silex\Provider\TranslationServiceProvider,
+    Silex\Provider\SecurityServiceProvider;
+
 
 use Mozza\Core\Services as MozzaServices,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
@@ -106,6 +111,33 @@ class LowLevelServiceProvider implements ServiceProviderInterface {
 
         }
         */
+
+        #
+        # Form services
+        #
+
+        $app->register(new FormServiceProvider());
+        $app->register(new ValidatorServiceProvider());
+        $app->register(new TranslationServiceProvider(), array(
+            'locale_fallbacks' => array('en'),
+        ));
+
+        #
+        # Security
+        #
+
+        $app->register(new SecurityServiceProvider(), array(
+            'security.firewalls' => array(
+                'admin' => array(
+                    'pattern' => '^/admin',
+                    'form' => array('login_path' => '/login', 'check_path' => '/admin/login_check'),
+                    'users' => array(
+                        // raw password is foo
+                        'admin' => array('ROLE_ADMIN', '5FZ2Z8QIkA7UTZ4BYkoC+GsReLf569mSKDsfods6LYQ8t+a8EW9oaircfMpmaLbPBh4FOBiiFyLfuZmTSUwzZg=='),
+                    ),
+                ),
+            )
+        ));
     }
 
     public function boot(Application $app) {

@@ -1,0 +1,31 @@
+{% extends '@MozzaCore/base.maintenance.html.twig' %}
+
+{% block body %}
+{% embed '@MozzaCore/Maintenance/embeddable/layout.header+content.html.twig' %}
+
+    {% block header %}
+        <h1>We're good to go !</h1>
+        <h2>&lt;/boring&gt;</h2>
+    {% endblock header %}
+
+    {% block content %}
+        <h1 class="content-subhead">Your account has been created</h1>
+
+        <p>We have also created some example posts for you. Feel free to delete them.</p>
+
+        <p>You may now wish to create some posts, or to customize your blog (like setting it's title or selecting it's theme).</p>
+
+        <div class="pure-g">
+            <div class="pure-u-1-2">
+                 <p class="mt3 text-center"><a href="{{ path('home') }}" class="button-xxlarge pure-button button-success"><i class="fa fa-mail-reply"></i> To your new blog</a></p>
+            </div>
+            <div class="pure-u-1-2">
+                 <p class="mt3 text-center"><a href="{{ path('admin') }}" class="button-xxlarge pure-button pure-button-primary">Customize your blog <i class="fa fa-wrench"></i></a></p>
+            </div>
+        </div>
+
+       
+    {% endblock content %}
+
+{% endembed %}
+{% endblock %}

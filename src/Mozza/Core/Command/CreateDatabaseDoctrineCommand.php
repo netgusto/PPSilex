@@ -17,7 +17,6 @@ namespace Mozza\Core\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\DBAL\DriverManager;
 
 /**
  * Database tool allows you to easily drop and create your configured databases.
@@ -58,32 +57,9 @@ EOT
         $dialog = $this->getHelperSet()->get('dialog');
         $app = $this->getSilexApplication();
 
-        $connection = $app['orm.em']->getConnection($input->getOption('connection'));
-
-        $params = $connection->getParams();
-        $name = isset($params['path']) ? $params['path'] : $params['dbname'];
-
-        unset($params['dbname']);
-
-        $tmpConnection = DriverManager::getConnection($params);
-
-        // Only quote if we don't have a path
-        if (!isset($params['path'])) {
-            $name = $tmpConnection->getDatabasePlatform()->quoteSingleIdentifier($name);
-        }
-
-        $error = false;
-        try {
-            $tmpConnection->getSchemaManager()->createDatabase($name);
-            $output->writeln(sprintf('<info>Created database for connection named <comment>%s</comment></info>', $name));
-        } catch (\Exception $e) {
-            $output->writeln(sprintf('<error>Could not create database for connection named <comment>%s</comment></error>', $name));
-            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
-            $error = true;
-        }
-
-        $tmpConnection->close();
-
-        return $error ? 1 : 0;
+        $databasecreator = new Mozza\Core\Services\Maintenance\DatabaseCreatorService();
+        return $databasecreator->createDatabase(
+            $app['orm.em']->getConnection($input->getOption('connection'))
+        );
     }
 }

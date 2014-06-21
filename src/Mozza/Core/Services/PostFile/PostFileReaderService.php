@@ -189,7 +189,7 @@ class PostFileReaderService {
         );
 
         $post->setFilepath(
-            $filepath
+            $relfilepath
         );
 
         $post->setLastModified(

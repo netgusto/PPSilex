@@ -45,7 +45,7 @@ class LocalFSPersistentStorageService implements PersistentStorageServiceInterfa
         $relfilepath = ltrim($relfilepath, '/');
         $filepath = $this->absbasedir . '/' . $relfilepath;
 
-        $streampath = 'file://' . $this->bucket . $filepath;
+        $streampath = 'file://' . $filepath;
         return new SplFileInfo(
             $streampath,
             dirname($relfilepath),

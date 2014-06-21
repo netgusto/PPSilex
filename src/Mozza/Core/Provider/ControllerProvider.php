@@ -59,8 +59,19 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         });
 
         # The controller responsible for maintenance handling
-        $app['error.maintenance'] = $app->share(function() use ($app) {
+        $app['maintenance.controller'] = $app->share(function() use ($app) {
             return new MozzaController\MaintenanceController(
+                $app['twig'],
+                $app['environment'],
+                $app['url_generator'],
+                $app['form.factory'],
+                $app['orm.em']
+            );
+        });
+
+        # The controller responsible for user auth
+        $app['auth.controller'] = $app->share(function() use ($app) {
+            return new MozzaController\AuthController(
                 $app['twig']
             );
         });
@@ -73,6 +84,33 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         ###############################################################################
         # Routing the request
         ###############################################################################
+
+        # Maintenance controllers
+
+        $app->get('_maintenance/welcome', 'maintenance.controller:welcomeAction')
+            ->bind('_maintenance_welcome');
+
+        $app->match('_maintenance/welcome/step1/db', 'maintenance.controller:welcomeStep1CreateDbAction')
+            ->bind('_maintenance_welcome_step1_createdb')
+            ->assert('_method', 'get|post');
+
+        $app->match('_maintenance/welcome/step1/createschema', 'maintenance.controller:welcomeStep1CreateSchemaAction')
+            ->bind('_maintenance_welcome_step1_createschema')
+            ->assert('_method', 'get|post');
+
+        $app->match('_maintenance/welcome/step1/updateschema', 'maintenance.controller:welcomeStep1UpdateSchemaAction')
+            ->bind('_maintenance_welcome_step1_updateschema')
+            ->assert('_method', 'get|post');
+
+        $app->match('_maintenance/welcome/step2', 'maintenance.controller:welcomeStep2Action')
+            ->bind('_maintenance_welcome_step2')
+            ->assert('_method', 'get|post');
+
+        $app->get('_maintenance/welcome/finish', 'maintenance.controller:welcomeFinishAction')
+            ->bind('_maintenance_welcome_finish');
+
+        $app->get('login', 'auth.controller:loginAction')
+            ->bind('login');
 
         # Filename empty: The Home Page (All Posts)
         $app->get('/', 'home.controller:indexAction')
@@ -104,23 +142,106 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
 
         $app->error(function (\Exception $e, $code) use ($app) {
 
+            $maintenanceexception = null;
+            
             if($e instanceof MozzaException\ApplicationNeedsMaintenanceExceptionInterface) {
-                return $app['error.maintenance']->reactToExceptionAction(
-                    $app['request'],
-                    $app,
-                    $e,
-                    $code
-                );
-            } else if($e instanceof \Doctrine\DBAL\DBALException && (
-                strpos($e->getMessage(), 'Invalid table name') !== FALSE ||
-                strpos($e->getMessage(), 'no such table') !== FALSE
-            )) {
-                return $app['error.maintenance']->reactToExceptionAction(
-                    $app['request'],
-                    $app,
-                    new MozzaException\DatabaseNeedsUpdateException(),
-                    $code
-                );
+                $maintenanceexception = $e;
+            } else if(
+                $e instanceof \Doctrine\DBAL\DBALException ||
+                $e instanceof \PDOException
+            ) {
+
+                try {
+                    $errorinfo = $app['db']->errorInfo();
+                } catch(\Exception $e) {
+                    # we could not fetch error info (happens with mysql, when access denied)
+                    $errorinfo = null;
+                }
+
+                if(!is_null($errorinfo)) {
+                    # Deterministic error detection
+                    $sqlstate = $errorinfo[0];
+                    $errorclass = strtoupper(substr($errorinfo[0], 0, 2));
+                    $errorsubclass = strtoupper(substr($errorinfo[0], 2));
+                    
+                    switch($errorclass) {
+                        case 'HY': {
+                            # driver custom error
+                            break;
+                        }
+                        case '42': {
+                            switch($errorsubclass) {
+                                case 'S22': {
+                                    $maintenanceexception = new MozzaException\DatabaseNeedsUpdateException();
+                                    $maintenanceexception->setInformationalLabel($errorinfo['2']);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if(is_null($maintenanceexception)) {
+                    # Heuristic error detection
+
+                    # We check if the database exists
+                    try {
+                        $tables = $app['db']->getSchemaManager()->listTableNames();
+                    } catch(\PDOException $e) {
+                        if(strpos($e->getMessage(), 'Access denied') !== FALSE) {
+                            $maintenanceexception = new MozzaException\DatabaseInvalidCredentialsException();
+                        } else {
+                            $maintenanceexception = new MozzaException\DatabaseMissingException();
+                        }
+                    }
+
+                    if(
+                        is_null($maintenanceexception) && (
+                            stripos($e->getMessage(), 'Invalid table name') !== FALSE ||
+                            stripos($e->getMessage(), 'no such table') !== FALSE ||
+                            stripos($e->getMessage(), 'Base table or view not found') !== FALSE
+                        )
+                    ) {
+                        if(empty($tables)) {
+                            $maintenanceexception = new MozzaException\DatabaseEmptyException();
+                        } else {
+                            $maintenanceexception = new MozzaException\DatabaseNeedsUpdateException();
+                        }
+                    }
+
+                    if(
+                        is_null($maintenanceexception) && (
+                            stripos($e->getMessage(), 'Unknown column') !== FALSE
+                        )
+                    ) {
+                        $maintenanceexception = new MozzaException\DatabaseNeedsUpdateException();
+                    }
+                }
+            }
+
+            if(!is_null($maintenanceexception)) {
+
+                # Enabling the anonymous maintenance mode
+                $app['environment']->setAnonymousMaintenance(TRUE);
+
+                if(strpos($app['request']->attributes->get('_route'), '_maintenance_') === 0) {
+                    
+                    # maintenance in progress; just proceed with the requested controller
+                    return $app['maintenance.controller']->proceedWithMaintenanceRequestAction(
+                        $app['request'],
+                        $app,
+                        $maintenanceexception,
+                        $code
+                    );
+                } else {
+                    return $app['maintenance.controller']->reactToExceptionAction(
+                        $app['request'],
+                        $app,
+                        $maintenanceexception,
+                        $code
+                    );
+                }
             }
 
             if(!$app['debug']) {

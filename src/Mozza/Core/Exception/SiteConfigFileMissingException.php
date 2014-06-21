@@ -4,6 +4,8 @@ namespace Mozza\Core\Exception;
 
 class SiteConfigFileMissingException extends \Exception implements ApplicationNeedsMaintenanceExceptionInterface {
 
+    use ApplicationNeedsMaintenanceExceptionTrait;
+
     protected $filepath;
     
     public function setFilePath() {

@@ -1,26 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mozza - Admin</title>
-<link rel="stylesheet" href="{{ app.request.basepath }}/vendor/zipball/purecss/pure-min.css">
-
-<!--[if lte IE 8]>
-<link rel="stylesheet" href="{{ app.request.basepath }}/vendor/zipball/purecss-layout-sidemenu/css/layouts/side-menu-old-ie.css">
-<![endif]-->
-<!--[if gt IE 8]><!-->
-<link rel="stylesheet" href="{{ app.request.basepath }}/vendor/zipball/purecss-layout-sidemenu/css/layouts/side-menu.css">
-<!--<![endif]-->
-    
-<!--[if lt IE 9]>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
-<![endif]-->
-</head>
-<body>
-
 <div id="layout">
-    
+
     <!-- Menu toggle -->
     <a href="#menu" id="menuLink" class="menu-link">
         <!-- Hamburger icon -->
@@ -29,17 +8,10 @@
 
     <div id="menu">
         <div class="pure-menu pure-menu-open">
-            <a class="pure-menu-heading" href="#">Mozza Admin</a>
+            <a class="pure-menu-heading" href="#">Mozza</a>
 
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-
-                <li class="menu-item-divided pure-menu-selected">
-                    <a href="#">Services</a>
-                </li>
-
-                <li><a href="#">Contact</a></li>
+                <li><a href="http://netgusto.com/mozza" target="blank">About Mozza</a></li>
             </ul>
         </div>
     </div>
@@ -47,12 +19,14 @@
     <div id="main">
 
         <div class="header">
-            <h1>{% block title %}Page Title{% endblock %}</h1>
-            <h2>{% block subtitle %}A subtitle for your page goes here{% endblock %}</h2>
+            {% block header %}
+                <h1>Mozza - Maintenance</h1>
+                <h2>A subtitle for your page goes here</h2>
+            {% endblock %}
         </div>
 
         <div class="content">
-            {% block body %}
+            {% block content %}
             <h2 class="content-subhead">How to use this layout</h2>
             <p>
                 To use this layout, you can just copy paste the HTML, along with the CSS in <a href="/css/layouts/side-menu.css" alt="Side Menu CSS">side-menu.css</a>, and the JavaScript in <a href="/js/ui.js">ui.js</a>. The JS file uses vanilla JavaScript to simply toggle an <code>active</code> class that makes the menu responsive.
@@ -82,11 +56,7 @@
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
             </p>
-            {% endblock body %}
+            {% endblock content %}
         </div>
     </div>
 </div>
-
-<script src="{{ app.request.basepath }}/vendor/zipball/purecss-layout-sidemenu/js/ui.js"></script>
-</body>
-</html>

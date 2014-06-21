@@ -6,13 +6,20 @@
         "silex/silex": "~1.2",
         "silex/web-profiler": "~1.0",
         
-        "symfony/yaml": "~2.1",
-        
         "twig/twig": ">=1.8,<2.0-dev",
         "twig/extensions": "v1.0.1",
+
         "symfony/twig-bridge": "~2.5",
+        "symfony/yaml": "~2.1",
         "symfony/finder": "~2.5",
         "symfony/filesystem": "~2.5",
+        "symfony/form": "~2.5",
+        "symfony/translation": "~2.3",
+        "symfony/locale": "~2.3",
+        "symfony/validator": "~2.5",
+        "symfony/config": "~2.3",
+        "symfony/security": "~2.3",
+
         "cebe/markdown": "0.9.2",
         
         "zipball/highlightjs": "~8.0",

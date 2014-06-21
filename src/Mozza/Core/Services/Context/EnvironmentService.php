@@ -11,6 +11,7 @@ use josegonzalez\Dotenv;
 class EnvironmentService {
 
     protected $env;
+    protected $scalarinterpreter;
     protected $rootdir;
     protected $webdir;
     protected $srcdir;
@@ -19,9 +20,12 @@ class EnvironmentService {
     protected $datadir;
     protected $themesdir;
 
-    public function __construct(array $env, $rootdir) {
+    protected $maintenancemode;
+
+    public function __construct(array $env, $scalarinterpreter, $rootdir) {
 
         $this->env = $env;
+        $this->scalarinterpreter = $scalarinterpreter;
         $this->rootdir = $rootdir;
         $this->webdir = $rootdir . '/web';
         $this->srcdir = $rootdir . '/src';
@@ -34,10 +38,21 @@ class EnvironmentService {
         $this->domain = $rootrequest->getHost();
         $this->scheme = $rootrequest->getScheme();
         $this->siteurl = $this->scheme . '://' . $rootrequest->getHttpHost() . $rootrequest->getBaseUrl();
+
+        $this->debug = $this->scalarinterpreter->toBooleanDefaultFalse($this->getEnv('DEBUG'));
+        $this->anonymousmaintenance = FALSE;
     }
 
     public function getEnv($what) {
         return array_key_exists($what, $this->env) ? $this->env[$what] : null;
+    }
+
+    public function getDebug() {
+        return $this->debug;
+    }
+
+    public function getAnonymousMaintenance() {
+        return $this->anonymousmaintenance;
     }
 
     public function getDomain() {
@@ -74,5 +89,18 @@ class EnvironmentService {
 
     public function getThemesDir() {
         return $this->themesdir;
+    }
+
+    ###########################################################################
+    # Setter for maintenance mode
+    ###########################################################################
+    
+    public function setAnonymousMaintenance($anonymousmaintenance) {
+        if(!is_bool($anonymousmaintenance)) {
+            throw new \InvalidArgumentException('EnvironmentService::setMaintenance() expects parameter 1 to be boolean.');
+        }
+
+        $this->anonymousmaintenance = $anonymousmaintenance;
+        return $this;
     }
 }

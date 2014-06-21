@@ -1,0 +1,27 @@
+Mozza\Core\Entity\User:
+    type: entity
+    table: ~
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+        email:
+            type: datetime
+            nullable: true
+
+        password:
+            type: string
+            length: 32
+            nullable: false
+
+        salt:
+            type: string
+            length: 32
+
+        roles:
+            type: array        
+
+    lifecycleCallbacks: {  }

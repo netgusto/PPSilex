@@ -1,0 +1,29 @@
+.button-success {
+    background: rgb(28, 184, 65);
+    color: white;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-xxlarge {
+    font-size: 170%;
+}
+
+.button-xlarge {
+    font-size: 140%;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt {
+    margin-top: 1em;
+}
+
+.mt2 {
+    margin-top: 2em;
+}
+
+.mt3 {
+    margin-top: 3em;
+}
