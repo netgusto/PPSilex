@@ -20,7 +20,7 @@ class EnvironmentService {
     protected $datadir;
     protected $themesdir;
 
-    protected $maintenancemode;
+    protected $initializationmode;
 
     public function __construct(array $env, $scalarinterpreter, $rootdir) {
 
@@ -40,7 +40,7 @@ class EnvironmentService {
         $this->siteurl = $this->scheme . '://' . $rootrequest->getHttpHost() . $rootrequest->getBaseUrl();
 
         $this->debug = $this->scalarinterpreter->toBooleanDefaultFalse($this->getEnv('DEBUG'));
-        $this->anonymousmaintenance = FALSE;
+        $this->initializationmode = FALSE;
     }
 
     public function getEnv($what) {
@@ -51,8 +51,8 @@ class EnvironmentService {
         return $this->debug;
     }
 
-    public function getAnonymousMaintenance() {
-        return $this->anonymousmaintenance;
+    public function getInitializationMode() {
+        return $this->initializationmode;
     }
 
     public function getDomain() {
@@ -95,12 +95,12 @@ class EnvironmentService {
     # Setter for maintenance mode
     ###########################################################################
     
-    public function setAnonymousMaintenance($anonymousmaintenance) {
-        if(!is_bool($anonymousmaintenance)) {
-            throw new \InvalidArgumentException('EnvironmentService::setMaintenance() expects parameter 1 to be boolean.');
+    public function setInitializationmode($initializationmode) {
+        if(!is_bool($initializationmode)) {
+            throw new \InvalidArgumentException('EnvironmentService::setInitializationmode() expects parameter 1 to be boolean.');
         }
 
-        $this->anonymousmaintenance = $anonymousmaintenance;
+        $this->initializationmode = $initializationmode;
         return $this;
     }
 }

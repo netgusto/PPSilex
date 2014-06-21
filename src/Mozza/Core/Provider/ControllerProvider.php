@@ -59,8 +59,8 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         });
 
         # The controller responsible for maintenance handling
-        $app['maintenance.controller'] = $app->share(function() use ($app) {
-            return new MozzaController\MaintenanceController(
+        $app['initialization.controller'] = $app->share(function() use ($app) {
+            return new MozzaController\InitializationController(
                 $app['twig'],
                 $app['environment'],
                 $app['url_generator'],
@@ -87,27 +87,27 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
 
         # Maintenance controllers
 
-        $app->get('_maintenance/welcome', 'maintenance.controller:welcomeAction')
-            ->bind('_maintenance_welcome');
+        $app->get('_init/welcome', 'initialization.controller:welcomeAction')
+            ->bind('_init_welcome');
 
-        $app->match('_maintenance/welcome/step1/db', 'maintenance.controller:welcomeStep1CreateDbAction')
-            ->bind('_maintenance_welcome_step1_createdb')
+        $app->match('_init/step1/db', 'initialization.controller:step1CreateDbAction')
+            ->bind('_init_step1_createdb')
             ->assert('_method', 'get|post');
 
-        $app->match('_maintenance/welcome/step1/createschema', 'maintenance.controller:welcomeStep1CreateSchemaAction')
-            ->bind('_maintenance_welcome_step1_createschema')
+        $app->match('_init/step1/createschema', 'initialization.controller:step1CreateSchemaAction')
+            ->bind('_init_step1_createschema')
             ->assert('_method', 'get|post');
 
-        $app->match('_maintenance/welcome/step1/updateschema', 'maintenance.controller:welcomeStep1UpdateSchemaAction')
-            ->bind('_maintenance_welcome_step1_updateschema')
+        $app->match('_init/step1/updateschema', 'initialization.controller:step1UpdateSchemaAction')
+            ->bind('_init_step1_updateschema')
             ->assert('_method', 'get|post');
 
-        $app->match('_maintenance/welcome/step2', 'maintenance.controller:welcomeStep2Action')
-            ->bind('_maintenance_welcome_step2')
+        $app->match('_init/step2', 'initialization.controller:step2Action')
+            ->bind('_init_step2')
             ->assert('_method', 'get|post');
 
-        $app->get('_maintenance/welcome/finish', 'maintenance.controller:welcomeFinishAction')
-            ->bind('_maintenance_welcome_finish');
+        $app->get('_init/finish', 'initialization.controller:finishAction')
+            ->bind('_init_finish');
 
         $app->get('login', 'auth.controller:loginAction')
             ->bind('login');
@@ -222,25 +222,28 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
 
             if(!is_null($maintenanceexception)) {
 
-                # Enabling the anonymous maintenance mode
-                $app['environment']->setAnonymousMaintenance(TRUE);
+                if($maintenanceexception instanceOf MozzaException\InitializationTriggeringExceptionInterface) {
 
-                if(strpos($app['request']->attributes->get('_route'), '_maintenance_') === 0) {
-                    
-                    # maintenance in progress; just proceed with the requested controller
-                    return $app['maintenance.controller']->proceedWithMaintenanceRequestAction(
-                        $app['request'],
-                        $app,
-                        $maintenanceexception,
-                        $code
-                    );
-                } else {
-                    return $app['maintenance.controller']->reactToExceptionAction(
-                        $app['request'],
-                        $app,
-                        $maintenanceexception,
-                        $code
-                    );
+                    # Enabling initialization mode
+                    $app['environment']->setInitializationMode(TRUE);
+
+                    if(strpos($app['request']->attributes->get('_route'), '_init_') === 0) {
+                        
+                        # maintenance in progress; just proceed with the requested controller
+                        return $app['initialization.controller']->proceedWithInitializationRequestAction(
+                            $app['request'],
+                            $app,
+                            $maintenanceexception,
+                            $code
+                        );
+                    } else {
+                        return $app['initialization.controller']->reactToExceptionAction(
+                            $app['request'],
+                            $app,
+                            $maintenanceexception,
+                            $code
+                        );
+                    }
                 }
             }
 

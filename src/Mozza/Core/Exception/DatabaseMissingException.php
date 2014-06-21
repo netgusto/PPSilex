@@ -2,6 +2,11 @@
 
 namespace Mozza\Core\Exception;
 
-class DatabaseMissingException extends \Exception implements ApplicationNeedsMaintenanceExceptionInterface {
+class DatabaseMissingException
+    extends \Exception
+    implements
+        ApplicationNeedsMaintenanceExceptionInterface,
+        InitializationTriggeringExceptionInterface {
+
     use ApplicationNeedsMaintenanceExceptionTrait;
 }

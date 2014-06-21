@@ -19,7 +19,7 @@ use Mozza\Core\Exception as MozzaException,
     Mozza\Core\Entity\SystemStatus,
     Mozza\Core\Entity\HierarchicalConfig;
 
-class MaintenanceController {
+class InitializationController {
 
     protected $twig;
     protected $environment;
@@ -40,8 +40,8 @@ class MaintenanceController {
 
     public function reactToExceptionAction(Request $request, Application $app, MozzaException\ApplicationNeedsMaintenanceExceptionInterface $e, $code) {
 
-        if($this->environment->getAnonymousMaintenance() !== TRUE) {
-            return new Response('Maintenance mode off. Access denied.', 401);
+        if($this->environment->getInitializationMode() !== TRUE) {
+            return new Response('Initialization mode off. Access denied.', 401);
         }
 
         switch(TRUE) {
@@ -86,13 +86,13 @@ class MaintenanceController {
         );
     }
 
-    public function proceedWithMaintenanceRequestAction(Request $request, Application $app, MozzaException\ApplicationNeedsMaintenanceExceptionInterface $e) {
+    public function proceedWithInitializationRequestAction(Request $request, Application $app, MozzaException\ApplicationNeedsMaintenanceExceptionInterface $e) {
 
-        if($this->environment->getAnonymousMaintenance() !== TRUE) {
-            return new Response('Maintenance mode off. Access denied.', 401);
+        if($this->environment->getInitializationMode() !== TRUE) {
+            return new Response('Initialization mode off. Access denied.', 401);
         }
 
-        if($request->attributes->get('_route') === '_maintenance_welcome') {
+        if($request->attributes->get('_route') === '_init_welcome') {
 
             $createdb = ($e instanceOf MozzaException\DatabaseMissingException);
             $createschema = $createdb || ($e instanceOf MozzaException\DatabaseEmptyException);
@@ -105,43 +105,43 @@ class MaintenanceController {
             ));
         }
 
-        if($request->attributes->get('_route') === '_maintenance_welcome_step1_createdb') {
-            return $this->welcomeStep1CreateDbAction($request, $app);
+        if($request->attributes->get('_route') === '_init_step1_createdb') {
+            return $this->step1CreateDbAction($request, $app);
         }
 
-        if($request->attributes->get('_route') === '_maintenance_welcome_step1_createschema') {
-            return $this->welcomeStep1CreateSchemaAction($request, $app);
+        if($request->attributes->get('_route') === '_init_step1_createschema') {
+            return $this->step1CreateSchemaAction($request, $app);
         }
 
-        if($request->attributes->get('_route') === '_maintenance_welcome_step1_updateschema') {
-            return $this->welcomeStep1UpdateSchemaAction($request, $app);
+        if($request->attributes->get('_route') === '_init_step1_updateschema') {
+            return $this->step1UpdateSchemaAction($request, $app);
         }
 
-        if($request->attributes->get('_route') === '_maintenance_welcome_step2') {
-            return $this->welcomeStep2Action($request, $app);
+        if($request->attributes->get('_route') === '_init_step2') {
+            return $this->step2Action($request, $app);
         }
 
-        if($request->attributes->get('_route') === '_maintenance_welcome_finish') {
-            return $this->welcomeFinishAction($request, $app);
+        if($request->attributes->get('_route') === '_init_finish') {
+            return $this->finishAction($request, $app);
         }
     }
 
     public function welcomeAction(Request $request, Application $app, $tasks = array()) {
 
-        if($this->environment->getAnonymousMaintenance() !== TRUE) {
-            return new Response('Maintenance mode off. Access denied.', 401);
+        if($this->environment->getInitializationMode() !== TRUE) {
+            return new Response('Initialization mode off. Access denied.', 401);
         }
 
         if($tasks['createdb']) {
-            $nextroute = '_maintenance_welcome_step1_createdb';
+            $nextroute = '_init_step1_createdb';
         } elseif($tasks['createschema']) {
-            $nextroute = '_maintenance_welcome_step1_createschema';
+            $nextroute = '_init_step1_createschema';
         } elseif($tasks['updateschema']) {
-            $nextroute = '_maintenance_welcome_step1_updateschema';
+            $nextroute = '_init_step1_updateschema';
         } else {
             # Database is OK; proceed to next step
             # Should never be the case here
-            $nextroute = '_maintenance_welcome_step2';
+            $nextroute = '_init_step2';
         }
 
         return $this->twig->render('@MozzaCore/Maintenance/welcome.html.twig', array(
@@ -149,7 +149,7 @@ class MaintenanceController {
         ));
     }
 
-    public function welcomeStep1CreateDbAction(Request $request, Application $app) {
+    public function initStep1CreateDbAction(Request $request, Application $app) {
         
         $form = $this->formfactory->create(new FormType\WelcomeStep1Type());
         $form->handleRequest($request);
@@ -161,15 +161,15 @@ class MaintenanceController {
             $this->createSystemStatus($this->em, $app['version']);
             $this->createSiteConfig($this->em, $app['environment']->getRootDir());
 
-            return new RedirectResponse($this->urlgenerator->generate('_maintenance_welcome_step2'));
+            return new RedirectResponse($this->urlgenerator->generate('_init_step2'));
         }
 
-        return $this->twig->render('@MozzaCore/Maintenance/welcome_step1_createdb.html.twig', array(
+        return $this->twig->render('@MozzaCore/Maintenance/init_step1_createdb.html.twig', array(
             'form' => $form->createView(),
         ));
     }
 
-    public function welcomeStep1CreateSchemaAction(Request $request, Application $app) {
+    public function step1CreateSchemaAction(Request $request, Application $app) {
         
         $form = $this->formfactory->create(new FormType\WelcomeStep1Type());
         $form->handleRequest($request);
@@ -180,32 +180,69 @@ class MaintenanceController {
             $this->createSystemStatus($this->em, $app['version']);
             $this->createSiteConfig($this->em, $app['environment']->getRootDir());
 
-            return new RedirectResponse($this->urlgenerator->generate('_maintenance_welcome_step2'));
+            return new RedirectResponse($this->urlgenerator->generate('_init_step2'));
         }
 
-        return $this->twig->render('@MozzaCore/Maintenance/welcome_step1_createdb.html.twig', array(
+        return $this->twig->render('@MozzaCore/Maintenance/init_step1_createschema.html.twig', array(
             'form' => $form->createView(),
         ));
     }
 
-    public function welcomeStep1UpdateSchemaAction(Request $request, Application $app) {
-        return 'welcomeStep1UpdateSchemaAction';
+    public function step1UpdateSchemaAction(Request $request, Application $app) {
+        return 'initStep1UpdateSchemaAction';
+    }
 
-        /*
-        $form = $this->formfactory->create(new FormType\WelcomeStep1Type());
+    public function step2Action(Request $request, Application $app) {
+        
+        $form = $this->formfactory->create(new FormType\WelcomeStep2Type());
         $form->handleRequest($request);
-
         if($form->isValid()) {
-            # The schemas are updated
-            $this->updateSchema($this->em);
-
-            return new RedirectResponse($this->urlgenerator->generate('_maintenance_welcome_step2'));
+            var_dump($form->getData());
+           die('VALID !');
         }
 
-        return $this->twig->render('@MozzaCore/Maintenance/welcome_step1_createdb.html.twig', array(
+        return $this->twig->render('@MozzaCore/Maintenance/init_step2.html.twig', array(
             'form' => $form->createView(),
-        ));*/
+        ));
     }
+
+    public function finishAction(Request $request, Application $app) {
+        return $this->twig->render('@MozzaCore/Maintenance/init_finish.html.twig');
+    }
+
+    public function databaseInvalidCredentialsExceptionAction(Request $request, Application $app, MozzaException\DatabaseInvalidCredentialsException $e) {
+        return $this->twig->render('@MozzaCore/Maintenance/databaseinvalidcredentials.html.twig');
+    }
+
+    public function databaseMissingExceptionAction(Request $request, Application $app, MozzaException\DatabaseMissingException $e) {
+        return new RedirectResponse($this->urlgenerator->generate('_init_welcome'));
+    }
+
+    public function databaseEmptyExceptionAction(Request $request, Application $app, MozzaException\DatabaseEmptyException $e) {
+        return new RedirectResponse($this->urlgenerator->generate('_init_welcome'));
+    }
+
+    public function databaseNeedsUpdateExceptionAction(Request $request, Application $app, MozzaException\DatabaseNeedsUpdateException $e) {
+        return $this->twig->render('@MozzaCore/Maintenance/databaseneedsupdate.html.twig');
+    }
+
+    public function administrativeAccountMissingExceptionAction(Request $request, Application $app, MozzaException\AdministrativeAccountMissingException $e) {
+        return $this->twig->render('@MozzaCore/Maintenance/administrativeaccountmissing.html.twig');
+    }
+
+    public function systemStatusMissingExceptionAction(Request $request, Application $app, MozzaException\SystemStatusMissingException $e) {
+        return $this->twig->render('@MozzaCore/Maintenance/systemstatusmissing.html.twig');
+    }
+
+    public function siteConfigFileMissingExceptionAction(Request $request, Application $app, MozzaException\SiteConfigFileMissingException $e) {
+        return $this->twig->render('@MozzaCore/Maintenance/siteconfigfilemissing.html.twig');
+    }
+
+    public function unknownMaintenanceTaskExceptionAction(Request $request, Application $app, MozzaException\ApplicationNeedsMaintenanceExceptionInterface $e) {
+        return $this->twig->render('@MozzaCore/Maintenance/unknownmaintenancetask.html.twig');
+    }
+
+
 
     protected function createDatabase(\Doctrine\DBAL\Connection $connection) {
         $databasecreator = new MozzaServices\Maintenance\DatabaseCreatorService();
@@ -237,55 +274,5 @@ class MaintenanceController {
 
         $em->persist($siteconfig);
         $em->flush();
-    }
-
-    public function welcomeStep2Action(Request $request, Application $app) {
-        
-        $form = $this->formfactory->create(new FormType\WelcomeStep2Type());
-        $form->handleRequest($request);
-        if($form->isValid()) {
-            var_dump($form->getData());
-           die('VALID !');
-        }
-
-        return $this->twig->render('@MozzaCore/Maintenance/welcome_step2.html.twig', array(
-            'form' => $form->createView(),
-        ));
-    }
-
-    public function welcomeFinishAction(Request $request, Application $app) {
-        return $this->twig->render('@MozzaCore/Maintenance/welcome_finish.html.twig');
-    }
-
-    public function databaseInvalidCredentialsExceptionAction(Request $request, Application $app, MozzaException\DatabaseInvalidCredentialsException $e) {
-        return $this->twig->render('@MozzaCore/Maintenance/databaseinvalidcredentials.html.twig');
-    }
-
-    public function databaseMissingExceptionAction(Request $request, Application $app, MozzaException\DatabaseMissingException $e) {
-        return new RedirectResponse($this->urlgenerator->generate('_maintenance_welcome'));
-    }
-
-    public function databaseEmptyExceptionAction(Request $request, Application $app, MozzaException\DatabaseEmptyException $e) {
-        return new RedirectResponse($this->urlgenerator->generate('_maintenance_welcome'));
-    }
-
-    public function databaseNeedsUpdateExceptionAction(Request $request, Application $app, MozzaException\DatabaseNeedsUpdateException $e) {
-        return $this->twig->render('@MozzaCore/Maintenance/databaseneedsupdate.html.twig');
-    }
-
-    public function administrativeAccountMissingExceptionAction(Request $request, Application $app, MozzaException\AdministrativeAccountMissingException $e) {
-        return $this->twig->render('@MozzaCore/Maintenance/administrativeaccountmissing.html.twig');
-    }
-
-    public function systemStatusMissingExceptionAction(Request $request, Application $app, MozzaException\SystemStatusMissingException $e) {
-        return $this->twig->render('@MozzaCore/Maintenance/systemstatusmissing.html.twig');
-    }
-
-    public function siteConfigFileMissingExceptionAction(Request $request, Application $app, MozzaException\SiteConfigFileMissingException $e) {
-        return $this->twig->render('@MozzaCore/Maintenance/siteconfigfilemissing.html.twig');
-    }
-
-    public function unknownMaintenanceTaskExceptionAction(Request $request, Application $app, MozzaException\ApplicationNeedsMaintenanceExceptionInterface $e) {
-        return $this->twig->render('@MozzaCore/Maintenance/unknownmaintenancetask.html.twig');
     }
 }
