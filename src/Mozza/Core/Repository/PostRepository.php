@@ -26,16 +26,19 @@ class PostRepository {
         return $this->em->createQueryBuilder()
             ->select('p')
             ->from('Mozza\Core\Entity\Post', 'p')
-            ->add('where', 'p.status=:status')->setParameter('status', 'publish')
-            ->add('orderBy', 'p.date DESC');
+            ->add('where', 'p.status=:status')->setParameter('status', 'publish');
     }
 
     public function findAll() {
-        return $this->qb_findAllPublished()->getQuery()->getResult();
+        return $this->qb_findAllPublished()
+            ->add('orderBy', 'p.date DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     public function findAllAtPage($page, $perpage) {
-        $qb = $this->qb_findAllPublished();
+        $qb = $this->qb_findAllPublished()
+            ->add('orderBy', 'p.date DESC');
 
         $start = ($page - 1) * $perpage;
         $qb->setFirstResult($start);

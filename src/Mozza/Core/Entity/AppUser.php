@@ -4,7 +4,7 @@ namespace Mozza\Core\Entity;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class User implements UserInterface {
+class AppUser implements UserInterface {
     /**
      * @var integer
      */

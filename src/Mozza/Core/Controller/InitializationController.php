@@ -15,7 +15,7 @@ use \Doctrine\ORM\EntityManager;
 
 use Mozza\Core\Exception as MozzaException,
     Mozza\Core\Services as MozzaServices,
-    Mozza\Core\Entity\User,
+    Mozza\Core\Entity\AppUser,
     Mozza\Core\Form\Type as FormType,
     Mozza\Core\Entity\SystemStatus,
     Mozza\Core\Entity\HierarchicalConfig;
@@ -199,7 +199,7 @@ class InitializationController {
         if($form->isValid()) {
 
             $data = $form->getData();
-            $user = new User();
+            $user = new AppUser();
 
             $user->setEmail($data['email']);
             $user->setSalt(md5(rand() . microtime()));

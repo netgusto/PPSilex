@@ -1,4 +1,4 @@
-Mozza\Core\Entity\User:
+Mozza\Core\Entity\AppUser:
     type: entity
     table: ~
     fields:
