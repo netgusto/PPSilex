@@ -23,10 +23,10 @@ class WelcomeStep2Type extends AbstractType {
                 'attr' => array('placeholder' => 'Email'),
                 'constraints' => array(
                     new NotBlank(array(
-                        'message' => 'Merci d\'indiquer votre Adresse email.'
+                        'message' => 'Please, give your email address.'
                     )),
                     new Email(array(
-                        'message' => 'L\'adresse email indiquée est invalide.'
+                        'message' => 'This email is not valid.'
                     ))
                 )
             ))
@@ -36,7 +36,7 @@ class WelcomeStep2Type extends AbstractType {
                 'options' => array('required' => TRUE),
                 'constraints' => array(
                     new NotBlank(array(
-                        'message' => 'Merci d\'indiquer votre mot de passe.'
+                        'message' => 'Password is required.'
                     ))
                 ),
                 'first_options'  => array(

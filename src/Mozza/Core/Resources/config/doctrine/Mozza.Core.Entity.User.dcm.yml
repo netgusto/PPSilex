@@ -9,19 +9,21 @@ Mozza\Core\Entity\User:
                 strategy: AUTO
 
         email:
-            type: datetime
-            nullable: true
+            type: string
+            length: 255
+            nullable: false
 
         password:
             type: string
-            length: 32
+            length: 255
             nullable: false
 
         salt:
             type: string
-            length: 32
+            length: 255
+            nullable: false
 
         roles:
-            type: array        
+            type: json_array        
 
     lifecycleCallbacks: {  }

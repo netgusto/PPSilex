@@ -5,7 +5,7 @@ namespace Mozza\Core\Services\Context;
 use Doctrine\ORM\EntityManager;
 
 use Mozza\Core\Entity\SystemStatus,
-    Mozza\Core\Exception\SystemStatusMissingException;
+    Mozza\Core\Exception\MaintenanceNeeded\SystemStatusMissingMaintenanceNeededException;
 
 class SystemStatusService {
 
@@ -23,7 +23,7 @@ class SystemStatusService {
             return;
         }
 
-        throw new SystemStatusMissingException();
+        throw new SystemStatusMissingMaintenanceNeededException();
 
         /*
         # We have to create the system status line
@@ -43,6 +43,16 @@ class SystemStatusService {
 
     public function setPostCacheLastUpdate(\DateTime $postlastcacheupdate) {
         $this->systemstatus->setPostcachelastupdate($postlastcacheupdate);
+        $this->em->persist($this->systemstatus);
+        $this->em->flush();
+    }
+
+    public function getInitialized() {
+        return $this->systemstatus->getInitialized();
+    }
+
+    public function setInitialized($initialized) {
+        $this->systemstatus->setInitialized($initialized);
         $this->em->persist($this->systemstatus);
         $this->em->flush();
     }

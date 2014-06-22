@@ -13,18 +13,6 @@ use Mozza\Core\Services as MozzaServices;
 class PaasPlatformServiceProvider implements ServiceProviderInterface {
 
     public function register(Application $app) {
-        
-        ###############################################################################
-        # Registering the config services
-        ###############################################################################
-
-        #
-        # System config service
-        #
-
-        $parameters = array(
-            'data.dir' => '',
-        );
 
         #######################################################################
         # Database connection
@@ -61,11 +49,31 @@ class PaasPlatformServiceProvider implements ServiceProviderInterface {
         ));
 
         #
+        # System status service (needs ORM)
+        #
+
+        $app['system.status'] = $app->share(function() use ($app) {
+            return new MozzaServices\Context\SystemStatusService(
+                $app['orm.em']
+            );
+        });
+
+        ###############################################################################
+        # Config services
+        ###############################################################################
+
+        $parameters = array(
+            'data.dir' => '',
+        );
+
+        #
         # Site config service
         #
 
         $app['config.site'] = $app->share(function() use ($app, $parameters) {
             
+            #debug_print_backtrace();
+            #die();
             $dbbackedconfig = new MozzaServices\Config\Loader\DbBackedConfigLoaderService(
                 $app['orm.em'],
                 $parameters

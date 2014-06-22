@@ -15,6 +15,7 @@ use Silex\Application,
 
 
 use Mozza\Core\Services as MozzaServices,
+    Mozza\Core\Security\UserProvider,
     Mozza\Core\Twig\MozzaExtension as TwigMozzaExtension;
 
 class LowLevelServiceProvider implements ServiceProviderInterface {
@@ -72,30 +73,42 @@ class LowLevelServiceProvider implements ServiceProviderInterface {
 
         $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
             
-            $twig->addGlobal('site', $app['config.site']);
-
-            $twig->addExtension(new \Twig_Extensions_Extension_Text($app));
-
-            $twig->addExtension(
-                new TwigMozzaExtension(
-                    $app['post.repository'],
-                    $app['post.serializer'],
-                    $app['url_generator'],
-                    $app['post.urlgenerator'],
-                    $app['markdown.processor'],
-                    $app['resource.resolver'],
-                    $app['post.resource.resolver'],
-                    $app['url.absolutizer'],
-                    $app['environment']->getDomain(),
-                    $app['culture'],
-                    $app['config.site']
-                )
-            );
-
-            # Setting the theme namespace
-            $app['twig.loader.filesystem']->addPath($app['environment']->getThemesDir() . '/' . $app['config.site']->getTheme() . '/views', 'MozzaTheme');
             $app['twig.loader.filesystem']->addPath($app['environment']->getSrcdir() . '/Mozza/Core/Resources/views', 'MozzaCore');
-            $app['twig.loader.filesystem']->addPath($app['environment']->getAppDir() . '/customhtml', 'Custom');
+
+            $configservice = null;
+            try {
+                $configservice = $app['config.site'];
+            } catch(\Exception $e) {
+            }
+
+            if(!is_null($configservice)) {
+
+                # Config is available (not the case when initializing, for instance)
+                
+                $twig->addGlobal('site', $configservice);
+
+                $twig->addExtension(new \Twig_Extensions_Extension_Text($app));
+
+                $twig->addExtension(
+                    new TwigMozzaExtension(
+                        $app['post.repository'],
+                        $app['post.serializer'],
+                        $app['url_generator'],
+                        $app['post.urlgenerator'],
+                        $app['markdown.processor'],
+                        $app['resource.resolver'],
+                        $app['post.resource.resolver'],
+                        $app['url.absolutizer'],
+                        $app['environment']->getDomain(),
+                        $app['culture'],
+                        $configservice
+                    )
+                );
+
+                # Setting the theme namespace
+                $app['twig.loader.filesystem']->addPath($app['environment']->getThemesDir() . '/' . $configservice->getTheme() . '/views', 'MozzaTheme');
+                $app['twig.loader.filesystem']->addPath($app['environment']->getAppDir() . '/customhtml', 'Custom');
+            }
 
             return $twig;
         }));
@@ -131,13 +144,20 @@ class LowLevelServiceProvider implements ServiceProviderInterface {
                 'admin' => array(
                     'pattern' => '^/admin',
                     'form' => array('login_path' => '/login', 'check_path' => '/admin/login_check'),
-                    'users' => array(
-                        // raw password is foo
-                        'admin' => array('ROLE_ADMIN', '5FZ2Z8QIkA7UTZ4BYkoC+GsReLf569mSKDsfods6LYQ8t+a8EW9oaircfMpmaLbPBh4FOBiiFyLfuZmTSUwzZg=='),
-                    ),
+                    #'users' => array(
+                    #    // raw password is foo
+                    #    'admin' => array('ROLE_ADMIN', '5FZ2Z8QIkA7UTZ4BYkoC+GsReLf569mSKDsfods6LYQ8t+a8EW9oaircfMpmaLbPBh4FOBiiFyLfuZmTSUwzZg=='),
+                    #),
+                    'users' => $app->share(function () use ($app) {
+                        return new UserProvider($app['orm.em']);
+                    }),
                 ),
             )
         ));
+
+        $app['security.role_hierarchy'] = array(
+            'ROLE_ADMIN' => array('ROLE_USER', 'ROLE_ALLOWED_TO_SWITCH'),
+        );
     }
 
     public function boot(Application $app) {

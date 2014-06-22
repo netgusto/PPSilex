@@ -75,14 +75,16 @@ class ClassicPlatformServiceProvider implements ServiceProviderInterface {
         # Site config service
         #
 
-        $configfile = $app['environment']->getRootDir() . '/data/config/config.yml';
-        if(!is_file($configfile)) {
-            $exception = new MozzaException\SiteConfigFileMissingException();
-            $exception->setFilepath($configfile);
-            throw $exception;
-        }
+        $app['config.site'] = $app->share(function() use ($app, $parameters) {
+            #debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
-        $app['config.site'] = $app->share(function() use ($app, $parameters, $configfile) {
+            $configfile = $app['environment']->getRootDir() . '/data/config/config.yml';
+            if(!is_file($configfile)) {
+                $exception = new MozzaException\MaintenanceNeeded\SiteConfigFileMissingMaintenanceNeededException();
+                $exception->setFilepath($configfile);
+                throw $exception;
+            }
+
             $filebackedconfig = new MozzaServices\Config\Loader\FileBackedConfigLoaderService($parameters);
             return new MozzaServices\Config\SiteConfigService(
                 $filebackedconfig->load($configfile)

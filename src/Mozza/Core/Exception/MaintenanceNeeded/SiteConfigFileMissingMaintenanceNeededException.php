@@ -10,7 +10,7 @@ class SiteConfigFileMissingMaintenanceNeededException
 
     protected $filepath;
     
-    public function setFilePath() {
+    public function setFilePath($filepath) {
         $this->filepath = $filepath;
         return $this;
     }

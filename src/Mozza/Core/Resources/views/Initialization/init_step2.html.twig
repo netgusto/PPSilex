@@ -13,7 +13,7 @@
         <p>As the blog owner, you have the special ability to get behind the curtain, in the administrative space.</p>
         <p>To create your administrative account now, <strong>please fill your email and password in the form below.</strong></p>
 
-        {{ form_start(form, { 'attr': { 'class': 'pure-form pure-form-aligned', 'autocomplete': 'off' }}) }}
+        {{ form_start(form, { 'attr': { 'class': 'pure-form pure-form-aligned', 'autocomplete': 'off', 'novalidate': 'novalidate' }}) }}
             <fieldset>
                 <div class="pure-control-group{% if form.email.vars.errors|length %} has-error{% endif %}">
                     {{ form_label(form.email, label|default(null)) }}

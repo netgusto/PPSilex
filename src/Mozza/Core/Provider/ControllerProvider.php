@@ -11,8 +11,9 @@ use Mozza\Core\Controller as MozzaController,
     Mozza\Core\Exception as MozzaException;
 
 class ControllerProvider implements ServiceProviderInterface, ControllerProviderInterface {
-    
+
     public function register(Application $app) {
+
         # The controller responsible for the homepage
         $app['home.controller'] = $app->share(function() use ($app) {
             return new MozzaController\HomeController(
@@ -75,73 +76,9 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                 $app['twig']
             );
         });
-    }
-
-    public function connect(Application $app) {
-    }
-
-    public function boot(Application $app) {
-        ###############################################################################
-        # Routing the request
-        ###############################################################################
-
-        # Initialization controllers
-
-        $app->get('_init/welcome', 'initialization.controller:welcomeAction')
-            ->bind('_init_welcome');
-
-        $app->match('_init/step1/db', 'initialization.controller:step1CreateDbAction')
-            ->bind('_init_step1_createdb')
-            ->assert('_method', 'get|post');
-
-        $app->match('_init/step1/createschema', 'initialization.controller:step1CreateSchemaAction')
-            ->bind('_init_step1_createschema')
-            ->assert('_method', 'get|post');
-
-        $app->match('_init/step1/updateschema', 'initialization.controller:step1UpdateSchemaAction')
-            ->bind('_init_step1_updateschema')
-            ->assert('_method', 'get|post');
-
-        $app->match('_init/step2', 'initialization.controller:step2Action')
-            ->bind('_init_step2')
-            ->assert('_method', 'get|post');
-
-        $app->get('_init/finish', 'initialization.controller:finishAction')
-            ->bind('_init_finish');
-
-        $app->get('login', 'auth.controller:loginAction')
-            ->bind('login');
-
-        # Filename empty: The Home Page (All Posts)
-        $app->get('/', 'home.controller:indexAction')
-            ->bind('home');
-
-        # Home page with page > 1
-        $app->match('/page/{page}', 'home.controller:indexAction')
-            ->assert('page', '[2-9]|[0-9]{2,}')
-            ->bind('home_paged');
-
-        # Filename /rss or /atom: RSS Feed
-        $app->get('rss', 'feed.controller:indexAction')
-            ->bind('rss');
-
-        # Filename /rss or /atom: RSS Feed
-        $app->get('json/posts', 'json.controller:indexAction')
-            ->bind('json.posts');
-
-        # Filename /rss or /atom: RSS Feed
-        $app->get('json/posts/{slug}', 'json.controller:postAction')
-            ->assert('slug', '.+')
-            ->bind('json.post');
-
-        # Filename path/to/post.md: Single Post Pages
-        $app->get('{slug}', 'post.controller:indexAction')
-            ->assert('slug', '.+')
-            ->assert('slug', '^((?!_profiler).)*$')
-            ->bind('post');
-
+        
         $app->error(function (\Exception $e, $code) use ($app) {
-
+            
             $refinedexception = null;
             
             if(
@@ -273,5 +210,79 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
             }
 
         });
+    }
+
+    public function connect(Application $app) {
+
+        # creates a new controller based on the default route
+        $controllers = $app['controllers_factory'];
+
+        ###############################################################################
+        # Routing the request
+        ###############################################################################
+
+        # Initialization controllers
+
+        $controllers->get('_init/welcome', 'initialization.controller:welcomeAction')
+            ->bind('_init_welcome');
+
+        $controllers->match('_init/step1/db', 'initialization.controller:step1CreateDbAction')
+            ->bind('_init_step1_createdb')
+            ->assert('_method', 'get|post');
+
+        $controllers->match('_init/step1/createschema', 'initialization.controller:step1CreateSchemaAction')
+            ->bind('_init_step1_createschema')
+            ->assert('_method', 'get|post');
+
+        $controllers->match('_init/step1/updateschema', 'initialization.controller:step1UpdateSchemaAction')
+            ->bind('_init_step1_updateschema')
+            ->assert('_method', 'get|post');
+
+        $controllers->match('_init/step2', 'initialization.controller:step2Action')
+            ->bind('_init_step2')
+            ->assert('_method', 'get|post');
+
+        $controllers->get('_init/finish', 'initialization.controller:finishAction')
+            ->bind('_init_finish');
+
+        $controllers->get('admin', 'admin.controller:dashboardAction')
+            ->bind('admin');
+
+        $controllers->get('login', 'auth.controller:loginAction')
+            ->bind('login');
+
+        # Filename empty: The Home Page (All Posts)
+        $controllers->get('/', 'home.controller:indexAction')
+            ->bind('home');
+
+        # Home page with page > 1
+        $controllers->match('/page/{page}', 'home.controller:indexAction')
+            ->assert('page', '[2-9]|[0-9]{2,}')
+            ->bind('home_paged');
+
+        # Filename /rss or /atom: RSS Feed
+        $controllers->get('rss', 'feed.controller:indexAction')
+            ->bind('rss');
+
+        # Filename /rss or /atom: RSS Feed
+        $controllers->get('json/posts', 'json.controller:indexAction')
+            ->bind('json.posts');
+
+        # Filename /rss or /atom: RSS Feed
+        $controllers->get('json/posts/{slug}', 'json.controller:postAction')
+            ->assert('slug', '.+')
+            ->bind('json.post');
+
+        # Filename path/to/post.md: Single Post Pages
+        $controllers->get('{slug}', 'post.controller:indexAction')
+            ->assert('slug', '.+')
+            ->assert('slug', '^((?!_profiler).)*$')
+            ->bind('post');
+
+        return $controllers;
+    }
+
+    public function boot(Application $app) {
+        $app->mount('/', $this->connect($app));
     }
 }

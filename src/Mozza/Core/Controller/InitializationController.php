@@ -15,6 +15,7 @@ use \Doctrine\ORM\EntityManager;
 
 use Mozza\Core\Exception as MozzaException,
     Mozza\Core\Services as MozzaServices,
+    Mozza\Core\Entity\User,
     Mozza\Core\Form\Type as FormType,
     Mozza\Core\Entity\SystemStatus,
     Mozza\Core\Entity\HierarchicalConfig;
@@ -23,6 +24,9 @@ class InitializationController {
 
     protected $twig;
     protected $environment;
+    protected $urlgenerator;
+    protected $formfactory;
+    protected $em;
 
     public function __construct(
         Twig_Environment $twig,
@@ -55,6 +59,10 @@ class InitializationController {
             }
             case $e instanceOf MozzaException\InitializationNeeded\DatabaseEmptyInitializationNeededException: {
                 $action = 'databaseEmptyAction';
+                break;
+            }
+            case $e instanceOf MozzaException\InitializationNeeded\SystemStatusMarkedAsUninitializedInitializationNeededException: {
+                $action = 'systemStatusMarkedAsUninitializedAction';
                 break;
             }
             default: {
@@ -117,6 +125,13 @@ class InitializationController {
         return new RedirectResponse($this->urlgenerator->generate('_init_welcome'));
     }
 
+    public function systemStatusMarkedAsUninitializedAction(Request $request, Application $app, MozzaException\InitializationNeeded\SystemStatusMarkedAsUninitializedInitializationNeededException $e) {
+        # System status exists, but marked as unitialized
+        # It means that the initialization process has not passed step 2 yet
+        
+        return new RedirectResponse($this->urlgenerator->generate('_init_step2'));
+    }
+
     public function welcomeAction(Request $request, Application $app, $tasks = array()) {
 
         if($this->environment->getInitializationMode() !== TRUE) {
@@ -148,7 +163,7 @@ class InitializationController {
             $this->createDatabase($this->em->getConnection());
             $this->createSchema($this->em);
             $this->createSystemStatus($this->em, $app['version']);
-            $this->createSiteConfig($this->em, $app['environment']->getRootDir());
+            $this->createSiteConfig($this->em, $app['environment']);
 
             return new RedirectResponse($this->urlgenerator->generate('_init_step2'));
         }
@@ -167,7 +182,7 @@ class InitializationController {
             # The schemas are created
             $this->createSchema($this->em);
             $this->createSystemStatus($this->em, $app['version']);
-            $this->createSiteConfig($this->em, $app['environment']->getRootDir());
+            $this->createSiteConfig($this->em, $app['environment']);
 
             return new RedirectResponse($this->urlgenerator->generate('_init_step2'));
         }
@@ -182,8 +197,29 @@ class InitializationController {
         $form = $this->formfactory->create(new FormType\WelcomeStep2Type());
         $form->handleRequest($request);
         if($form->isValid()) {
-            var_dump($form->getData());
-           die('VALID !');
+
+            $data = $form->getData();
+            $user = new User();
+
+            $user->setEmail($data['email']);
+            $user->setSalt(md5(rand() . microtime()));
+            $user->setRoles(array('ROLE_ADMIN'));
+            $user->setPassword(
+                $app['security.encoder_factory']
+                    ->getEncoder($user)
+                    ->encodePassword(
+                        $data['password'],
+                        $user->getSalt()
+                    )
+            );
+
+            $this->em->persist($user);
+            $this->em->flush();
+
+            # We mark the application as initialized
+            $app['system.status']->setInitialized(TRUE);
+
+            return new RedirectResponse($this->urlgenerator->generate('_init_finish'));
         }
 
         return $this->twig->render('@MozzaCore/Initialization/init_step2.html.twig', array(
@@ -210,14 +246,16 @@ class InitializationController {
     protected function createSystemStatus(\Doctrine\ORM\EntityManager $em, $appversion) {
         $systemStatus = new SystemStatus();
         $systemStatus->setConfiguredversion($appversion);
+        $systemStatus->setInitialized(FALSE);
 
         $em->persist($systemStatus);
         $em->flush();
     }
 
-    protected function createSiteConfig(\Doctrine\ORM\EntityManager $em, $rootdir) {
+    protected function createSiteConfig(\Doctrine\ORM\EntityManager $em, MozzaServices\Context\EnvironmentService $environment) {
 
-        $configfile = $rootdir . '/data/config/config.yml';
+        #$configfile = $rootdir . '/data/config/config.yml';
+        $configfile = $environment->getSrcdir() . '/Mozza/Core/Resources/config/config.yml.dist';
 
         $siteconfig = new HierarchicalConfig();
         $siteconfig->setName('config.site');

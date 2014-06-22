@@ -5,7 +5,8 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
 use Mozza\Core\Services as MozzaServices,
-    Mozza\Core\Provider as MozzaProvider;
+    Mozza\Core\Provider as MozzaProvider,
+    Mozza\Core\Exception as MozzaException;
 
 # Here we go
 
@@ -81,11 +82,18 @@ $app->register(new MozzaProvider\BusinessLogicServiceProvider());
 
 $app->register(new MozzaProvider\ControllerProvider());
 
-###############################################################################
-# Handling cache
-###############################################################################
-
 $app->before(function(Request $req) use($app) {
+    
+    ###############################################################################
+    # Checking if all systems are GO
+    ###############################################################################
+    if($app['system.status']->getInitialized() !== TRUE) {
+        throw new MozzaException\InitializationNeeded\SystemStatusMarkedAsUninitializedInitializationNeededException();
+    }
+
+    ###############################################################################
+    # Handling cache
+    ###############################################################################
     $app['post.cachehandler']->updateCacheIfNeeded();
 });
 

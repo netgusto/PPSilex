@@ -13,6 +13,8 @@ class SystemStatus {
 
     protected $configuredversion;
 
+    protected $initialized = FALSE;
+
     /**
      * Get id
      *
@@ -67,5 +69,28 @@ class SystemStatus {
     public function getConfiguredversion()
     {
         return $this->configuredversion;
+    }
+
+    /**
+     * Set initialized
+     *
+     * @param boolean $initialized
+     * @return SystemStatus
+     */
+    public function setInitialized($initialized)
+    {
+        $this->initialized = $initialized;
+
+        return $this;
+    }
+
+    /**
+     * Get initialized
+     *
+     * @return string 
+     */
+    public function getInitialized()
+    {
+        return $this->initialized;
     }
 }

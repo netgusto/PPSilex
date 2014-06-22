@@ -17,4 +17,8 @@ Mozza\Core\Entity\SystemStatus:
             length: 32
             nullable: false
 
+        initialized:
+            type: boolean
+            nullable: false
+
     lifecycleCallbacks: {  }
