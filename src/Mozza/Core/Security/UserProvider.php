@@ -8,6 +8,8 @@ use Symfony\Component\Security\Core\User\UserProviderInterface,
     Symfony\Component\Security\Core\Exception\UnsupportedUserException,
     Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
+use Mozza\Core\Entity\AppUser;
+
 use Doctrine\ORM\EntityManager;
 
 class UserProvider implements UserProviderInterface {
@@ -20,7 +22,7 @@ class UserProvider implements UserProviderInterface {
 
     public function loadUserByUsername($email) {
 
-        $user = $this->em->getRepository('Mozza\Core\Entity\User')->findOneByEmail($email);
+        $user = $this->em->getRepository('Mozza\Core\Entity\AppUser')->findOneByEmail($email);
         if($user) {
             return $user;
         }
@@ -30,7 +32,7 @@ class UserProvider implements UserProviderInterface {
 
     public function refreshUser(UserInterface $user) {
 
-        if (!$user instanceof User) {
+        if (!$user instanceof AppUser) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
         }
 
@@ -38,6 +40,7 @@ class UserProvider implements UserProviderInterface {
     }
 
     public function supportsClass($class) {
-        return $class === 'Mozza\Core\Entity\User';
+        die($class);
+        return $class === 'Mozza\Core\Entity\AppUser';
     }
 }

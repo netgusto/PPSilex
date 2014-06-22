@@ -1,0 +1,34 @@
+{% extends '@MozzaAdmin/base.html.twig' %}
+
+{% block body %}
+
+{% if error %}
+    {{ error }}
+{% endif %}
+
+<form class="form-horizontal" action="{{ path('admin_authcheck') }}" method="post">
+    
+    <div class="form-group">
+        <label class="col-lg-4 control-label" for="_username">Username</label>
+        <div class="col-lg-8">
+            <input class="form-control" type="text" id="username" name="_username" placeholder="Username" value="{{ last_username }}">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-4 control-label" for="_password">Password</label>
+        <div class="col-lg-8">
+            <input type="password" class="form-control" id="password" name="_password" placeholder="Password">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-8">
+            <button type="submit" class="btn btn-primary">Sign in</button>
+        </div>
+    </div>
+
+    <input type="hidden" name="_target_path" value="{{ path('admin.home') }}" />
+</form>
+{% endblock %}

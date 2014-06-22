@@ -79,6 +79,7 @@ class LowLevelServiceProvider implements ServiceProviderInterface {
             try {
                 $configservice = $app['config.site'];
             } catch(\Exception $e) {
+                # Config service is not available
             }
 
             if(!is_null($configservice)) {
@@ -141,13 +142,14 @@ class LowLevelServiceProvider implements ServiceProviderInterface {
 
         $app->register(new SecurityServiceProvider(), array(
             'security.firewalls' => array(
+                'admin_login' => array(
+                    'pattern' => '^/admin/login',
+                    'anonymous' => TRUE,
+                ),
                 'admin' => array(
                     'pattern' => '^/admin',
-                    'form' => array('login_path' => '/login', 'check_path' => '/admin/login_check'),
-                    #'users' => array(
-                    #    // raw password is foo
-                    #    'admin' => array('ROLE_ADMIN', '5FZ2Z8QIkA7UTZ4BYkoC+GsReLf569mSKDsfods6LYQ8t+a8EW9oaircfMpmaLbPBh4FOBiiFyLfuZmTSUwzZg=='),
-                    #),
+                    'form' => array('login_path' => '/admin/login', 'check_path' => '/admin/authcheck'),
+                    'logout' => array('logout_path' => '/admin/logout'),
                     'users' => $app->share(function () use ($app) {
                         return new UserProvider($app['orm.em']);
                     }),

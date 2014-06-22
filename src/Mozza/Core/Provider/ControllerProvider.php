@@ -247,12 +247,6 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         $controllers->get('_init/finish', 'initialization.controller:finishAction')
             ->bind('_init_finish');
 
-        $controllers->get('admin', 'admin.controller:dashboardAction')
-            ->bind('admin');
-
-        $controllers->get('login', 'auth.controller:loginAction')
-            ->bind('login');
-
         # Filename empty: The Home Page (All Posts)
         $controllers->get('/', 'home.controller:indexAction')
             ->bind('home');
