@@ -58,7 +58,7 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
             );
         });
 
-        # The controller responsible for maintenance handling
+        # The controller responsible for initialization handling
         $app['initialization.controller'] = $app->share(function() use ($app) {
             return new MozzaController\InitializationController(
                 $app['twig'],
@@ -85,7 +85,7 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         # Routing the request
         ###############################################################################
 
-        # Maintenance controllers
+        # Initialization controllers
 
         $app->get('_init/welcome', 'initialization.controller:welcomeAction')
             ->bind('_init_welcome');
@@ -142,10 +142,13 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
 
         $app->error(function (\Exception $e, $code) use ($app) {
 
-            $maintenanceexception = null;
+            $refinedexception = null;
             
-            if($e instanceof MozzaException\ApplicationNeedsMaintenanceExceptionInterface) {
-                $maintenanceexception = $e;
+            if(
+                $e instanceof MozzaException\MaintenanceNeeded\MaintenanceNeededExceptionInterface ||
+                $e instanceof MozzaException\InitializationNeeded\InitializationNeededExceptionInterface
+            ) {
+                $refinedexception = $e;
             } else if(
                 $e instanceof \Doctrine\DBAL\DBALException ||
                 $e instanceof \PDOException
@@ -172,8 +175,8 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                         case '42': {
                             switch($errorsubclass) {
                                 case 'S22': {
-                                    $maintenanceexception = new MozzaException\DatabaseNeedsUpdateException();
-                                    $maintenanceexception->setInformationalLabel($errorinfo['2']);
+                                    $refinedexception = new MozzaException\MaintenanceNeeded\DatabaseUpdateMaintenanceNeededException();
+                                    $refinedexception->setInformationalLabel($errorinfo['2']);
                                     break;
                                 }
                             }
@@ -182,7 +185,7 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                     }
                 }
 
-                if(is_null($maintenanceexception)) {
+                if(is_null($refinedexception)) {
                     # Heuristic error detection
 
                     # We check if the database exists
@@ -190,39 +193,39 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                         $tables = $app['db']->getSchemaManager()->listTableNames();
                     } catch(\PDOException $e) {
                         if(strpos($e->getMessage(), 'Access denied') !== FALSE) {
-                            $maintenanceexception = new MozzaException\DatabaseInvalidCredentialsException();
+                            $refinedexception = new MozzaException\MaintenanceNeeded\DatabaseInvalidCredentialsMaintenanceNeededException();
                         } else {
-                            $maintenanceexception = new MozzaException\DatabaseMissingException();
+                            $refinedexception = new MozzaException\InitializationNeeded\DatabaseMissingInitializationNeededException();
                         }
                     }
 
                     if(
-                        is_null($maintenanceexception) && (
+                        is_null($refinedexception) && (
                             stripos($e->getMessage(), 'Invalid table name') !== FALSE ||
                             stripos($e->getMessage(), 'no such table') !== FALSE ||
                             stripos($e->getMessage(), 'Base table or view not found') !== FALSE
                         )
                     ) {
                         if(empty($tables)) {
-                            $maintenanceexception = new MozzaException\DatabaseEmptyException();
+                            $refinedexception = new MozzaException\InitializationNeeded\DatabaseEmptyInitializationNeededException();
                         } else {
-                            $maintenanceexception = new MozzaException\DatabaseNeedsUpdateException();
+                            $refinedexception = new MozzaException\MaintenanceNeeded\DatabaseUpdateMaintenanceNeededException();
                         }
                     }
 
                     if(
-                        is_null($maintenanceexception) && (
+                        is_null($refinedexception) && (
                             stripos($e->getMessage(), 'Unknown column') !== FALSE
                         )
                     ) {
-                        $maintenanceexception = new MozzaException\DatabaseNeedsUpdateException();
+                        $refinedexception = new MozzaException\MaintenanceNeeded\DatabaseUpdateMaintenanceNeededException();
                     }
                 }
             }
 
-            if(!is_null($maintenanceexception)) {
+            if(!is_null($refinedexception)) {
 
-                if($maintenanceexception instanceOf MozzaException\InitializationTriggeringExceptionInterface) {
+                if($refinedexception instanceOf MozzaException\InitializationNeeded\InitializationNeededExceptionInterface) {
 
                     # Enabling initialization mode
                     $app['environment']->setInitializationMode(TRUE);
@@ -233,17 +236,18 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                         return $app['initialization.controller']->proceedWithInitializationRequestAction(
                             $app['request'],
                             $app,
-                            $maintenanceexception,
-                            $code
+                            $refinedexception
                         );
                     } else {
                         return $app['initialization.controller']->reactToExceptionAction(
                             $app['request'],
                             $app,
-                            $maintenanceexception,
-                            $code
+                            $refinedexception
                         );
                     }
+                } else if($refinedexception instanceOf MozzaException\MaintenanceNeeded\MaintenanceNeededExceptionInterface) {
+                    # Maintenance exception are not handled yet
+                    throw $refinedexception;
                 }
             }
 

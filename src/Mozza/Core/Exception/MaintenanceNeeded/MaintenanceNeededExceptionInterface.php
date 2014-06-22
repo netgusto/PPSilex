@@ -1,8 +1,8 @@
 <?php
 
-namespace Mozza\Core\Exception;
+namespace Mozza\Core\Exception\MaintenanceNeeded;
 
-interface ApplicationNeedsMaintenanceExceptionInterface {
+interface MaintenanceNeededExceptionInterface {
     public function setInformationalLabel($label);
     public function getInformationalLabel();
 }

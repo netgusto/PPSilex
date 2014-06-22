@@ -1,8 +1,8 @@
 <?php
 
-namespace Mozza\Core\Exception;
+namespace Mozza\Core\Exception\MaintenanceNeeded;
 
-trait ApplicationNeedsMaintenanceExceptionTrait {
+trait MaintenanceNeededExceptionTrait {
     
     protected $label;
 
