@@ -78,7 +78,7 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         });
         
         $app->error(function (\Exception $e, $code) use ($app) {
-            
+
             $refinedexception = null;
             
             if(
@@ -98,7 +98,8 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                     $errorinfo = null;
                 }
 
-                if(!is_null($errorinfo)) {
+                /*if(!is_null($errorinfo)) {
+                    var_dump($errorinfo);
                     # Deterministic error detection
                     $sqlstate = $errorinfo[0];
                     $errorclass = strtoupper(substr($errorinfo[0], 0, 2));
@@ -120,7 +121,7 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                             break;
                         }
                     }
-                }
+                }*/
 
                 if(is_null($refinedexception)) {
                     # Heuristic error detection
@@ -140,7 +141,8 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
                         is_null($refinedexception) && (
                             stripos($e->getMessage(), 'Invalid table name') !== FALSE ||
                             stripos($e->getMessage(), 'no such table') !== FALSE ||
-                            stripos($e->getMessage(), 'Base table or view not found') !== FALSE
+                            stripos($e->getMessage(), 'Base table or view not found') !== FALSE ||
+                            stripos($e->getMessage(), 'Undefined table') !== FALSE
                         )
                     ) {
                         if(empty($tables)) {
