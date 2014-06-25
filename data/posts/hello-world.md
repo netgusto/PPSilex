@@ -9,15 +9,15 @@ image: desk.jpg
 about: [life, universe, everything]
 comments: off
 ---
-Welcome to **Mozza**.
+Welcome to **Pulpy**.
 
-**Mozza** is a deliciously simple [Markdown](http://daringfireball.net/projects/markdown/) blog system, based on [Silex](http://silex.sensiolabs.org).
+**Pulpy** is a deliciously simple [Markdown](http://daringfireball.net/projects/markdown/) blog system, based on [Silex](http://silex.sensiolabs.org).
 
-Mozza is designed to be an ascetic solution to online post publication, rather than a do-it-all piece of software.
+Pulpy is designed to be an ascetic solution to online post publication, rather than a do-it-all piece of software.
 
 Posts are Markdown files, stored in a folder of the website (`data/posts`). To add a post, simply create a file in this folder.
 
-![](res/mozza-logo.png)
+![](res/pulpy-logo.png)
 *This is the looon image legend This is the looon image legend This is the looon image legend This is the looon image legend This is the looon image legend*
 
 
@@ -33,7 +33,7 @@ Posts are Markdown files, stored in a folder of the website (`data/posts`). To a
 
     2. To define your post metadata, like it's date, or title, you'll have to use the yaml front matter notation; have a look at `hello-world.md` to see how it's done
 
-3. Once you created your first post, remove the default posts by deleting the files `data/posts/hello-world.md` and `data/posts/setting-up-mozza.md`.
+3. Once you created your first post, remove the default posts by deleting the files `data/posts/hello-world.md` and `data/posts/setting-up-pulpy.md`.
 
 # Le code block title
 

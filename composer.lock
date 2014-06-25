@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b43475b49506acab62d185d7469a9682",
+    "hash": "7e935cd8f6a823c92e3c18e2babe572d",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -293,7 +293,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -347,7 +347,7 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan H. Wage",
+                    "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
                     "homepage": "http://www.jwage.com/",
                     "role": "Creator"
@@ -368,7 +368,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -414,7 +414,7 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan Wage",
+                    "name": "Jonathan H. Wage",
                     "email": "jonwage@gmail.com",
                     "homepage": "http://www.jwage.com/",
                     "role": "Creator"
@@ -435,7 +435,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -952,12 +952,12 @@
             "type": "library"
         },
         {
-            "name": "netgusto/mozza-theme-casper",
-            "version": "1.0.5",
+            "name": "netgusto/pulpy-theme-casper",
+            "version": "1.0.7",
             "source": {
                 "type": "git",
-                "url": "https://github.com/netgusto/Mozza-Theme-Casper.git",
-                "reference": "f94c40afe3cf762ded7396f9fd5f35174cfb9833"
+                "url": "https://github.com/netgusto/Pulpy-Theme-Casper.git",
+                "reference": "3afcc2e9055d91e6f6b19f777e86bda6da402a39"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -972,24 +972,24 @@
                     "email": "contact@netgusto.com"
                 }
             ],
-            "description": "The Casper Theme from Ghost, adapted to Mozza",
-            "homepage": "https://github.com/netgusto/mozza-theme-casper",
+            "description": "The Casper Theme from Ghost, adapted to Pulpy",
+            "homepage": "https://github.com/netgusto/pulpy-theme-casper",
             "keywords": [
                 "casper",
                 "ghost",
-                "mozza",
+                "pulpy",
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-19 11:42:31"
+            "time": "2014-06-25 12:02:08"
         },
         {
-            "name": "netgusto/mozza-theme-dropplets",
-            "version": "1.0.9",
+            "name": "netgusto/pulpy-theme-dropplets",
+            "version": "1.0.12",
             "source": {
                 "type": "git",
-                "url": "https://github.com/netgusto/Mozza-Theme-Dropplets.git",
-                "reference": "90a5352c0f0cc668c71bfe7e7046e7e258868edb"
+                "url": "https://github.com/netgusto/Pulpy-Theme-Dropplets.git",
+                "reference": "06432f35cb00329426f15d0322f5b1a9c78490f3"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -1004,22 +1004,22 @@
                     "email": "contact@netgusto.com"
                 }
             ],
-            "description": "Dropplets theme for Mozza",
-            "homepage": "https://github.com/netgusto/mozza-theme-dropplets",
+            "description": "Dropplets theme for Pulpy",
+            "homepage": "https://github.com/netgusto/pulpy-theme-dropplets",
             "keywords": [
-                "mozza",
+                "pulpy",
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-18 10:37:57"
+            "time": "2014-06-25 12:00:00"
         },
         {
-            "name": "netgusto/mozza-theme-medium",
-            "version": "1.0.14",
+            "name": "netgusto/pulpy-theme-medium",
+            "version": "1.0.17",
             "source": {
                 "type": "git",
-                "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
-                "reference": "e3f2ceacf36bb8f5814534ad24da4d242b3843c1"
+                "url": "https://github.com/netgusto/Pulpy-Theme-Medium.git",
+                "reference": "b85d6522ecf5834e603620218bab0e693adfcb64"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -1034,15 +1034,15 @@
                     "email": "contact@netgusto.com"
                 }
             ],
-            "description": "Medium theme for Mozza",
-            "homepage": "https://github.com/netgusto/mozza-theme-medium",
+            "description": "Medium theme for Pulpy",
+            "homepage": "https://github.com/netgusto/pulpy-theme-medium",
             "keywords": [
                 "medium",
-                "mozza",
+                "pulpy",
                 "silex",
                 "theme"
             ],
-            "time": "2014-06-18 10:39:49"
+            "time": "2014-06-25 12:01:03"
         },
         {
             "name": "pimple/pimple",

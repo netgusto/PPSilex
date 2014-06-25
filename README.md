@@ -1,10 +1,10 @@
-# Mozza
+# Pulpy
 
 Deliciously simple Markdown blog system, based on Silex.
 
 ## Demo
 
-Net Gusto's blog uses Mozza: <http://blog.netgusto.com/>
+Net Gusto's blog uses Pulpy: <http://blog.netgusto.com/>
 
 ## Install
 
@@ -12,17 +12,17 @@ The installation requires composer. Get it at <http://getcomposer.org>
 
 ```bash
 $ cd /path/to/www
-$ git clone https://github.com/netgusto/Mozza.git
-$ cd Mozza
+$ git clone https://github.com/netgusto/Pulpy.git
+$ cd Pulpy
 $ composer install
 ```
 
 ## Test-run the application
 
-To test-run Mozza, you may just use the PHP built-in server, using these commands (requires PHP 5.4+):
+To test-run Pulpy, you may just use the PHP built-in server, using these commands (requires PHP 5.4+):
 
 ```bash
-$ cd /path/to/www/Mozza
+$ cd /path/to/www/Pulpy
 $ php -S 0.0.0.0:8000 -t web web/index.php
 ```
 
@@ -56,14 +56,14 @@ The default parameters are:
 
 ```yaml
 site:
-    title: My Mozza blog                        # The name of your blog; required                
+    title: My Pulpy blog                        # The name of your blog; required                
     description: "Stuff about everything"       # A short description of this blog; required
-    theme: netgusto/mozza-theme-medium          # the package name of the theme; required try also netgusto/mozza-theme-dropplets
+    theme: netgusto/pulpy-theme-medium          # the package name of the theme; required try also netgusto/pulpy-theme-dropplets
     locale: fr_FR.UTF-8                         # The server locale; required
     owner:
         name: Me                                # Your full name, or your company name; required
-        twitter: GetMozza                       # Your twitter username; required
-        mail: mozza@netgusto.com                # Your email; required
+        twitter: GetPulpy                       # Your twitter username; required
+        mail: pulpy@netgusto.com                # Your email; required
         website: http://netgusto.com            # Your website URL (not this blog); required
     about:
         slug: about                             # the slug of a post used for your About page; optional
@@ -75,7 +75,7 @@ date:
 components:
     
     disqus:
-        shortname: mozzablog                    # the Disqus ID for your blog; optional
+        shortname: pulpyblog                    # the Disqus ID for your blog; optional
 
     googleanalytics:
         uacode: UA-XXXXXXXX-X                   # the Google analytic UA code; optional
@@ -98,10 +98,10 @@ date: 2014-06-01 12:00          # The date of the post; required
 status: publish                 # The status of the post (draft, publish); optional, publish by default
 
 image: desk.jpg                 # The image associated with the post; required, path relative to data/res
-about: [this blog, mozza]       # An array of categories; optional; not all themes use this
+about: [this blog, pulpy]       # An array of categories; optional; not all themes use this
 comments: off                   # Wether or not to display the comment form; optional; not all themes support comments
 ---
-Stuffed with Markdown flavoured **Mozza**.
+Stuffed with Markdown flavoured **Pulpy**.
 
 At Net Gusto, we love [**Markdown**](http://daringfireball.net/projects/markdown/), so much even that we placed it at the center of our work processes. We like it's *simplicity*, its *readability*, its *universalism*.
 

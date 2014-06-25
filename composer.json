@@ -35,24 +35,24 @@
         "dflydev/doctrine-orm-service-provider": "v1.0.4",
         "knplabs/console-service-provider": "dev-master",
 
-        "netgusto/mozza-theme-dropplets": "~1.0",
-        "netgusto/mozza-theme-medium": "~1.0",
-        "netgusto/mozza-theme-casper": "~1.0",
+        "netgusto/pulpy-theme-dropplets": "~1.0",
+        "netgusto/pulpy-theme-medium": "~1.0",
+        "netgusto/pulpy-theme-casper": "~1.0",
         "aws/aws-sdk-php": "2.6.7",
         
         "brianium/habitat": "v1.0.0"
     },
     "repositories": [
         {
-            "url": "https://github.com/netgusto/Mozza-Theme-Dropplets.git",
+            "url": "https://github.com/netgusto/Pulpy-Theme-Dropplets.git",
             "type": "git"
         },
         {
-            "url": "https://github.com/netgusto/Mozza-Theme-Medium.git",
+            "url": "https://github.com/netgusto/Pulpy-Theme-Medium.git",
             "type": "git"
         },
         {
-            "url": "https://github.com/netgusto/Mozza-Theme-Casper.git",
+            "url": "https://github.com/netgusto/Pulpy-Theme-Casper.git",
             "type": "git"
         },
         {
@@ -146,10 +146,10 @@
     ],
     "scripts": {
         "post-install-cmd": [
-            "Mozza\\Core\\Composer\\ScriptHandler::forwardAssetsToWebDir"
+            "Pulpy\\Core\\Composer\\ScriptHandler::forwardAssetsToWebDir"
         ],
         "post-update-cmd": [
-            "Mozza\\Core\\Composer\\ScriptHandler::forwardAssetsToWebDir"
+            "Pulpy\\Core\\Composer\\ScriptHandler::forwardAssetsToWebDir"
         ]
     },
     "extra": {
@@ -179,9 +179,9 @@
                 "zipball/purecss-layout-email",
 
                 "font-awesome/font-awesome",
-                "netgusto/mozza-theme-dropplets",
-                "netgusto/mozza-theme-medium",
-                "netgusto/mozza-theme-casper"
+                "netgusto/pulpy-theme-dropplets",
+                "netgusto/pulpy-theme-medium",
+                "netgusto/pulpy-theme-casper"
             ]
         }
     }

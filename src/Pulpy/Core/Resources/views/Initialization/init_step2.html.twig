@@ -1,0 +1,40 @@
+{% extends '@PulpyCore/Initialization/base.html.twig' %}
+
+{% block body %}
+{% embed '@PulpyCore/Initialization/embeddable/layout.header+content.html.twig' %}
+
+    {% block header %}
+        <h1>Your admin account</h1>
+        <h2>Setting things up</h2>
+    {% endblock header %}
+
+    {% block content %}
+        <h1 class="content-subhead">Your administrative account</h1>
+        <p>As the blog owner, you have the special ability to get behind the curtain, in the administrative space.</p>
+        <p>To create your administrative account now, <strong>please fill your email and password in the form below.</strong></p>
+
+        {{ form_start(form, { 'attr': { 'class': 'pure-form pure-form-aligned', 'autocomplete': 'off', 'novalidate': 'novalidate' }}) }}
+            <fieldset>
+                <div class="pure-control-group{% if form.email.vars.errors|length %} has-error{% endif %}">
+                    {{ form_label(form.email, label|default(null)) }}
+                    {{ form_widget(form.email) }}
+                    {% if not form.email.vars.valid %}<span class="help-block">{{ form.email.vars.errors[0].getMessage() }}</span>{% endif %}
+                </div>
+
+                {% for passwordField in form.password %}
+                    <div class="pure-control-group{% if passwordField.vars.errors|length %} has-error{% endif %}">
+                        {{ form_label(passwordField, label|default(null)) }}
+                        {{ form_widget(passwordField) }}
+                        {% if not passwordField.vars.valid %}<span class="help-block">{{ passwordField.vars.errors[0].getMessage() }}</span>{% endif %}
+                    </div>
+                {% endfor %}
+
+                {{ form_rest(form) }}
+            </fieldset>
+            <p class="mt3 text-center"><button type="submit" class="button-xxlarge pure-button pure-button-primary">Continue <i class="fa fa-arrow-circle-right"></i></button></p>
+        {{ form_end(form) }}
+
+    {% endblock content %}
+
+{% endembed %}
+{% endblock %}

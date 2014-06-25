@@ -1,0 +1,41 @@
+title: My Pulpy blog                        # The name of your blog; required                
+description: "Stuff about everything"       # A short description of this blog; required
+theme: netgusto/pulpy-theme-medium       # the package name of the theme; required
+
+posts:
+    dir: %data.dir%/posts
+    extension: md
+
+resources:
+    dir: res
+
+owner:
+    name: Me                                # Your full name, or your company name; required
+    twitter: GetPulpy                       # Your twitter username; required
+    mail: pulpy@netgusto.com                # Your email; required
+    website: http://netgusto.com            # Your website URL (not this blog); required
+    bio: "GIF punk, personal branding hacktivist, talent acquisition engineer. 80s kid."
+
+images:
+    logo: logo-netgusto.png                 # Your logo; relative to res/
+    cover: jet-sky.jpg                      # A nice hi-res illustrative jpg (~150KB max) used by compatible templates; relative to res/
+
+home:
+    postsperpage: 3
+
+pages:
+    about: about                                # the slug of a post used for your About page; optional
+
+culture:
+    locale: fr_FR.UTF-8                         # The server locale; required
+    date:
+        timezone: Europe/Paris                  # Timezone, as per http://en.wikipedia.org/wiki/List_of_tz_database_time_zones; required
+        format: "F jS, Y"                       # Date Format as explained here: http://php.net/date
+
+components:
+    
+    disqus:
+        shortname: pulpyblog                    # the Disqus ID for your blog; optional
+
+    googleanalytics:
+        uacode: UA-XXXXXXXX-X                   # the Google analytic UA code; optional

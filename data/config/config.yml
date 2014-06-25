@@ -1,6 +1,6 @@
-title: My Mozza blog                        # The name of your blog; required                
+title: My Pulpy blog                        # The name of your blog; required                
 description: "Stuff about everything"       # A short description of this blog; required
-theme: netgusto/mozza-theme-medium       # the package name of the theme; required
+theme: netgusto/pulpy-theme-medium       # the package name of the theme; required
 
 posts:
     dir: %data.dir%/posts
@@ -11,8 +11,8 @@ resources:
 
 owner:
     name: Me                                # Your full name, or your company name; required
-    twitter: GetMozza                       # Your twitter username; required
-    mail: mozza@netgusto.com                # Your email; required
+    twitter: GetPulpy                       # Your twitter username; required
+    mail: pulpy@netgusto.com                # Your email; required
     website: http://netgusto.com            # Your website URL (not this blog); required
     bio: "GIF punk, personal branding hacktivist, talent acquisition engineer. 80s kid."
 
@@ -35,7 +35,7 @@ culture:
 components:
     
     disqus:
-        shortname: mozzablog                    # the Disqus ID for your blog; optional
+        shortname: pulpyblog                    # the Disqus ID for your blog; optional
 
     googleanalytics:
         uacode: UA-XXXXXXXX-X                   # the Google analytic UA code; optional

@@ -4,11 +4,11 @@ use Silex\Application;
 
 use Symfony\Component\HttpFoundation\Request;
 
-use Mozza\Core\Services as CoreServices,
-    Mozza\Core\Provider as CoreProvider,
-    Mozza\Core\Exception as CoreException;
+use Pulpy\Core\Services as CoreServices,
+    Pulpy\Core\Provider as CoreProvider,
+    Pulpy\Core\Exception as CoreException;
 
-use Mozza\Admin\Provider as AdminProvider;
+use Pulpy\Admin\Provider as AdminProvider;
 
 # Here we go
 
@@ -55,7 +55,7 @@ $app['debug'] = $app['environment']->getDebug();
 
 $platformprovider = $app['environment']->getEnv('PLATFORM');
 if(!$platformprovider) {
-    $platformprovider = 'Mozza\Core\Provider\Platform\ClassicPlatformServiceProvider';
+    $platformprovider = 'Pulpy\Core\Provider\Platform\ClassicPlatformServiceProvider';
 }
 $app->register(new $platformprovider());
 
