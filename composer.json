@@ -160,11 +160,7 @@
             "php-config": [
                 "display_errors=on",
                 "log_errors=on"
-            ],
-            "engines": {
-                "php": "5.5.10",
-                "nginx": "1.5.4"
-            }
+            ]
         },
         "assetsforwarding": {
             "destdir": "web/vendor",
