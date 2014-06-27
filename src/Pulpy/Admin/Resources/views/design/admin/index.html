@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog &ndash; Layout Examples &ndash; Pure</title>
+<link rel="stylesheet" href="//yui.yahooapis.com/pure/0.5.0/pure-min.css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="icomoon/style.css" rel="stylesheet">
+<!--[if lte IE 8]>
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-old-ie-min.css">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
+<!--<![endif]-->
+<!--[if lt IE 9]>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
+<![endif]-->
+
+<link rel="stylesheet/less" type="text/css" href="style.less" />
+
+<script>
+  less = {
+    env: "development"/*,
+    async: false,
+    fileAsync: false,
+    poll: 1000,
+    functions: {},
+    dumpLineNumbers: "comments",
+    relativeUrls: false,
+    rootpath: ":/a.com/"*/
+  };
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/less.js/1.7.3/less.min.js"></script>
+</head>
+<body>
+
+<div id="bar" class="pure-g">
+    <div class="leftside pure-u-3-5">
+        <ul class="buttons"><!-- @ws
+            --><li class="brand"><a href="#"><i class="icon-pp-lemon"></i></a></li><!-- @ws 
+            --><li class="active"><a href="#"><i class="fa fa-cubes"></i> Content</a></li><!-- @ws
+            --><li><a href="#"><i class="fa fa-plus"></i> New post</a></li><!-- @ws
+            --><li><a href="#"><i class="fa fa-cog"></i> Settings</a></li><!-- @ws
+        --></ul>
+    </div>
+    <div class="rightside pure-u-2-5">
+        <ul class="logout"><!-- @ws
+            --><li style="line-height: 40px;"><a href="#"><i class="fa fa-eject"></i> Jérôme Schneider <span class="avatar" style="background-image: url(http://www.gravatar.com/avatar/82f5ba307fb38b396e7050ddc05328a7?s=200)" /></a></li><!-- @ws 
+        --></ul>
+    </div>
+</div>
+
+<div id="layout" class="pure-g">
+
+    <div id="postlist" class="pure-u-1">
+        <div class="list-inner">
+            <div class="pure-g">
+                <header class="pure-u-1">
+                    <div class="inner">
+
+                        <span>All posts</span>
+
+                        <div class="pull-right">
+                            <button class="pure-button wetasphalt"><i class="fa fa-plus"></i></button>
+                        </div>
+
+                    </div>
+                </header>
+                <div class="pure-u-1">
+
+                    <div class="scroller">
+                        <ol class="posts">
+                            <li>
+                                <a href="#">
+                                    <h3>Welcome to pulpy</h3>
+                                    <section class="post-meta">
+                                        <span class="post-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...</span>
+                                    </section>
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="#">
+                                    <h3>Welcome to pulpy</h3>
+                                    <section class="post-meta">
+                                        <span class="post-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...</span>
+                                    </section>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <h3>A longer title, for a much deeper post with some awesome quotes</h3>
+                                    <section class="post-meta">
+                                        <span class="post-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...</span>
+                                    </section>
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main" class="pure-u-1">
+        <div class="pure-g">
+            <header class="pure-u-1">
+                <div class="inner">
+                    <span>Published by Jérôme Schneider</span>
+
+                    <div class="pull-right">
+                        <button class="pure-button wetasphalt"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+            </header>
+            <section class="content-preview pure-u-1">
+                <div class="wrapper">
+                    <div class="scroller">
+                        <div class="innerwrapper">
+                        <h1>Welcome to Pulpy</h1>
+                        <p>You're live! Nice. We've put together a little post to introduce you to the Ghost editor and get you started. You can manage your content by signing in to the admin area at <code>&lt;your blog URL&gt;/ghost/</code>. When you arrive, you can select this post from a list on the left and see a preview of it on the right. Click the little pencil icon at the top of the preview to edit this post and read the next section!</p>
+
+                        <h2 id="gettingstarted">Getting Started !</h2>
+
+                        <p>Yes, this is nice :)</p>
+
+                        <p>Ghost uses something called Markdown for writing. Essentially, it's a shorthand way to manage your post formatting as you write!</p>
+
+                        <p>Writing in Markdown is really easy. In the left hand panel of Ghost, you simply write as you normally would. Where appropriate, you can use <em>shortcuts</em> to <strong>style</strong> your content. For example, a list:</p>
+
+                        <ul>
+                        <li>Item number one</li>
+                        <li>Item number two
+                        <ul><li>A nested item</li></ul></li>
+                        <li>A final item</li>
+                        </ul>
+
+                        <p>or with numbers!</p>
+
+                        <ol>
+                        <li>Remember to buy some milk  </li>
+                        <li>Drink the milk  </li>
+                        <li>Tweet that I remembered to buy the milk, and drank it</li>
+                        </ol>
+
+                        <h3 id="links">Links</h3>
+
+                        <p>Want to link to a source? No problem. If you paste in url, like <a href="http://ghost.org">http://ghost.org</a> - it'll automatically be linked up. But if you want to customise your anchor text, you can do that too! Here's a link to <a href="http://ghost.org">the Ghost website</a>. Neat.</p>
+
+                        <h3 id="whataboutimages">What about Images?</h3>
+
+                        <p>Images work too! Already know the URL of the image you want to include in your article? Simply paste it in like this to make it show up:</p>
+
+                        <p><img src="https://ghost.org/images/ghost.png" alt="The Ghost Logo"></p>
+
+                        <p>Not sure which image you want to use yet? That's ok too. Leave yourself a descriptive placeholder and keep writing. Come back later and drag and drop the image in to upload:</p>
+
+                        <h3 id="quoting">Quoting</h3>
+
+                        <p>Sometimes a link isn't enough, you want to quote someone on what they've said. It was probably very wisdomous. Is wisdomous a word? Find out in a future release when we introduce spellcheck! For now - it's definitely a word.</p>
+
+                        <blockquote>
+                          <p>Wisdomous - it's definitely a word.</p>
+                        </blockquote>
+
+                        <h3 id="workingwithcode">Working with Code</h3>
+
+                        <p>Got a streak of geek? We've got you covered there, too. You can write inline <code>&lt;code&gt;</code> blocks really easily with back ticks. Want to show off something more comprehensive? 4 spaces of indentation gets you there.</p>
+
+                        <pre><code>.awesome-thing {
+                            display: block;
+                            width: 100%;
+                        }
+                        </code></pre>
+
+                        <h3 id="readyforabreak">Ready for a Break?</h3>
+
+                        <p>Throw 3 or more dashes down on any new line and you've got yourself a fancy new divider. Aw yeah.</p>
+
+                        <hr>
+
+                        <h3 id="advancedusage">Advanced Usage</h3>
+
+                        <p>There's one fantastic secret about Markdown. If you want, you can  write plain old HTML and it'll still work! Very flexible.</p>
+
+                        <p><input type="text" placeholder="I'm an input field!"></p>
+
+                        <p>That should be enough to get you started. Have fun - and let us know what you think :)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
