@@ -1,0 +1,508 @@
+
+
+html.posts,
+html.posts body {
+  height: 100%;
+  overflow: hidden;
+}
+html.posts #postlist {
+  background: white;
+  color: #ecf0f1;
+  font-weight: lighter;
+  -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.05);
+  width: 35%;
+}
+html.posts #postlist header {
+  color: #95a5a6;
+  width: 100%;
+  line-height: 22px;
+}
+html.posts #postlist header .inner {
+  padding: 10px 15px;
+}
+html.posts #postlist header .inner span,
+html.posts #postlist header .inner button {
+  vertical-align: middle;
+}
+html.posts #postlist header button {
+  font-size: 0.6em;
+}
+html.posts #postlist .posts {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  border-top: 1px solid #ecf0f1;
+}
+html.posts #postlist .posts li {
+  border-bottom: 1px solid #ecf0f1;
+  padding: 20px 15px;
+}
+html.posts #postlist .posts li a {
+  text-decoration: none;
+}
+html.posts #postlist .posts li h3 {
+  color: #34495e;
+  padding: 0;
+  margin: 0 0 0.5em 0;
+}
+html.posts #postlist .posts li .post-content {
+  color: #7f8c8d;
+  font-size: 90%;
+}
+html.posts #postlist .posts li:last-child {
+  border-bottom: none;
+}
+html.posts #postlist .posts li+.active {
+  border-bottom: none;
+}
+html.posts #postlist .posts li.active {
+  background-color: #ecf0f1;
+  border-left: 5px solid rgba(149,165,166,0.3);
+}
+html.posts #main {
+  background: white;
+  color: #ecf0f1;
+  font-weight: lighter;
+  -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.05);
+  margin-left: 1%;
+  width: 64%;
+}
+html.posts #main header {
+  color: #95a5a6;
+  width: 100%;
+  line-height: 22px;
+}
+html.posts #main header .inner {
+  padding: 10px 15px;
+}
+html.posts #main header .inner span,
+html.posts #main header .inner button {
+  vertical-align: middle;
+}
+html.posts #main section.content-preview {
+  width: 100%;
+  height: 100%;
+}
+html.posts #main section.content-preview .wrapper {
+  color: #242628;
+  font-size: 1.4em;
+  line-height: 1.5em;
+}
+html.posts #main section.content-preview .wrapper img {
+  max-width: 100%;
+}
+html.posts #main section.content-preview .wrapper h1,
+html.posts #main section.content-preview .wrapper h2,
+html.posts #main section.content-preview .wrapper h3,
+html.posts #main section.content-preview .wrapper h4,
+html.posts #main section.content-preview .wrapper h5,
+html.posts #main section.content-preview .wrapper h6 {
+  text-rendering: optimizeLegibility;
+  line-height: 1;
+  margin-top: 0;
+  font-family: 'Open Sans', sans-serif;
+}
+html.posts #main section.content-preview .wrapper h1 {
+  font-size: 5rem;
+  line-height: 1.2em;
+  letter-spacing: -2px;
+  text-indent: -3px;
+}
+html.posts #main section.content-preview .wrapper h2 {
+  font-size: 4rem;
+  line-height: 1.2em;
+  letter-spacing: -1px;
+  text-indent: -2px;
+}
+html.posts #main section.content-preview .wrapper h3 {
+  font-size: 3.5rem;
+}
+html.posts #main section.content-preview .wrapper h4 {
+  font-size: 3rem;
+}
+html.posts #main section.content-preview .wrapper h5 {
+  font-size: 2.5rem;
+}
+html.posts #main section.content-preview .wrapper h6 {
+  font-size: 2rem;
+}
+html.posts #main section.content-preview .wrapper a {
+  color: #4a4a4a;
+  transition: color ease 0.3s;
+}
+html.posts #main section.content-preview .wrapper a:hover {
+  color: #57A3E8;
+}
+html.posts #main section.content-preview .wrapper h1 a,
+html.posts #main section.content-preview .wrapper h2 a,
+html.posts #main section.content-preview .wrapper h3 a,
+html.posts #main section.content-preview .wrapper h4 a,
+html.posts #main section.content-preview .wrapper h5 a,
+html.posts #main section.content-preview .wrapper h6 a {
+  color: #50585D;
+}
+html.posts #main section.content-preview .wrapper p,
+html.posts #main section.content-preview .wrapper ul,
+html.posts #main section.content-preview .wrapper ol,
+html.posts #main section.content-preview .wrapper dl {
+  margin: 1.6em 0;
+}
+html.posts #main section.content-preview .wrapper ol ol,
+html.posts #main section.content-preview .wrapper ul ul,
+html.posts #main section.content-preview .wrapper ul ol,
+html.posts #main section.content-preview .wrapper ol ul {
+  margin: 0.4em 0;
+}
+html.posts #main section.content-preview .wrapper dl dt {
+  float: left;
+  width: 180px;
+  overflow: hidden;
+  clear: left;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+html.posts #main section.content-preview .wrapper dl dd {
+  margin-left: 200px;
+  margin-bottom: 1em;
+}
+html.posts #main section.content-preview .wrapper hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #efefef;
+  margin: 3.2em 0;
+  padding: 0;
+}
+html.posts #main section.content-preview .wrapper blockquote {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 1.6em 0 1.6em -2.2em;
+  padding: 0 0 0 1.6em;
+  border-left: #4a4a4a 0.4em solid;
+}
+html.posts #main section.content-preview .wrapper blockquote p {
+  margin: 0.8em 0;
+  font-style: italic;
+}
+html.posts #main section.content-preview .wrapper blockquote small {
+  display: inline-block;
+  margin: 0.8em 0 0.8em 1.5em;
+  font-size: 0.9em;
+  color: #ccc;
+}
+html.posts #main section.content-preview .wrapper blockquote small:before {
+  content: '\2014 \00A0';
+}
+html.posts #main section.content-preview .wrapper blockquote cite {
+  font-weight: bold;
+}
+html.posts #main section.content-preview .wrapper blockquote cite a {
+  font-weight: normal;
+}
+html.posts #main section.content-preview .wrapper mark {
+  background-color: #ffc336;
+}
+html.posts #main section.content-preview .wrapper code,
+html.posts #main section.content-preview .wrapper tt {
+  padding: 1px 3px;
+  font-family: Inconsolata, monospace, sans-serif;
+  font-size: 0.85em;
+  white-space: pre-wrap;
+  border: 1px solid #E3EDF3;
+  background: #F7FAFB;
+  border-radius: 2px;
+}
+html.posts #main section.content-preview .wrapper pre {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 1.6em 0;
+  border: 1px solid #E3EDF3;
+  width: 100%;
+  padding: 10px;
+  font-family: Inconsolata, monospace, sans-serif;
+  font-size: 0.9em;
+  white-space: pre;
+  overflow: auto;
+  background: #F7FAFB;
+  border-radius: 3px;
+}
+html.posts #main section.content-preview .wrapper pre code,
+html.posts #main section.content-preview .wrapper tt {
+  font-size: inherit;
+  white-space: -moz-pre-wrap;
+  white-space: pre-wrap;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+html.posts #main section.content-preview .wrapper kbd {
+  display: inline-block;
+  margin-bottom: 0.4em;
+  padding: 1px 8px;
+  border: #ccc 1px solid;
+  color: #666;
+  text-shadow: #fff 0 1px 0;
+  font-size: 0.9em;
+  font-weight: bold;
+  background: #f4f4f4;
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2), 0 1px 0 0 #fff inset;
+}
+html.posts #main section.content-preview .wrapper table {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 1.6em 0;
+  width: 100%;
+  max-width: 100%;
+  background-color: transparent;
+}
+html.posts #main section.content-preview .wrapper table th,
+html.posts #main section.content-preview .wrapper table td {
+  padding: 8px;
+  line-height: 20px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid #efefef;
+}
+html.posts #main section.content-preview .wrapper table th {
+  color: #000;
+}
+html.posts #main section.content-preview .wrapper table caption + thead tr:first-child th,
+html.posts #main section.content-preview .wrapper table caption + thead tr:first-child td,
+html.posts #main section.content-preview .wrapper table colgroup + thead tr:first-child th,
+html.posts #main section.content-preview .wrapper table colgroup + thead tr:first-child td,
+html.posts #main section.content-preview .wrapper table thead:first-child tr:first-child th,
+html.posts #main section.content-preview .wrapper table thead:first-child tr:first-child td {
+  border-top: 0;
+}
+html.posts #main section.content-preview .wrapper table tbody + tbody {
+  border-top: 2px solid #efefef;
+}
+html.posts #main section.content-preview .wrapper table table table {
+  background-color: #fff;
+}
+html.posts #main section.content-preview .wrapper table tbody > tr:nth-child(odd) > td,
+html.posts #main section.content-preview .wrapper table tbody > tr:nth-child(odd) > th {
+  background-color: #f6f6f6;
+}
+html.posts #main section.content-preview .wrapper table.plain tbody > tr:nth-child(odd) > td,
+html.posts #main section.content-preview .wrapper table.plain tbody > tr:nth-child(odd) > th {
+  background: transparent;
+}
+html.posts #main section.content-preview .wrapper iframe,
+html.posts #main section.content-preview .wrapper .fluid-width-video-wrapper {
+  display: block;
+  margin: 1.6em 0;
+}
+html.posts #main button {
+  font-size: 0.6em;
+}
+html.posts #postlist,
+html.posts #main {
+  height: 100%;
+}
+html.posts #layout {
+  height: calc(100% -  40px  - 1rem);
+  height: -webkit-calc(100% -  40px  - 1rem);
+  height: -moz-calc(100% -  40px  - 1rem);
+}
+html.posts .wrapper {
+  margin: 0 auto;
+}
+html.posts .innerwrapper {
+  max-width: 700px;
+  margin: 0 auto;
+}
+html.posts .content-preview .wrapper .scroller {
+  position: absolute;
+  bottom: 0;
+  top: calc( 40px  + 1rem + 42px);
+  top: -webkit-calc( 40px  + 1rem + 42px);
+  top: -moz-calc( 40px  + 1rem + 42px);
+  overflow-y: scroll;
+  padding: 40px;
+  margin: 0 auto;
+  word-wrap: break-word;
+  width: calc(64% - 80px - 1rem - 4px);
+  width: -webkit-calc(64% - 80px - 1rem - 4px);
+  width: -moz-calc(64% - 80px - 1rem - 4px);
+  -webkit-overflow-scrolling: touch;
+}
+html.posts #postlist .scroller {
+  width: calc(35% - 12px);
+  position: absolute;
+  top: calc( 40px  + 1rem + 42px);
+  bottom: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+html.edit #left {
+  background: white;
+  color: #ecf0f1;
+  font-weight: lighter;
+  -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.05);
+  height: 20px;
+  width: 49.5%;
+}
+html.edit #right {
+  background: white;
+  color: #ecf0f1;
+  font-weight: lighter;
+  -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.05);
+  height: 20px;
+  width: 49.5%;
+  margin-left: 1%;
+}
+html.login,
+html.login body,
+html.login .loginform {
+  height: 100%;
+}
+html.login .loginform {
+  display: table;
+}
+html.login .loginform-inner {
+  display: table-cell;
+  vertical-align: middle;
+}
+.pure-button:hover,
+.pure-button:focus {
+  background-image: none;
+}
+.carrot {
+  background-color: #e67e22;
+  color: white;
+}
+.sunflower {
+  background-color: #f1c40f;
+  color: #d35400;
+}
+.emerald {
+  background-color: #2ecc71;
+  color: white;
+}
+.wetasphalt {
+  background-color: #34495e;
+  color: #ecf0f1;
+}
+.pull-right {
+  float: right;
+}
+body {
+  background: #edece4;
+}
+#bar {
+  background-color: #2c3e50;
+  height: 40px;
+  line-height: 40px;
+}
+#bar,
+#bar a {
+  color: #a8afb6;
+}
+#bar .leftside ul.buttons {
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  font-weight: lighter;
+  font-size: 0.8em;
+}
+#bar .leftside ul.buttons li {
+  height: inherit;
+  display: inline-block;
+  position: relative;
+  padding: 0 0.7em;
+}
+#bar .leftside ul.buttons li:last-child {
+  border-right: none;
+}
+#bar .leftside ul.buttons li.active a:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 0 5px 5px 5px;
+  border-style: solid;
+  border-color: #edece4 transparent;
+  display: block;
+  width: 0;
+}
+#bar .leftside ul.buttons li a {
+  text-decoration: none;
+  line-height: inherit;
+  display: inline-block;
+  height: inherit;
+}
+#bar .leftside ul.buttons li.active a {
+  color: #edece4;
+}
+#bar .leftside ul.buttons li.brand {
+  background: #d35400;
+}
+#bar .leftside ul.buttons li.brand a i {
+  vertical-align: middle;
+  font-size: 230%;
+  display: inline-block;
+  color: #f1c40f;
+}
+#bar .rightside {
+  text-align: right;
+}
+#bar .rightside ul.logout {
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  font-weight: lighter;
+  font-size: 0.8em;
+}
+#bar .rightside ul.logout li {
+  height: inherit;
+  display: inline-block;
+  position: relative;
+  padding: 0 0.7em;
+}
+#bar .rightside ul.logout li:last-child {
+  border-right: none;
+}
+#bar .rightside ul.logout li.active a:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 0 5px 5px 5px;
+  border-style: solid;
+  border-color: #edece4 transparent;
+  display: block;
+  width: 0;
+}
+#bar .rightside ul.logout li a {
+  text-decoration: none;
+  line-height: inherit;
+  display: inline-block;
+  height: inherit;
+}
+#bar .rightside ul.logout li.active a {
+  color: #edece4;
+}
+#bar .avatar {
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 2px;
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-position: center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+#layout {
+  margin: 1rem 1rem 0 1rem;
+}

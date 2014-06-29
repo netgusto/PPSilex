@@ -5,6 +5,10 @@
     "require": {
         "silex/silex": "~1.2",
         "silex/web-profiler": "~1.0",
+
+        "kriswallsmith/assetic": "~1.1",
+        "leafo/lessphp": "~0.4.0",
+        "mheap/silex-assetic": "~1.0",
         
         "twig/twig": ">=1.8,<2.0-dev",
         "twig/extensions": "v1.0.1",
@@ -27,6 +31,8 @@
         "zipball/purecss-layout-sidemenu": "~0.5",
         "zipball/purecss-layout-email": "~0.5",
         "requirejs/requirejs": "2.1.11",
+        "underscorejs/underscorejs": "1.6.0",
+        "backbonejs/backbonejs": "1.1.2",
         "modernizr/modernizr": "2.7.1",
         "jquery/jquery": "2.1.0",
 
@@ -40,7 +46,9 @@
         "netgusto/pulpy-theme-casper": "~1.0",
         "aws/aws-sdk-php": "2.6.7",
         
-        "brianium/habitat": "v1.0.0"
+        "brianium/habitat": "v1.0.0",
+
+        "twbs/bootstrap": "v3.2.0"
     },
     "repositories": [
         {
@@ -62,6 +70,28 @@
                 "version": "2.1.11",
                 "dist": {
                     "url": "http://requirejs.org/docs/release/2.1.11/minified/require.js",
+                    "type": "file"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+              "name": "backbonejs/backbonejs",
+                "version": "1.1.2",
+                "dist": {
+                    "url": "http://backbonejs.org/backbone.js",
+                    "type": "file"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+              "name": "underscorejs/underscorejs",
+                "version": "1.6.0",
+                "dist": {
+                    "url": "http://underscorejs.org/underscore-min.js",
                     "type": "file"
                 }
             }
@@ -163,9 +193,10 @@
             ]
         },
         "assetsforwarding": {
-            "destdir": "web/vendor",
             "packages": [
                 "requirejs/requirejs",
+                "underscorejs/underscorejs",
+                "backbonejs/backbonejs",
                 "jquery/jquery",
                 "modernizr/modernizr",
                 "zipball/highlightjs",
@@ -177,7 +208,12 @@
                 "font-awesome/font-awesome",
                 "netgusto/pulpy-theme-dropplets",
                 "netgusto/pulpy-theme-medium",
-                "netgusto/pulpy-theme-casper"
+                "netgusto/pulpy-theme-casper",
+                
+                "twbs/bootstrap"
+            ],
+            "bundles": [
+                "Pulpy/Admin"
             ]
         }
     }

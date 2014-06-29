@@ -16,24 +16,34 @@ class ScriptHandler {
             return;
         }
 
-        if(!array_key_exists('packages', $extra['assetsforwarding'])) {
-            return;
+        if(array_key_exists('packages', $extra['assetsforwarding'])) {
+            self::forwardPackages(
+                $event,
+                $extra['assetsforwarding']['packages'],
+                realpath('.') . '/vendor/',     // sourcedir
+                realpath('.') . '/web/vendor/'  // destinationdir
+            );
         }
 
-        $sourcedir = realpath('.') . '/vendor/';
-        $destinationdir = realpath('.') . '/' . trim($extra['assetsforwarding']['destdir'], '/') . '/';
+        if(array_key_exists('bundles', $extra['assetsforwarding'])) {
+            self::forwardBundlesPublicResources(
+                $event,
+                $extra['assetsforwarding']['bundles'],
+                realpath('.') . '/src/',         // sourcedir
+                realpath('.') . '/web/bundles/'     // destinationdir
+            );
+        }
+    }
+
+    protected static function forwardPackages($event, $packages, $sourcedir, $destinationdir) {
 
         $filesystem = new Filesystem();
 
         if(!is_dir($destinationdir)) {
-            #$event->getIO()->write('<error>The assetsforwarding.destdir specified in composer.json was not found in '.getcwd() . '.' . PHP_EOL . '</error>');
-            #return;
             $filesystem->mkdir($destinationdir, 0777);
         }
 
-        $filesystem = new Filesystem();
-
-        foreach($extra['assetsforwarding']['packages'] as $packagename) {
+        foreach($packages as $packagename) {
             
             $originDir = $sourcedir . '/' . $packagename;
             if(!is_dir($originDir)) {
@@ -50,6 +60,35 @@ class ScriptHandler {
             $filesystem->mirror($originDir, $targetDir, Finder::create()->ignoreDotFiles(false)->in($originDir));
 
             $event->getIO()->write('<info>Package "' . $packagename . '" assets have been forwarded to web dir.</info>');
+        }
+    }
+
+    protected static function forwardBundlesPublicResources($event, $bundles, $sourcedir, $destinationdir) {
+
+        $filesystem = new Filesystem();
+
+        if(!is_dir($destinationdir)) {
+            $filesystem->mkdir($destinationdir, 0777);
+        }
+
+        foreach($bundles as $bundlename) {
+            
+            $originDir = $sourcedir . $bundlename . '/Resources/public/';
+
+            if(!is_dir($originDir)) {
+                $event->getIO()->write('<error>Bundle "' . $bundlename . '" was not found ("' . $originDir . '")</error>');
+                return;
+            }
+
+            $targetDir = $destinationdir . trim(strtolower(str_replace(array('\\', '/'), '', $bundlename)));
+
+            $filesystem->remove($targetDir);
+            $filesystem->mkdir($targetDir, 0777);
+            
+            // We use a custom iterator to ignore VCS files
+            $filesystem->mirror($originDir, $targetDir, Finder::create()->ignoreDotFiles(false)->in($originDir));
+
+            $event->getIO()->write('<info>Bundle "' . $bundlename . '" public resources have been forwarded to web dir.</info>');
         }
     }
 }

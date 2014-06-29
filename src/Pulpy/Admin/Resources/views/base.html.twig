@@ -1,1 +1,27 @@
-{% extends '@PulpyCore/base.html.twig' %}
+<!DOCTYPE html>
+<html lang="en" class="{% block htmlclass '' %}">
+<head>
+{% include '@PulpyAdmin/_partials/base.head.html.twig' %}
+</head>
+<body>
+
+<div id="bar">
+    <div class="leftside pull-left">
+        <ul class="buttons"><!-- @ws
+            --><li class="brand"><a href="#"><i class="icon-pp-lemon fa-2x"></i></a></li><!-- @ws 
+            --><li class="active"><a href="#"><i class="fa fa-cubes"></i> Content</a></li><!-- @ws
+            --><li><a href="#"><i class="fa fa-plus"></i> New post</a></li><!-- @ws
+            --><li><a href="#"><i class="fa fa-cog"></i> Settings</a></li><!-- @ws
+        --></ul>
+    </div>
+    <div class="rightside pull-right">
+        <ul class="logout"><!-- @ws
+            --><li style="line-height: 40px;"><a href="{{ path('admin.logout') }}"><i class="fa fa-eject"></i> {{ app.security.token.user.username }} <span class="avatar" style="background-image: url({{ avatarurl(app.security.token.user) }})" /></a></li><!-- @ws 
+        --></ul>
+    </div>
+</div>
+
+{% block body %}{% endblock %}
+
+</body>
+</html>

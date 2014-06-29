@@ -1,34 +1,45 @@
-{% extends '@PulpyAdmin/base.html.twig' %}
+{% extends '@PulpyAdmin/base.login.html.twig' %}
+
+{% block htmlclass 'login' %}
 
 {% block body %}
 
-{% if error %}
-    {{ error }}
-{% endif %}
+<div class="container loginform">
+    <div class="loginform-inner">
 
-<form class="form-horizontal" action="{{ path('admin_authcheck') }}" method="post">
-    
-    <div class="form-group">
-        <label class="col-lg-4 control-label" for="_username">Username</label>
-        <div class="col-lg-8">
-            <input class="form-control" type="text" id="username" name="_username" placeholder="Username" value="{{ last_username }}">
+        {% if error %}
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-4">
+                <div class="alert alert-danger" role="alert">{{ error }}</div>
+            </div>
         </div>
-    </div>
+        {% endif %}
 
-    <div class="form-group">
-        <label class="col-lg-4 control-label" for="_password">Password</label>
-        <div class="col-lg-8">
-            <input type="password" class="form-control" id="password" name="_password" placeholder="Password">
-        </div>
-    </div>
+        <form class="form-horizontal" action="{{ path('admin_authcheck') }}" method="post">
+            
+            <div class="form-group">
+                <label class="col-sm-4 col-md-5 control-label" for="_username">Username</label>
+                <div class="col-sm-4 col-md-2">
+                    <input class="form-control" type="text" id="username" name="_username" placeholder="Username" value="{{ last_username }}">
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-lg-4"></div>
-        <div class="col-lg-8">
-            <button type="submit" class="btn btn-primary">Sign in</button>
-        </div>
-    </div>
+            <div class="form-group">
+                <label class="col-sm-4 col-md-5 control-label" for="_password">Password</label>
+                <div class="col-sm-4 col-md-2">
+                    <input type="password" class="form-control" id="password" name="_password" placeholder="Password">
+                </div>
+            </div>
 
-    <input type="hidden" name="_target_path" value="{{ path('admin.home') }}" />
-</form>
+            <div class="form-group">
+                <div class="col-sm-4 col-md-2 col-sm-offset-4 col-md-offset-5">
+                    <button type="submit" class="btn btn-block btn-primary">Sign in</button>
+                </div>
+            </div>
+
+            <input type="hidden" name="_target_path" value="{{ path('admin.home') }}" />
+        </form>
+    </div>
+</div>
+
 {% endblock %}

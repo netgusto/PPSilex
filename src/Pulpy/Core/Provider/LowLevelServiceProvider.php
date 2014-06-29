@@ -13,6 +13,9 @@ use Silex\Application,
     Silex\Provider\TranslationServiceProvider,
     Silex\Provider\SecurityServiceProvider;
 
+use SilexAssetic\AsseticServiceProvider;
+
+use Assetic;
 
 use Pulpy\Core\Services as PulpyServices,
     Pulpy\Core\Security\UserProvider,
@@ -160,6 +163,31 @@ class LowLevelServiceProvider implements ServiceProviderInterface {
         $app['security.role_hierarchy'] = array(
             'ROLE_ADMIN' => array('ROLE_USER', 'ROLE_ALLOWED_TO_SWITCH'),
         );
+
+
+        #
+        # Assetic
+        #
+
+        $app['assetic.path_to_cache'] = $app['environment']->getCacheDir() . '/assetic';
+        $app['assetic.path_to_web'] = $app['environment']->getWebDir() . '/assets';
+
+        $app->register(new AsseticServiceProvider(), array(
+            'assetic.options' => array(
+                #'debug'            => $app['debug'],
+                #'auto_dump_assets' => $app['debug'],
+                'debug' => FALSE,
+                'auto_dump_assets' => FALSE,
+            )
+        ));
+
+        $app['assetic.filter_manager'] = $app->share(
+            $app->extend('assetic.filter_manager', function ($fm, $app) {
+                $fm->set('lessphp', new Assetic\Filter\LessphpFilter());
+                return $fm;
+            })
+        );
+
     }
 
     public function boot(Application $app) {

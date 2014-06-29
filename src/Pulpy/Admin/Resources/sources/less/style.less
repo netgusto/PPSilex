@@ -1,0 +1,120 @@
+@import "_mixins.less";
+@import "_colors.less";
+
+@import "layouts/posts.less";
+@import "layouts/edit.less";
+@import "layouts/login.less";
+
+.pure-button:hover,
+.pure-button:focus {
+    background-image: none;
+}
+
+.carrot {
+    background-color: @carrot;
+    color: white;
+}
+
+.sunflower {
+    background-color: @sunflower;
+    color: @pumpkin;
+}
+
+.emerald {
+    background-color: @emerald;
+    color: white;
+}
+
+.wetasphalt {
+    background-color: @wetasphalt;
+    color: @clouds;
+}
+
+
+/*************************************************** */
+
+
+
+/*************************************************** */
+
+@barheight: 40px;
+
+@barbgcolor: @midnightblue;
+@barcolor: desaturate(lighten(@wetasphalt, 40%), 20%);
+@barcoloractive: @beige;
+@barsepcolor: @asbestos;
+
+@lightblack: lighten(black, 60%);
+@lightgray: lighten(red, 30%);
+
+@bodybg: @beige;
+
+/*********************/
+
+.pull-right { float: right; }
+
+/*********************/
+
+body {
+    background: @bodybg;
+    font-size: 16px;
+}
+
+
+#bar {
+
+    background-color: @barbgcolor;
+    height: @barheight;
+    line-height: @barheight;
+
+    &, & a {
+        color: @barcolor;
+    }
+
+    .leftside {
+        ul.buttons {
+            
+            .barbuttons;
+
+            li.brand  {
+
+                background: @pumpkin;
+
+                a i {
+                    vertical-align: middle;
+                    display: inline-block;
+                    color: @sunflower;
+                }
+            }
+        }
+    }
+
+    .rightside {
+        text-align: right;
+        ul.logout {
+            .barbuttons;
+        }   
+    }
+
+    .avatar {
+        display: inline-block;
+        vertical-align: middle;
+        margin-bottom: 2px;
+        width: 30px;
+        height: 30px;
+        background-repeat: no-repeat;
+        background-position: center fixed;
+        -webkit-background-size: cover; /* pour Chrome et Safari */
+        -moz-background-size: cover; /* pour Firefox */
+        -o-background-size: cover; /* pour Opera */
+        background-size: cover; /* version standardisée */
+    }
+}
+
+#layout {
+    margin: 1rem 1rem 0 1rem;
+}
+
+.text-center {
+    text-align: center;
+}

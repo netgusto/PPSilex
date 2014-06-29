@@ -50,6 +50,7 @@ $app['console']->addCommands(array(
     new \Pulpy\Core\Command\PostRebuildCacheCommand(),
     new \Pulpy\Core\Command\PostUpdateCacheCommand(),
     new \Pulpy\Core\Command\CreateDatabaseDoctrineCommand(),
+    new \Pulpy\Core\Command\AsseticDumpCommand(),
 ));
 
 $app['console']->run();

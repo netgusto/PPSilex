@@ -7,6 +7,8 @@ use Silex\Application,
     Silex\ControllerProviderInterface,
     Silex\Provider\SessionServiceProvider;
 
+use Assetic;
+
 use Pulpy\Admin\Controller as AdminController;
 
 class ControllerProvider implements ServiceProviderInterface, ControllerProviderInterface {
@@ -19,6 +21,24 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         # The view namespace
         $app['twig.loader.filesystem']->addPath($app['environment']->getSrcdir() . '/Pulpy/Admin/Resources/views', 'PulpyAdmin');
 
+        $app['assetic.asset_manager'] = $app->share(
+            $app->extend('assetic.asset_manager', function ($am, $app) {
+
+                # stylesheet
+                $am->set('styles', new Assetic\Asset\AssetCollection(
+                    new Assetic\Asset\GlobAsset(
+                        array(
+                            $app['environment']->getSrcdir() . '/Pulpy/Admin/Resources/sources/less/*.less'
+                        ),
+                        array($app['assetic.filter_manager']->get('lessphp'))
+                    )
+                ));
+                $am->get('styles')->setTargetPath('admin/styles.css');
+
+                return $am;
+            })
+        );
+
         # The controller responsible of authentication
         $app['auth.admin.controller'] = $app->share(function() use ($app) {
             return new AdminController\AuthController(
@@ -30,6 +50,14 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         $app['dashboard.admin.controller'] = $app->share(function() use ($app) {
             return new AdminController\DashboardController(
                 $app['twig']
+            );
+        });
+
+        # The controller responsible for the post list
+        $app['posts.admin.controller'] = $app->share(function() use ($app) {
+            return new AdminController\PostsController(
+                $app['twig'],
+                $app['post.repository']
             );
         });
     }
@@ -48,7 +76,10 @@ class ControllerProvider implements ServiceProviderInterface, ControllerProvider
         $controllers->get('/login', 'auth.admin.controller:loginAction')
             ->bind('admin.login');
 
-        $controllers->get('/', 'dashboard.admin.controller:indexAction')
+        $controllers->get('/logout')
+            ->bind('admin.logout');
+
+        $controllers->get('/', 'posts.admin.controller:indexAction')
             ->bind('admin.home');
 
         return $controllers;

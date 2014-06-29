@@ -13,7 +13,8 @@ use Pulpy\Core\Services\ResourceResolverService,
     Pulpy\Core\Services\Context\CultureService,
     Pulpy\Core\Services\Config\SiteConfigService,
     Pulpy\Core\Repository\PostRepository,
-    Pulpy\Core\Entity\Post;
+    Pulpy\Core\Entity\Post,
+    Pulpy\Core\Entity\AppUser;
 
 class PulpyExtension extends \Twig_Extension {
 
@@ -80,6 +81,7 @@ class PulpyExtension extends \Twig_Extension {
             'documenttitleforposttitle' => new \Twig_SimpleFunction('documenttitleforposttitle', array($this, 'documenttitleforposttitle')),
             'nextpost' => new \Twig_SimpleFunction('nextpost', array($this, 'nextpost')),
             'previouspost' => new \Twig_SimpleFunction('previouspost', array($this, 'previouspost')),
+            'avatarurl' => new \Twig_SimpleFunction('avatarurl', array($this, 'avatarurl')),
         );
     }
 
@@ -130,6 +132,14 @@ class PulpyExtension extends \Twig_Extension {
 
     public function humandate(\DateTime $date) {
         return $this->culture->humanDate($date);
+    }
+
+    public function md5($string) {
+        return md5($string);
+    }
+
+    public function avatarurl(AppUser $user) {
+        return 'http://www.gravatar.com/avatar/' . md5($user->getEmail()) . '?s=200';
     }
 
     public function component_disqus(Post $post) {

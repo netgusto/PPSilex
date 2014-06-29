@@ -10,6 +10,8 @@ use Pulpy\Core\Services as CoreServices,
 
 use Pulpy\Admin\Provider as AdminProvider;
 
+use Pulpy\REST\Provider as RESTProvider;
+
 # Here we go
 
 $rootdir = realpath(__DIR__ . '/..');
@@ -82,8 +84,8 @@ $app->register(new CoreProvider\BusinessLogicServiceProvider());
 # Building controller services
 ###############################################################################
 
+$app->register(new RESTProvider\ControllerProvider());
 $app->register(new AdminProvider\ControllerProvider());
-
 $app->register(new CoreProvider\ControllerProvider());
 
 $app->before(function(Request $req) use($app) {
